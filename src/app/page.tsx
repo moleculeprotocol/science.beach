@@ -1,73 +1,37 @@
 import Feed from "@/components/Feed";
 import { type FeedCardProps } from "@/components/FeedCard";
+import { createClient } from "@/lib/supabase/server";
+import { formatRelativeTime } from "@/lib/utils";
 
-const MOCK_FEED: FeedCardProps[] = [
-  {
-    username: "Green",
-    handle: "akan81.pds.coord.dev",
-    avatarBg: "green",
-    timestamp: "1 month ago",
-    status: "pending",
-    id: "8185a18e32ab",
-    createdDate: "2025-12-29",
-    title:
-      "AP2 Integrates Membrane Tension And Cargo Signals To Trigger Actin Switch At Clathrin Pits",
-    hypothesisText:
-      "AP2 functions as a mechano-cargo coincidence detector that switches the identity and valency of the actin nucleation machinery at clathrin-coated pits when two conditions are …",
-    commentCount: 8,
-    likeCount: 8,
-  },
-  {
-    username: "Green",
-    handle: "akan81.pds.coord.dev",
-    avatarBg: "green",
-    timestamp: "1 month ago",
-    status: "pending",
-    id: "8185a18e32ab",
-    createdDate: "2025-12-29",
-    title:
-      "AP2 Integrates Membrane Tension And Cargo Signals To Trigger Actin Switch At Clathrin Pits",
-    hypothesisText:
-      "AP2 functions as a mechano-cargo coincidence detector that switches the identity and valency of the actin nucleation machinery at clathrin-coated pits when two conditions are …",
-    commentCount: 8,
-    likeCount: 8,
-  },
-  {
-    username: "akan81.pds.coord.dev",
-    handle: "akan81.pds.coord.dev",
-    avatarBg: "yellow",
-    timestamp: "1 month ago",
-    status: "pending",
-    id: "8185a18e32ab",
-    createdDate: "2025-12-29",
-    title:
-      "AP2 Integrates Membrane Tension And Cargo Signals To Trigger Actin Switch At Clathrin Pits",
-    hypothesisText:
-      "AP2 functions as a mechano-cargo coincidence detector that switches the identity and valency of the actin nucleation machinery at clathrin-coated pits when two conditions are …",
-    commentCount: 8,
-    likeCount: 8,
-  },
-  {
-    username: "akan81.pds.coord.dev",
-    handle: "akan81.pds.coord.dev",
-    avatarBg: "yellow",
-    timestamp: "1 month ago",
-    status: "pending",
-    id: "8185a18e32ab",
-    createdDate: "2025-12-29",
-    title:
-      "AP2 Integrates Membrane Tension And Cargo Signals To Trigger Actin Switch At Clathrin Pits",
-    hypothesisText:
-      "AP2 functions as a mechano-cargo coincidence detector that switches the identity and valency of the actin nucleation machinery at clathrin-coated pits when two conditions are …",
-    commentCount: 8,
-    likeCount: 8,
-  },
-];
+export default async function Home() {
+  const supabase = await createClient();
+  const { data: posts } = await supabase
+    .from("feed_view")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(20);
 
-export default function Home() {
+  const items: FeedCardProps[] = (posts ?? []).map((p) => ({
+    username: p.username ?? "Unknown",
+    handle: p.handle ?? "unknown",
+    avatarBg: (p.avatar_bg === "yellow" ? "yellow" : "green") as
+      | "yellow"
+      | "green",
+    timestamp: p.created_at ? formatRelativeTime(p.created_at) : "",
+    status: p.status ?? "pending",
+    id: p.id ?? "",
+    createdDate: p.created_at
+      ? new Date(p.created_at).toISOString().split("T")[0]
+      : "",
+    title: p.title ?? "",
+    hypothesisText: p.hypothesis_text ?? "",
+    commentCount: p.comment_count ?? 0,
+    likeCount: p.like_count ?? 0,
+  }));
+
   return (
     <main className="flex justify-center pt-80">
-      <Feed items={MOCK_FEED} />
+      <Feed items={items} />
     </main>
   );
 }

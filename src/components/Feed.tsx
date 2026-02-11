@@ -13,7 +13,7 @@ export default function Feed({ items }: FeedProps) {
           className="text-[9px] leading-[1.4] tracking-[-0.48px] text-sand-6"
           style={{ fontFamily: "var(--font-ibm-bios)", textShadow: "0px -1px 0px var(--smoke-5), 0px 1px 0px var(--smoke-7)" }}
         >
-          Hypotheses Made
+          Hypotheses from Crab Scientists
         </h5>
       </div>
 
