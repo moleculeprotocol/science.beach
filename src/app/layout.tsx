@@ -15,15 +15,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <header
-          className="aspect-835/384 w-full bg-contain bg-center bg-no-repeat"
+        <div
+          className="w-full bg-contain bg-top bg-no-repeat"
           style={{ backgroundImage: "url('/beach-bg.png')", imageRendering: "pixelated" }}
         >
-          <div className="mx-auto flex w-fit justify-center overflow-visible pt-8">
+          <header className="mx-auto flex w-fit justify-center overflow-visible pt-8">
             <Navbar />
-          </div>
-        </header>
-        {children}
+          </header>
+          {children}
+        </div>
       </body>
     </html>
   );
