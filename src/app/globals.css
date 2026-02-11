@@ -1,26 +1,202 @@
 @import "tailwindcss";
 
+/* --- Kode Mono Font Faces --- */
+@font-face {
+  font-family: "Kode Mono";
+  src: url("/fonts/kode_mono/KodeMono-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Kode Mono";
+  src: url("/fonts/kode_mono/KodeMono-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Kode Mono";
+  src: url("/fonts/kode_mono/KodeMono-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Kode Mono";
+  src: url("/fonts/kode_mono/KodeMono-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- CSS Variables --- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --font-kode-mono: "Kode Mono", monospace;
+
+  /* Energies */
+  --yellow-4: #ffda33;
+
+  /* Eclipse */
+  --light-space: #ffffff;
+
+  /* Shades / Smoke */
+  --smoke-2: #1d1d1d;
+  --smoke-5: #b3b3b3;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-yellow-4: var(--yellow-4);
+  --color-light-space: var(--light-space);
+  --color-smoke-2: var(--smoke-2);
+  --color-smoke-5: var(--smoke-5);
+  --font-mono: var(--font-kode-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* --- Base --- */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-kode-mono);
+  line-height: 1.5;
+}
+
+/* --- Headlines (exact Figma specs) --- */
+h1 {
+  font-family: var(--font-kode-mono);
+  font-size: 5rem; /* 80px */
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.05em; /* -5% */
+}
+
+h2 {
+  font-family: var(--font-kode-mono);
+  font-size: 3.625rem; /* 58px */
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.05em; /* -5% */
+}
+
+h3 {
+  font-family: var(--font-kode-mono);
+  font-size: 3rem; /* 48px */
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+h4 {
+  font-family: var(--font-kode-mono);
+  font-size: 2.5rem; /* 40px */
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+h5 {
+  font-family: var(--font-kode-mono);
+  font-size: 2rem; /* 32px */
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+h6 {
+  font-family: var(--font-kode-mono);
+  font-size: 1.5rem; /* 24px */
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* H7/H8 don't map to HTML elements — use classes */
+.h7 {
+  font-family: var(--font-kode-mono);
+  font-size: 1.125rem; /* 18px */
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.h8 {
+  font-family: var(--font-kode-mono);
+  font-size: 1rem; /* 16px */
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* --- Paragraph --- */
+.paragraph-l {
+  font-family: var(--font-kode-mono);
+  font-size: 1.125rem; /* 18px */
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.paragraph-m {
+  font-family: var(--font-kode-mono);
+  font-size: 1rem; /* 16px */
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.paragraph-m-bold {
+  font-family: var(--font-kode-mono);
+  font-size: 1rem; /* 16px */
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.paragraph-s {
+  font-family: var(--font-kode-mono);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* --- Label --- */
+.label-s-semibold {
+  font-family: var(--font-kode-mono);
+  font-size: 0.75rem; /* 12px */
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.label-m-regular {
+  font-family: var(--font-kode-mono);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.label-m-bold {
+  font-family: var(--font-kode-mono);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.label-s-regular {
+  font-family: var(--font-kode-mono);
+  font-size: 0.75rem; /* 12px */
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* --- Mono --- */
+.mono-m {
+  font-family: var(--font-kode-mono);
+  font-size: 1rem; /* 16px */
+  font-weight: 500;
+  line-height: 1.5; /* 24px */
+}
+
+.mono-s {
+  font-family: var(--font-kode-mono);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  line-height: 1.714; /* 24px */
 }
