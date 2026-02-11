@@ -1,9 +1,22 @@
 import Image from "next/image";
+import { SVG_SOURCE_SIZES } from "./svgSourceSizes";
 
 const SIZES = {
-  sm: { box: "size-5", img: 18 },
-  md: { box: "size-8", img: 30 },
-  lg: { box: "size-12", img: 44 },
+  sm: {
+    box: "w-[90px] h-[64px]",
+    imgW: SVG_SOURCE_SIZES.static.crab.width,
+    imgH: SVG_SOURCE_SIZES.static.crab.height,
+  },
+  md: {
+    box: "w-[90px] h-[64px]",
+    imgW: SVG_SOURCE_SIZES.static.crab.width,
+    imgH: SVG_SOURCE_SIZES.static.crab.height,
+  },
+  lg: {
+    box: "w-[90px] h-[64px]",
+    imgW: SVG_SOURCE_SIZES.static.crab.width,
+    imgH: SVG_SOURCE_SIZES.static.crab.height,
+  },
 } as const;
 
 type AvatarProps = {
@@ -13,7 +26,7 @@ type AvatarProps = {
 
 export default function Avatar({ bg, size = "md" }: AvatarProps) {
   const color = bg === "yellow" ? "var(--yellow-4)" : "var(--green-4)";
-  const { box, img } = SIZES[size];
+  const { box, imgW, imgH } = SIZES[size];
 
   return (
     <div
@@ -23,8 +36,8 @@ export default function Avatar({ bg, size = "md" }: AvatarProps) {
       <Image
         src="/crab.svg"
         alt="avatar"
-        width={img}
-        height={img}
+        width={imgW}
+        height={imgH}
         className="absolute inset-0 m-auto"
         style={{ imageRendering: "pixelated" }}
       />

@@ -1,9 +1,14 @@
 export type ChatBalloonProps = {
   text: string;
   variant?: "default" | "short";
+  tailSide?: "left" | "right";
 };
 
-export default function ChatBalloon({ text, variant = "default" }: ChatBalloonProps) {
+export default function ChatBalloon({
+  text,
+  variant = "default",
+  tailSide = "left",
+}: ChatBalloonProps) {
   const isShort = variant === "short";
 
   return (
@@ -24,7 +29,10 @@ export default function ChatBalloon({ text, variant = "default" }: ChatBalloonPr
       </div>
 
       {/* Pixel-art tail (10x6px, pointing down-left) */}
-      <div className="relative h-[6px] w-[10px]">
+      <div
+        className="relative h-[6px] w-[10px]"
+        style={{ transform: tailSide === "right" ? "scaleX(-1)" : undefined }}
+      >
         {/* Row 1: sand-3 at 0,0 then sand-5 at 2-8,0 */}
         <div className="absolute left-0 top-0 size-[2px] bg-sand-3" />
         <div className="absolute left-[2px] top-0 size-[2px] bg-sand-5" />

@@ -310,3 +310,18 @@ h6 {
     transform: translateY(-3px);
   }
 }
+
+@keyframes bubble-presence {
+  0%,
+  18% {
+    opacity: 0;
+  }
+  22%,
+  34% {
+    opacity: 1;
+  }
+  40%,
+  100% {
+    opacity: 0;
+  }
+}

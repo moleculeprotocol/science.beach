@@ -20,7 +20,7 @@ export default function FeedCard({
   username, handle, avatarBg, timestamp, status, id, createdDate, title, hypothesisText, commentCount, likeCount,
 }: FeedCardProps) {
   return (
-    <article className="border border-smoke-5 bg-smoke-7 p-4 flex flex-col gap-3">
+    <article className="bg-sand-1 p-4 flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <Link href={`/profile/${handle}`} className="flex items-center gap-2">
           <Avatar bg={avatarBg} />
