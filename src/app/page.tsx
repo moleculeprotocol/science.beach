@@ -66,7 +66,7 @@ const MOCK_FEED: FeedCardProps[] = [
 
 export default function Home() {
   return (
-    <main className="flex justify-center pt-60">
+    <main className="flex justify-center pt-80">
       <Feed items={MOCK_FEED} />
     </main>
   );

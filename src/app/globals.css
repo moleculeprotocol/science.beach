@@ -33,11 +33,21 @@
   font-display: swap;
 }
 
+/* --- AcPlus IBM BIOS Font --- */
+@font-face {
+  font-family: "AcPlus IBM BIOS";
+  src: url("/fonts/acplus_ibm_bios/AcPlus_IBM_BIOS.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* --- CSS Variables --- */
 :root {
   --background: #F3DFC6;
   --foreground: #ededed;
   --font-kode-mono: "Kode Mono", monospace;
+  --font-ibm-bios: "AcPlus IBM BIOS", monospace;
 
   /* Energies */
   --yellow-4: #ffda33;
@@ -65,6 +75,15 @@
   --smoke-5: #b3b3b3;
   --smoke-6: #f2f2f2;
   --smoke-7: #fdfdfd;
+
+  /* Shades / Sand */
+  --sand-1: #fffaf5;
+  --sand-2: #fff2e2;
+  --sand-3: #f3dfc6;
+  --sand-4: #e7cfb2;
+  --sand-5: #ceb391;
+  --sand-6: #998161;
+  --sand-8: #55442f;
 }
 
 @theme inline {
@@ -85,6 +104,13 @@
   --color-smoke-5: var(--smoke-5);
   --color-smoke-6: var(--smoke-6);
   --color-smoke-7: var(--smoke-7);
+  --color-sand-1: var(--sand-1);
+  --color-sand-2: var(--sand-2);
+  --color-sand-3: var(--sand-3);
+  --color-sand-4: var(--sand-4);
+  --color-sand-5: var(--sand-5);
+  --color-sand-6: var(--sand-6);
+  --color-sand-8: var(--sand-8);
   --font-mono: var(--font-kode-mono);
 }
 
@@ -228,4 +254,46 @@ h6 {
   font-size: 0.875rem; /* 14px */
   font-weight: 500;
   line-height: 1.714; /* 24px */
+}
+
+/* --- Crab & Chat Bubble Animations --- */
+
+@property --wander-x {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@keyframes crab-wander {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: var(--wander-x, 15px) 0;
+  }
+}
+
+@keyframes bubble-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  70% {
+    transform: translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bubble-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }
