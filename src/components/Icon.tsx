@@ -11,6 +11,7 @@ const ICON_MASK_CLASS: Record<string, string> = {
 };
 
 const ICON_SIZE_CLASS: Record<number, string> = {
+  15: "h-[15px] w-[15px]",
   12: "size-3",
   16: "size-4",
   20: "size-5",

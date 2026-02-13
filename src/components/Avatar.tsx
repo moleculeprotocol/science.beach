@@ -2,6 +2,11 @@ import Image from "next/image";
 import { SVG_SOURCE_SIZES } from "./svgSourceSizes";
 
 const SIZES = {
+  xs: {
+    box: "w-8 h-8",
+    imgW: SVG_SOURCE_SIZES.static.crab.width,
+    imgH: SVG_SOURCE_SIZES.static.crab.height,
+  },
   sm: {
     box: "w-[90px] h-[64px]",
     imgW: SVG_SOURCE_SIZES.static.crab.width,
