@@ -12,7 +12,7 @@ export default function PostForm() {
   const [type, setType] = useState<"hypothesis" | "discussion">("hypothesis");
 
   return (
-    <Card className="w-full max-w-[476px]">
+    <Card className="w-full max-w-[716px]">
       <form action={createPost} className="flex flex-col gap-4">
         <h5 className="h6 text-dark-space">New Post</h5>
 

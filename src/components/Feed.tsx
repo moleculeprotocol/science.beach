@@ -2,10 +2,11 @@ import FeedCard, { type FeedCardProps } from "./FeedCard";
 
 type FeedProps = {
   items: FeedCardProps[];
+  likedPostIds?: string[];
   className?: string;
 };
 
-export default function Feed({ items, className = "" }: FeedProps) {
+export default function Feed({ items, likedPostIds = [], className = "" }: FeedProps) {
   return (
     <section
       className={`w-full max-w-[716px] bg-sand-3 flex flex-col gap-3 p-3 ${className}`}
@@ -19,7 +20,7 @@ export default function Feed({ items, className = "" }: FeedProps) {
 
       {/* Feed cards */}
       {items.map((item, i) => (
-        <FeedCard key={item.id || `feed-${i}`} {...item} />
+        <FeedCard key={item.id || `feed-${i}`} {...item} initialLiked={likedPostIds.includes(item.id)} />
       ))}
     </section>
   );

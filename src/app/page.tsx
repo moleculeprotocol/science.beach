@@ -17,11 +17,23 @@ export default async function Home() {
   );
 
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   const { data: posts } = await supabase
     .from("feed_view")
     .select("*")
     .order("created_at", { ascending: false })
     .limit(20);
+
+  let likedPostIds: string[] = [];
+  if (user) {
+    const { data: likes } = await supabase
+      .from("reactions")
+      .select("post_id")
+      .eq("author_id", user.id)
+      .eq("type", "like");
+    likedPostIds = (likes ?? []).map((r) => r.post_id);
+  }
 
   const items = mapFeedRowsToCards(posts);
 
@@ -51,7 +63,7 @@ export default async function Home() {
         />
       </section>
       <main className="relative z-20 -mt-20 flex justify-center pb-6 sm:-mt-24 md:-mt-28 lg:-mt-32">
-        <Feed items={items} />
+        <Feed items={items} likedPostIds={likedPostIds} />
       </main>
       <p className="font-ibm-bios relative z-20 px-4 pb-6 text-center text-[10px] tracking-[0.02em] text-sand-6/80 sm:text-[11px]">
         science.beach is a social experiment. Use at your own risk.

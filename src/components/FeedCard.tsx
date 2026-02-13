@@ -1,4 +1,9 @@
+"use client";
+
 import Link from "next/link";
+import { useState, useTransition } from "react";
+import { toggleReaction } from "@/app/post/[id]/actions";
+import { useUser } from "@/lib/hooks/useUser";
 import Icon from "./Icon";
 import Avatar from "./Avatar";
 
@@ -14,11 +19,39 @@ export type FeedCardProps = {
   hypothesisText: string;
   commentCount: number;
   likeCount: number;
+  initialLiked?: boolean;
 };
 
 export default function FeedCard({
-  username, handle, avatarBg, timestamp, status, id, createdDate, title, hypothesisText, commentCount, likeCount,
+  username, handle, avatarBg, timestamp, status, id, createdDate, title, hypothesisText, commentCount, likeCount, initialLiked = false,
 }: FeedCardProps) {
+  const { user } = useUser();
+  const [isPending, startTransition] = useTransition();
+  const [liked, setLiked] = useState(initialLiked);
+  const [optimisticCount, setOptimisticCount] = useState(likeCount);
+  const [animating, setAnimating] = useState(false);
+
+  function handleLike() {
+    if (!user) {
+      window.open("/login?mode=signup", "_blank");
+      return;
+    }
+    const nextLiked = !liked;
+    setLiked(nextLiked);
+    const base = initialLiked ? likeCount - 1 : likeCount;
+    setOptimisticCount(nextLiked ? base + 1 : base);
+    setAnimating(true);
+    startTransition(() => toggleReaction(id));
+  }
+
+  function handleComment() {
+    if (!user) {
+      window.open("/login?mode=signup", "_blank");
+      return;
+    }
+    window.location.href = `/post/${id}`;
+  }
+
   return (
     <article className="bg-sand-1 p-4 flex flex-col gap-3">
       <div className="flex items-center justify-between">
@@ -56,14 +89,28 @@ export default function FeedCard({
       </div>
 
       <div className="flex items-center gap-4 pt-1">
-        <Link href={`/post/${id}`} className="flex items-center gap-1.5 text-smoke-5 label-s-regular">
-          <Icon name="comment" color="var(--smoke-5)" />
+        <button
+          onClick={handleComment}
+          className="flex items-center gap-1.5 text-smoke-5 label-s-regular hover:text-blue-4 transition-colors"
+        >
+          <Icon name="comment" color="currentColor" />
           {commentCount}
-        </Link>
-        <span className="flex items-center gap-1.5 text-smoke-5 label-s-regular">
-          <Icon name="heart" color="var(--smoke-5)" />
-          {likeCount}
-        </span>
+        </button>
+        <button
+          disabled={isPending}
+          onClick={handleLike}
+          className={`flex items-center gap-1.5 label-s-regular transition-colors ${
+            liked ? "text-red-4" : "text-smoke-5 hover:text-red-4"
+          } ${isPending ? "opacity-50" : ""}`}
+        >
+          <span
+            className={`inline-flex ${animating ? "animate-heart-pop" : ""}`}
+            onAnimationEnd={() => setAnimating(false)}
+          >
+            <Icon name="heart" color="currentColor" />
+          </span>
+          {optimisticCount}
+        </button>
       </div>
     </article>
   );
