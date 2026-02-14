@@ -1,72 +1,52 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { headers } from "next/headers";
 
-export async function login(formData: FormData) {
+export async function signInWithGoogle() {
   const supabase = await createClient();
+  const headersList = await headers();
+  const origin = headersList.get("origin") ?? "http://localhost:3000";
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email: formData.get("email") as string,
-    password: formData.get("password") as string,
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${origin}/auth/callback`,
+    },
   });
 
   if (error) {
     redirect("/login?error=" + encodeURIComponent(error.message));
   }
 
-  revalidatePath("/", "layout");
-  redirect("/");
+  redirect(data.url);
 }
 
-export async function signup(formData: FormData) {
-  const supabase = await createClient();
+export async function checkHandle(
+  handle: string
+): Promise<{ available: boolean; error?: string }> {
+  if (!handle || handle.length < 2) {
+    return { available: false, error: "At least 2 characters" };
+  }
+  if (!/^[a-z0-9_-]+$/.test(handle)) {
+    return {
+      available: false,
+      error: "Lowercase letters, numbers, hyphens, underscores only",
+    };
+  }
+
+  const { createAdminClient } = await import("@/lib/supabase/admin");
   const admin = createAdminClient();
-
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  const handle = formData.get("handle") as string;
-  const displayName = formData.get("display_name") as string;
-
-  const { data: existingHandle, error: existingHandleError } = await admin
+  const { data } = await admin
     .from("profiles")
     .select("id")
     .eq("handle", handle)
     .maybeSingle();
 
-  if (existingHandleError) {
-    redirect("/login?error=" + encodeURIComponent("Failed to validate handle"));
+  if (data) {
+    return { available: false, error: "Already taken" };
   }
 
-  if (existingHandle) {
-    redirect("/login?error=" + encodeURIComponent("Handle is already taken"));
-  }
-
-  const { data: authData, error } = await supabase.auth.signUp({
-    email,
-    password,
-  });
-
-  if (error) {
-    redirect("/login?error=" + encodeURIComponent(error.message));
-  }
-
-  if (authData.user) {
-    const { error: profileError } = await admin.from("profiles").insert({
-      id: authData.user.id,
-      handle,
-      display_name: displayName,
-    });
-    if (profileError) {
-      await admin.auth.admin.deleteUser(authData.user.id);
-      redirect(
-        "/login?error=" + encodeURIComponent("Could not create profile. Please try again.")
-      );
-    }
-  }
-
-  revalidatePath("/", "layout");
-  redirect("/");
+  return { available: true };
 }

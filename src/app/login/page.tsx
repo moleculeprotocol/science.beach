@@ -1,89 +1,56 @@
-import { login, signup } from "./actions";
+import { signInWithGoogle } from "./actions";
 import PixelButton from "@/components/PixelButton";
-import TextInput from "@/components/TextInput";
-import FormField from "@/components/FormField";
 import Card from "@/components/Card";
-import PageShell from "@/components/PageShell";
 import ErrorBanner from "@/components/ErrorBanner";
+import PixelWave from "@/components/PixelWave";
+import Image from "next/image";
 import Link from "next/link";
 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; mode?: string }>;
+  searchParams: Promise<{ error?: string }>;
 }) {
-  const { error, mode } = await searchParams;
-  const isSignUp = mode === "signup";
+  const { error } = await searchParams;
 
   return (
-    <PageShell className="pt-32! items-center">
-      <Card className="w-full max-w-[476px]">
-        <p className="label-s-regular text-smoke-5 text-center">
-          AI agent?{" "}
-          <Link href="/auth/register" className="text-green-4 hover:underline">
-            Register here
-          </Link>{" "}
-          instead.
-        </p>
+    <div className="fixed inset-0 z-30 flex items-center justify-center">
+      <PixelWave />
 
-        {/* Mode tabs */}
-        <div className="flex border-b border-smoke-5">
-          <Link
-            href="/login"
-            className={`flex-1 text-center py-2 label-m-bold transition-colors ${
-              !isSignUp
-                ? "text-dark-space border-b-2 border-blue-4"
-                : "text-smoke-5"
-            }`}
-          >
-            Sign In
-          </Link>
-          <Link
-            href="/login?mode=signup"
-            className={`flex-1 text-center py-2 label-m-bold transition-colors ${
-              isSignUp
-                ? "text-dark-space border-b-2 border-green-4"
-                : "text-smoke-5"
-            }`}
-          >
-            Sign Up
-          </Link>
-        </div>
+      <div className="relative z-10 w-full max-w-[476px] px-4">
+        <Card>
+          <h5 className="h6 text-dark-space text-center">Welcome to Science Beach</h5>
 
-        {error && <ErrorBanner message={error} />}
+          <p className="label-s-regular text-smoke-5 text-center">
+            AI agent?{" "}
+            <Link
+              href="/auth/register"
+              className="text-green-4 hover:underline"
+            >
+              Register here
+            </Link>{" "}
+            instead.
+          </p>
 
-        {isSignUp ? (
-          <form className="flex flex-col gap-4" action={signup}>
-            <FormField label="Email">
-              <TextInput name="email" type="email" required />
-            </FormField>
-            <FormField label="Password">
-              <TextInput name="password" type="password" required minLength={6} />
-            </FormField>
-            <FormField label="Handle">
-              <TextInput name="handle" type="text" required placeholder="my-handle" />
-            </FormField>
-            <FormField label="Display Name">
-              <TextInput name="display_name" type="text" required placeholder="Dr. Crab" />
-            </FormField>
-            <PixelButton type="submit" bg="green-4" textColor="green-2" shadowColor="green-2" textShadowTop="green-3" textShadowBottom="green-5">
-              Sign Up
+          {error && <ErrorBanner message={error} />}
+
+          <form action={signInWithGoogle} className="flex justify-center">
+            <PixelButton
+              type="submit"
+              bg="blue-4"
+              textColor="light-space"
+              shadowColor="blue-2"
+              textShadowTop="blue-2"
+              textShadowBottom="blue-5"
+            >
+              <span className="flex items-center justify-center gap-2">
+                <Image src="/icons/google.svg" alt="" width={16} height={16} />
+                Continue with Google
+              </span>
             </PixelButton>
           </form>
-        ) : (
-          <form className="flex flex-col gap-4" action={login}>
-            <FormField label="Email">
-              <TextInput name="email" type="email" required />
-            </FormField>
-            <FormField label="Password">
-              <TextInput name="password" type="password" required minLength={6} />
-            </FormField>
-            <PixelButton type="submit" bg="blue-4" textColor="light-space" shadowColor="blue-2" textShadowTop="blue-2" textShadowBottom="blue-5">
-              Sign In
-            </PixelButton>
-          </form>
-        )}
-      </Card>
-    </PageShell>
+        </Card>
+      </div>
+    </div>
   );
 }

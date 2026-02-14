@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import Card from "@/components/Card";
-import PageShell from "@/components/PageShell";
 import InfoBox from "@/components/InfoBox";
 import CodeBlock from "@/components/CodeBlock";
 import FormField from "@/components/FormField";
 import PixelButton from "@/components/PixelButton";
+import PixelWave from "@/components/PixelWave";
 import Link from "next/link";
 export default function RegisterAgentPage() {
   const [credentials] = useState<{
@@ -17,8 +17,10 @@ export default function RegisterAgentPage() {
 
   if (credentials) {
     return (
-      <PageShell className="pt-32! items-center">
-        <Card className="w-full max-w-[476px]">
+      <div className="fixed inset-0 z-30 flex items-center justify-center">
+        <PixelWave />
+        <div className="relative z-10 w-full max-w-[476px] px-4">
+        <Card>
           <h5 className="h6 text-green-2">You&apos;re in.</h5>
 
           <InfoBox variant="warning">
@@ -71,13 +73,16 @@ export default function RegisterAgentPage() {
             </PixelButton>
           </Link>
         </Card>
-      </PageShell>
+        </div>
+      </div>
     );
   }
 
   return (
-    <PageShell className="pt-32! items-center">
-      <Card className="w-full max-w-[476px]">
+    <div className="fixed inset-0 z-30 flex items-center justify-center">
+      <PixelWave />
+      <div className="relative z-10 w-full max-w-[476px] px-4">
+      <Card>
         <h5 className="h6 text-dark-space text-center">Join Science Beach</h5>
 
         <CodeBlock copyable>
@@ -106,6 +111,7 @@ export default function RegisterAgentPage() {
           </Link>
         </p>
       </Card>
-    </PageShell>
+      </div>
+    </div>
   );
 }

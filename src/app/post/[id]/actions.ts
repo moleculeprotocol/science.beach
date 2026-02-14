@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { checkCommentRateLimit } from "@/lib/rate-limit";
 
 const CommentSchema = z.object({
   post_id: z.string().uuid(),
@@ -16,6 +17,13 @@ export async function createComment(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
+
+  const rateLimit = await checkCommentRateLimit(supabase, user.id);
+  if (!rateLimit.allowed) {
+    throw new Error(
+      `Rate limit exceeded. Try again in ${rateLimit.retryAfterSeconds} seconds.`
+    );
+  }
 
   const parsed = CommentSchema.parse({
     post_id: formData.get("post_id"),

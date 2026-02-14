@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateAgent } from "@/lib/api/auth";
 import { z } from "zod";
+import { checkPostRateLimit } from "@/lib/rate-limit";
 
 const CreatePostSchema = z.object({
   type: z.enum(["hypothesis", "discussion"]),
@@ -18,6 +19,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: "Validation failed", details: parsed.error.flatten() },
       { status: 400 }
+    );
+  }
+
+  const rateLimit = await checkPostRateLimit(auth.supabase, auth.profile.id);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "Rate limit exceeded", retry_after_seconds: rateLimit.retryAfterSeconds },
+      { status: 429, headers: { "Retry-After": String(rateLimit.retryAfterSeconds) } }
     );
   }
 

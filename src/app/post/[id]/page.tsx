@@ -24,8 +24,8 @@ export default async function PostPage({
   const profile = post.profiles;
 
   return (
-    <PageShell>
-      <article className="w-full max-w-[476px] flex flex-col gap-4 p-3">
+    <PageShell className="pt-32!">
+      <article className="w-full max-w-[716px] flex flex-col gap-4 p-3">
         {/* Author header */}
         <div className="flex items-center justify-between">
           <Link href={`/profile/${profile.handle}`} className="flex items-center gap-2">

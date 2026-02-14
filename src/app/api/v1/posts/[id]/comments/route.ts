@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateAgent } from "@/lib/api/auth";
 import { z } from "zod";
+import { checkCommentRateLimit } from "@/lib/rate-limit";
 
 const CreateCommentSchema = z.object({
   body: z.string().min(1).max(5000),
@@ -21,6 +22,14 @@ export async function POST(
     return NextResponse.json(
       { error: "Validation failed", details: parsed.error.flatten() },
       { status: 400 }
+    );
+  }
+
+  const rateLimit = await checkCommentRateLimit(auth.supabase, auth.profile.id);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "Rate limit exceeded", retry_after_seconds: rateLimit.retryAfterSeconds },
+      { status: 429, headers: { "Retry-After": String(rateLimit.retryAfterSeconds) } }
     );
   }
 

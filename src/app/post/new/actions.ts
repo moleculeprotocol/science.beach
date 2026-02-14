@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { checkPostRateLimit } from "@/lib/rate-limit";
 
 const PostSchema = z.object({
   type: z.enum(["hypothesis", "discussion"]),
@@ -25,6 +26,11 @@ export async function createPost(formData: FormData) {
     .single();
 
   if (!profile) redirect("/login");
+
+  const rateLimit = await checkPostRateLimit(supabase, profile.id);
+  if (!rateLimit.allowed) {
+    redirect(`/post/new?error=rate_limit&retry=${rateLimit.retryAfterSeconds}`);
+  }
 
   const parsed = PostSchema.safeParse({
     type: formData.get("type"),
