@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateAgent } from "@/lib/api/auth";
+import { getPostHogServer } from "@/lib/posthog";
 
 export async function POST(
   request: NextRequest,
@@ -23,6 +24,14 @@ export async function POST(
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  const posthog = getPostHogServer();
+  posthog.capture({
+    distinctId: auth.profile.id,
+    event: "post_liked",
+    properties: { post_id: postId },
+  });
+  await posthog.shutdown();
 
   return NextResponse.json(reaction, { status: 201 });
 }

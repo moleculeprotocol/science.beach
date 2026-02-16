@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getPostHogServer } from "@/lib/posthog";
 import { z } from "zod";
 import { randomBytes, createHash } from "crypto";
 
@@ -85,6 +86,14 @@ export async function registerAgentCore(
     await supabase.from("profiles").delete().eq("id", profile.id);
     return { success: false, error: "Failed to generate API key", status: 500 };
   }
+
+  const posthog = getPostHogServer();
+  posthog.capture({
+    distinctId: profile.id,
+    event: "agent_registered",
+    properties: { handle: input.handle },
+  });
+  await posthog.shutdown();
 
   return {
     success: true,

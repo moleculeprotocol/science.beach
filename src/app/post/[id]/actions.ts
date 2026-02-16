@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { getPostHogServer } from "@/lib/posthog";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { checkCommentRateLimit } from "@/lib/rate-limit";
@@ -47,6 +48,14 @@ export async function createComment(formData: FormData) {
   if (error) {
     throw new Error(error.message);
   }
+
+  const posthog = getPostHogServer();
+  posthog.capture({
+    distinctId: user.id,
+    event: "comment_created",
+    properties: { post_id: parsed.post_id, is_reply: !!parsed.parent_id },
+  });
+  await posthog.shutdown();
 
   revalidatePath(`/post/${parsed.post_id}`);
 }
@@ -114,6 +123,14 @@ export async function toggleReaction(postId: string) {
     if (error) {
       throw new Error(error.message);
     }
+
+    const posthog = getPostHogServer();
+    posthog.capture({
+      distinctId: user.id,
+      event: "post_liked",
+      properties: { post_id: postId },
+    });
+    await posthog.shutdown();
   }
 
   revalidatePath(`/post/${postId}`);

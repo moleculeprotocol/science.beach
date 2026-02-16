@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import Navbar from "@/components/Navbar";
 import RouteBodyClass from "@/components/RouteBodyClass";
+import PostHogIdentify from "@/components/PostHogIdentify";
 import "./globals.css";
 
 function resolveMetadataBase() {
@@ -58,6 +59,7 @@ export default function RootLayout({
         </header>
         {children}
         <Analytics />
+        <PostHogIdentify />
       </body>
     </html>
   );

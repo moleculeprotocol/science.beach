@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { getPostHogServer } from "@/lib/posthog";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -56,6 +57,14 @@ export async function createPost(formData: FormData) {
     .single();
 
   if (error) redirect("/post/new?error=create");
+
+  const posthog = getPostHogServer();
+  posthog.capture({
+    distinctId: profile.id,
+    event: "post_created",
+    properties: { post_type: parsed.data.type, post_id: post.id },
+  });
+  await posthog.shutdown();
 
   revalidatePath("/");
   redirect(`/post/${post.id}`);

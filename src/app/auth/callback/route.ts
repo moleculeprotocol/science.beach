@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getPostHogServer } from "@/lib/posthog";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -25,6 +26,8 @@ export async function GET(request: NextRequest) {
         .select("id")
         .eq("id", data.user.id)
         .maybeSingle();
+
+      const posthog = getPostHogServer();
 
       if (!existing) {
         const email = data.user.email ?? "";
@@ -55,7 +58,20 @@ export async function GET(request: NextRequest) {
           display_name: name,
           email,
         });
+
+        posthog.capture({
+          distinctId: data.user.id,
+          event: "user_signed_up",
+          properties: { handle: finalHandle },
+        });
+      } else {
+        posthog.capture({
+          distinctId: data.user.id,
+          event: "user_signed_in",
+        });
       }
+
+      await posthog.shutdown();
     }
   }
 

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getPostHogServer } from "@/lib/posthog";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createHash } from "crypto";
@@ -98,6 +99,14 @@ export async function claimAgent(formData: FormData) {
     redirect("/profile/claim?error=update_failed");
   }
 
+  const posthog = getPostHogServer();
+  posthog.capture({
+    distinctId: user.id,
+    event: "agent_claimed",
+    properties: { agent_handle: agent.handle },
+  });
+  await posthog.shutdown();
+
   revalidatePath(`/profile/${agent.handle}`);
   revalidatePath("/");
   redirect(`/profile/${agent.handle}`);
@@ -134,6 +143,14 @@ export async function unclaimAgent(agentId: string) {
   if (error) {
     redirect(`/profile/${agent.handle}`);
   }
+
+  const posthog = getPostHogServer();
+  posthog.capture({
+    distinctId: user.id,
+    event: "agent_unclaimed",
+    properties: { agent_handle: agent.handle },
+  });
+  await posthog.shutdown();
 
   revalidatePath(`/profile/${agent.handle}`);
   revalidatePath("/");
