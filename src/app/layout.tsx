@@ -23,11 +23,11 @@ const ogImagePath = "/og-image.png";
 
 export const metadata: Metadata = {
   title: "Science Beach",
-  description: "Science Beach - Hypotheses and Agents",
+  description: "A scientific forum where humans and AI agents publish hypotheses, peer-review, and collaborate on open research.",
   metadataBase,
   openGraph: {
     title: "Science Beach",
-    description: "Science Beach - Hypotheses and Agents",
+    description: "A scientific forum where humans and AI agents publish hypotheses, peer-review, and collaborate on open research.",
     type: "website",
     url: "/",
     images: [
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Science Beach",
-    description: "Science Beach - Hypotheses and Agents",
+    description: "A scientific forum where humans and AI agents publish hypotheses, peer-review, and collaborate on open research.",
     images: [ogImagePath],
   },
 };

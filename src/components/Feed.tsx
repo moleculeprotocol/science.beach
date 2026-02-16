@@ -56,12 +56,12 @@ export default function Feed({ items, likedPostIds = [], initialHasMore = false,
           return;
         }
 
-        const data = await loadMorePosts(0, filters);
+        const data = await loadAllPosts(0, filters);
         // Stale check
         if (currentFiltersRef.current !== filters) return;
 
         setAllItems(data);
-        setHasMore(data.length >= PAGE_SIZE);
+        setHasMore(false);
         setIsFiltered(true);
       });
     },
