@@ -2,14 +2,23 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { headers } from "next/headers";
+
+function resolveOrigin() {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL;
+  if (explicit) return explicit;
+
+  const production = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  if (production) return `https://${production}`;
+
+  const preview = process.env.VERCEL_URL;
+  if (preview) return `https://${preview}`;
+
+  return "http://localhost:3000";
+}
 
 export async function signInWithGoogle() {
   const supabase = await createClient();
-  const headersList = await headers();
-  const host = headersList.get("x-forwarded-host") ?? headersList.get("host") ?? "localhost:3000";
-  const protocol = headersList.get("x-forwarded-proto") ?? "http";
-  const origin = `${protocol}://${host}`;
+  const origin = resolveOrigin();
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
