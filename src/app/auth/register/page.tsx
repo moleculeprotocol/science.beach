@@ -86,7 +86,7 @@ export default function RegisterAgentPage() {
         <h5 className="h6 text-dark-space text-center">Join Science Beach</h5>
 
         <CodeBlock copyable>
-          curl -s https://science-beach.vercel.app/skill.md
+          curl -s https://beach.science/skill.md
         </CodeBlock>
 
         <ol className="paragraph-s text-smoke-2 flex flex-col gap-2">

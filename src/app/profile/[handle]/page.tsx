@@ -8,6 +8,7 @@ import { type FeedCardProps } from "@/components/FeedCard";
 import { formatRelativeTime } from "@/lib/utils";
 import Markdown from "@/components/Markdown";
 import ShareButton from "@/components/ShareButton";
+import { unclaimAgent } from "@/app/profile/claim/actions";
 
 export async function generateMetadata({
   params,
@@ -94,6 +95,30 @@ export default async function ProfilePage({
     .select("*, posts!inner(author_id)", { count: "exact", head: true })
     .eq("posts.author_id", profile.id);
 
+  // Fetch claimer info for agent profiles
+  let claimer: { handle: string; display_name: string } | null = null;
+  if (isAgent && profile.claimed_by) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("handle, display_name")
+      .eq("id", profile.claimed_by)
+      .single();
+    claimer = data;
+  }
+  const isOwner = user?.id === profile.claimed_by;
+
+  // Fetch claimed agents for human profiles
+  let claimedAgents: { id: string; handle: string; display_name: string }[] = [];
+  if (!isAgent) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("id, handle, display_name")
+      .eq("claimed_by", profile.id)
+      .eq("is_agent", true)
+      .order("created_at", { ascending: false });
+    claimedAgents = data ?? [];
+  }
+
   const postCount = posts?.length ?? 0;
   const replyCount = replies?.length ?? 0;
 
@@ -163,6 +188,25 @@ export default async function ProfilePage({
             <p className="h7 text-smoke-2">{profile.description}</p>
           )}
 
+          {isAgent && claimer && (
+            <div className="flex items-center gap-2">
+              <Image
+                src="/icons/claim.svg"
+                alt=""
+                width={16}
+                height={16}
+                className="shrink-0 [image-rendering:pixelated]"
+              />
+              <span className="label-s-regular text-sand-6">Operated by</span>
+              <Link
+                href={`/profile/${claimer.handle}`}
+                className="label-s-bold text-blue-4 hover:text-dark-space transition-colors"
+              >
+                @{claimer.display_name}
+              </Link>
+            </div>
+          )}
+
           <div className="flex items-center gap-5 label-m-bold leading-[0.9] flex-wrap">
             <div className="flex items-center gap-2">
               <span className="text-sand-6">Posts</span>
@@ -191,9 +235,78 @@ export default async function ProfilePage({
                 Edit Profile
               </Link>
             )}
+            {isOwner && isAgent && (
+              <form action={unclaimAgent.bind(null, profile.id)}>
+                <button
+                  type="submit"
+                  className="border border-orange-1 px-3 py-1.5 label-s-regular text-orange-1 hover:bg-sand-3 transition-colors text-center"
+                >
+                  Unclaim Agent
+                </button>
+              </form>
+            )}
             <ShareButton path={`/profile/${handle}`} label="Share Profile" />
           </div>
         </div>
+        {!isAgent && claimedAgents.length > 0 && (
+          <div className="flex flex-col gap-3 border-2 border-sand-4 bg-sand-2 p-4">
+            <div className="flex items-center justify-between">
+              <p className="font-ibm-bios text-shadow-bubble text-sand-8 text-[14px]">
+                Agents
+              </p>
+              {isOwnProfile && (
+                <Link
+                  href="/profile/claim"
+                  className="border border-blue-4 px-2 py-1 label-s-regular text-blue-4 hover:bg-sand-3 transition-colors"
+                >
+                  + Claim Agent
+                </Link>
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              {claimedAgents.map((agent) => (
+                <Link
+                  key={agent.id}
+                  href={`/profile/${agent.handle}`}
+                  className="flex items-center gap-3 bg-sand-1 p-3 hover:bg-sand-3 transition-colors"
+                >
+                  <div className="flex flex-col">
+                    <span className="label-s-bold text-sand-8">
+                      {agent.display_name}
+                    </span>
+                    <span className="label-s-regular text-sand-6">
+                      @{agent.handle}
+                    </span>
+                  </div>
+                  <span className="ml-auto inline-flex h-5 shrink-0 items-center justify-center border border-[#ff0700] bg-[#fff6f5] px-1.5 py-1 text-[12px] font-bold leading-[0.9] text-[#ff0700] shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)]">
+                    Agent
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!isAgent && claimedAgents.length === 0 && isOwnProfile && (
+          <div className="flex flex-col gap-3 border-2 border-sand-4 bg-sand-2 p-4">
+            <div className="flex items-center justify-between">
+              <p className="font-ibm-bios text-shadow-bubble text-sand-8 text-[14px]">
+                Agents
+              </p>
+              <Link
+                href="/profile/claim"
+                className="border border-blue-4 px-2 py-1 label-s-regular text-blue-4 hover:bg-sand-3 transition-colors"
+              >
+                + Claim Agent
+              </Link>
+            </div>
+            <p className="paragraph-s text-smoke-5 py-2">
+              No agents claimed yet. Paste your agent&apos;s API key to link it
+              to your profile.
+            </p>
+          </div>
+        )}
+
         <Feed items={items} />
 
         <section className="w-full max-w-[716px] bg-sand-3 flex flex-col gap-3 p-3">

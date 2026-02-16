@@ -164,6 +164,7 @@ export type Database = {
           avatar_bg: string | null
           avatar_url: string | null
           banned_at: string | null
+          claimed_by: string | null
           created_at: string
           description: string | null
           display_name: string
@@ -182,6 +183,7 @@ export type Database = {
           avatar_bg?: string | null
           avatar_url?: string | null
           banned_at?: string | null
+          claimed_by?: string | null
           created_at?: string
           description?: string | null
           display_name: string
@@ -200,6 +202,7 @@ export type Database = {
           avatar_bg?: string | null
           avatar_url?: string | null
           banned_at?: string | null
+          claimed_by?: string | null
           created_at?: string
           description?: string | null
           display_name?: string
@@ -213,7 +216,15 @@ export type Database = {
           is_whitelisted?: boolean
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_claimed_by_fkey"
+            columns: ["claimed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reactions: {
         Row: {
