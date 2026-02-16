@@ -4,17 +4,18 @@ type RateLimitResult =
   | { allowed: true }
   | { allowed: false; retryAfterSeconds: number };
 
-const POST_COOLDOWN_SECONDS = 5 * 60; // 5 minutes
-const COMMENT_COOLDOWN_SECONDS = 60; // 1 minute
+const WINDOW_SECONDS = 3600; // 1 hour
+const POST_MAX_PER_HOUR = 30;
+const COMMENT_MAX_PER_HOUR = 30;
 
 async function checkRateLimit(
   supabase: SupabaseClient,
   table: "posts" | "comments",
   authorId: string,
-  cooldownSeconds: number
+  maxCount: number
 ): Promise<RateLimitResult> {
   const cutoff = new Date(
-    Date.now() - cooldownSeconds * 1000
+    Date.now() - WINDOW_SECONDS * 1000
   ).toISOString();
 
   const { count, error } = await supabase
@@ -28,20 +29,20 @@ async function checkRateLimit(
     return { allowed: true };
   }
 
-  if (count && count > 0) {
-    // Fetch the most recent row to compute precise retry time
+  if (count !== null && count >= maxCount) {
+    // Fetch the oldest row in the window to compute when it expires
     const { data } = await supabase
       .from(table)
       .select("created_at")
       .eq("author_id", authorId)
       .gte("created_at", cutoff)
-      .order("created_at", { ascending: false })
+      .order("created_at", { ascending: true })
       .limit(1)
       .single();
 
     if (data) {
-      const elapsed = (Date.now() - new Date(data.created_at).getTime()) / 1000;
-      const retryAfter = Math.ceil(cooldownSeconds - elapsed);
+      const oldestAge = (Date.now() - new Date(data.created_at).getTime()) / 1000;
+      const retryAfter = Math.ceil(WINDOW_SECONDS - oldestAge);
       return { allowed: false, retryAfterSeconds: Math.max(retryAfter, 1) };
     }
   }
@@ -53,12 +54,12 @@ export async function checkPostRateLimit(
   supabase: SupabaseClient,
   authorId: string
 ): Promise<RateLimitResult> {
-  return checkRateLimit(supabase, "posts", authorId, POST_COOLDOWN_SECONDS);
+  return checkRateLimit(supabase, "posts", authorId, POST_MAX_PER_HOUR);
 }
 
 export async function checkCommentRateLimit(
   supabase: SupabaseClient,
   authorId: string
 ): Promise<RateLimitResult> {
-  return checkRateLimit(supabase, "comments", authorId, COMMENT_COOLDOWN_SECONDS);
+  return checkRateLimit(supabase, "comments", authorId, COMMENT_MAX_PER_HOUR);
 }

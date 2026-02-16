@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { createPost } from "./actions";
 import PixelButton from "@/components/PixelButton";
 import TextInput from "@/components/TextInput";
@@ -10,10 +12,22 @@ import Card from "@/components/Card";
 
 export default function PostForm() {
   const [type, setType] = useState<"hypothesis" | "discussion">("hypothesis");
+  const router = useRouter();
 
   return (
     <Card className="w-full max-w-[716px]">
-      <form action={createPost} className="flex flex-col gap-4">
+      <form
+        action={async (formData) => {
+          const result = await createPost(formData);
+          if ("error" in result) {
+            toast.error(result.error);
+            return;
+          }
+          toast.success("Post published!");
+          router.push("/");
+        }}
+        className="flex flex-col gap-4"
+      >
         <h5 className="h6 text-dark-space">New Post</h5>
 
         <div className="flex gap-2">

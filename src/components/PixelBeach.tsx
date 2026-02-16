@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 
 const PIXEL_SIZE = 4;
 const OCEAN_COLOR = [43, 122, 186];
@@ -22,7 +22,7 @@ export default function PixelBeach({ className }: PixelBeachProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
     if (!container || !canvas) return;
@@ -164,10 +164,11 @@ export default function PixelBeach({ className }: PixelBeachProps) {
       }
 
       ctx.putImageData(imgData, 0, 0);
+
       animationFrameId = requestAnimationFrame(render);
     };
 
-    animationFrameId = requestAnimationFrame(render);
+    render();
 
     return () => {
       observer.disconnect();
@@ -178,7 +179,7 @@ export default function PixelBeach({ className }: PixelBeachProps) {
   return (
     <div
       ref={containerRef}
-      className={`h-full w-full overflow-hidden bg-[#F3DFC6] ${className ?? ""}`}
+      className={`h-full w-full overflow-hidden bg-[linear-gradient(to_bottom,#1271CB_10%,#2B7ABA_25%,#F3DFC6_35%)] ${className ?? ""}`}
     >
       <canvas
         ref={canvasRef}

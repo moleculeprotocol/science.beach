@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import { Toaster } from "sonner";
 import Navbar from "@/components/Navbar";
-import RouteBodyClass from "@/components/RouteBodyClass";
 import PostHogIdentify from "@/components/PostHogIdentify";
 import "./globals.css";
 
@@ -53,11 +53,25 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <RouteBodyClass />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if(location.pathname==='/')document.body.classList.add('home-page')`,
+          }}
+        />
         <header id="site-navbar" className="mx-auto flex w-full justify-center overflow-visible px-0 pt-0 sm:px-3 sm:pt-6">
           <Navbar />
         </header>
         {children}
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            style: {
+              fontFamily: "var(--font-kode-mono)",
+              borderRadius: 0,
+              border: "1px solid var(--smoke-5)",
+            },
+          }}
+        />
         <Analytics />
         <PostHogIdentify />
       </body>

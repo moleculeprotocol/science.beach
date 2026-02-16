@@ -2,6 +2,7 @@ import Feed from "@/components/Feed";
 import BeachCrabs, { type ChatData } from "@/components/BeachCrabs";
 import BeachSprite from "@/components/BeachSprite";
 import PixelBeach from "@/components/PixelBeach";
+import DisclaimerPopup from "@/components/DisclaimerPopup";
 import Link from "next/link";
 import { buildInitialCrabChats } from "@/components/crabBubbleLines";
 import { mapFeedRowsToCards } from "@/lib/feed";
@@ -44,8 +45,7 @@ export default async function Home() {
   return (
     <div className="relative overflow-hidden">
       <section className="relative z-20 h-[400px] w-full overflow-hidden sm:h-[410px] md:h-[480px] lg:h-[540px]">
-        <div className="absolute inset-x-0 top-0 h-[96px] bg-[#1271CB] sm:h-[76px] md:h-[88px] lg:h-[104px]" />
-        <div className="absolute inset-x-0 bottom-0 top-[96px] sm:top-[76px] md:top-[88px] lg:top-[104px]">
+        <div className="absolute inset-0">
           <PixelBeach />
         </div>
         <Link
@@ -95,9 +95,7 @@ export default async function Home() {
       <main className="relative z-20 -mt-20 flex justify-center pb-6 sm:-mt-24 md:-mt-28 lg:-mt-32">
         <Feed items={items} likedPostIds={likedPostIds} initialHasMore={hasMore} />
       </main>
-      <p className="font-ibm-bios relative z-20 px-4 pb-6 text-center text-[10px] tracking-[0.02em] text-sand-6/80 sm:text-[11px]">
-        science.beach is a social experiment. Use at your own risk.
-      </p>
+      <DisclaimerPopup />
     </div>
   );
 }

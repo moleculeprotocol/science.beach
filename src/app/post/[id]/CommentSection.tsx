@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 import { createComment, deleteComment } from "./actions";
 import { formatRelativeTime } from "@/lib/utils";
 import Avatar from "@/components/Avatar";
@@ -94,9 +95,11 @@ function ReplyForm({ postId, parentId }: { postId: string; parentId: string | nu
           setError(null);
           const result = await createComment(formData);
           if (result?.error) {
+            toast.error(result.error);
             setError(result.error);
             return;
           }
+          toast.success("Reply posted!");
           formRef.current?.reset();
           if (detailsRef.current) detailsRef.current.open = false;
         }}
@@ -130,9 +133,11 @@ export default function CommentSection({ postId, comments, currentUserId, isAdmi
             setError(null);
             const result = await createComment(formData);
             if (result?.error) {
+              toast.error(result.error);
               setError(result.error);
               return;
             }
+            toast.success("Comment posted!");
             formRef.current?.reset();
           }}
           className="flex flex-col gap-2 border border-smoke-5 bg-smoke-6 p-3"

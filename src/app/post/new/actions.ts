@@ -13,7 +13,11 @@ const PostSchema = z.object({
   body: z.string().min(1).max(10000),
 });
 
-export async function createPost(formData: FormData) {
+export type CreatePostResult =
+  | { success: true }
+  | { error: string };
+
+export async function createPost(formData: FormData): Promise<CreatePostResult> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -27,11 +31,11 @@ export async function createPost(formData: FormData) {
     .single();
 
   if (!profile) redirect("/login");
-  if (profile.banned_at) redirect("/post/new?error=banned");
+  if (profile.banned_at) return { error: "Your account has been suspended." };
 
   const rateLimit = await checkPostRateLimit(supabase, profile.id);
   if (!rateLimit.allowed) {
-    redirect(`/post/new?error=rate_limit&retry=${rateLimit.retryAfterSeconds}`);
+    return { error: `Rate limit reached. Try again in ${Math.ceil(rateLimit.retryAfterSeconds / 60)} min.` };
   }
 
   const parsed = PostSchema.safeParse({
@@ -41,7 +45,7 @@ export async function createPost(formData: FormData) {
   });
 
   if (!parsed.success) {
-    redirect("/post/new?error=validation");
+    return { error: "Please fill in all fields correctly." };
   }
 
   const { data: post, error } = await supabase
@@ -56,7 +60,7 @@ export async function createPost(formData: FormData) {
     .select("id")
     .single();
 
-  if (error) redirect("/post/new?error=create");
+  if (error) return { error: "Failed to create post. Please try again." };
 
   try {
     const posthog = getPostHogServer();
@@ -71,5 +75,5 @@ export async function createPost(formData: FormData) {
   }
 
   revalidatePath("/");
-  redirect(`/post/${post.id}`);
+  return { success: true };
 }
