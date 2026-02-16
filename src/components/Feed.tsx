@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useMemo, useTransition } from "react";
+import { useState, useTransition, useCallback, useRef, useEffect } from "react";
 import FeedCard, { type FeedCardProps } from "./FeedCard";
 import PixelButton from "./PixelButton";
-import { loadMorePosts } from "@/app/actions";
+import { loadMorePosts, loadAllPosts, type FeedFilters } from "@/app/actions";
 
 const PAGE_SIZE = 7;
+const DEBOUNCE_MS = 350;
 
 type FeedProps = {
   items: FeedCardProps[];
@@ -21,32 +22,92 @@ export default function Feed({ items, likedPostIds = [], initialHasMore = false,
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | "hypothesis" | "discussion">("all");
+  const [isFiltered, setIsFiltered] = useState(false);
 
-  const filtered = useMemo(() => {
-    let result = allItems;
-    if (typeFilter !== "all") {
-      result = result.filter((item) => item.postType === typeFilter);
-    }
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      result = result.filter(
-        (item) =>
-          item.title.toLowerCase().includes(q) ||
-          item.hypothesisText.toLowerCase().includes(q) ||
-          item.username.toLowerCase().includes(q) ||
-          item.handle.toLowerCase().includes(q)
-      );
-    }
-    return result;
-  }, [allItems, search, typeFilter]);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const currentFiltersRef = useRef<FeedFilters>({});
+
+  const getFilters = useCallback(
+    (searchOverride?: string, typeOverride?: "all" | "hypothesis" | "discussion"): FeedFilters => ({
+      search: searchOverride ?? search,
+      type: typeOverride ?? typeFilter,
+    }),
+    [search, typeFilter],
+  );
+
+  const hasActiveFilters = useCallback(
+    (filters: FeedFilters) => (filters.type && filters.type !== "all") || filters.search?.trim(),
+    [],
+  );
+
+  // Re-fetch from offset 0 with current filters
+  const fetchFiltered = useCallback(
+    (filters: FeedFilters) => {
+      currentFiltersRef.current = filters;
+      startTransition(async () => {
+        // If current filters changed while we were loading, bail
+        if (currentFiltersRef.current !== filters) return;
+
+        if (!hasActiveFilters(filters)) {
+          // No filters active — restore initial data
+          setAllItems(items);
+          setHasMore(initialHasMore);
+          setIsFiltered(false);
+          return;
+        }
+
+        const data = await loadMorePosts(0, filters);
+        // Stale check
+        if (currentFiltersRef.current !== filters) return;
+
+        setAllItems(data);
+        setHasMore(data.length >= PAGE_SIZE);
+        setIsFiltered(true);
+      });
+    },
+    [items, initialHasMore, hasActiveFilters, startTransition],
+  );
+
+  // Debounced search handler
+  function handleSearchChange(value: string) {
+    setSearch(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      fetchFiltered(getFilters(value, undefined));
+    }, DEBOUNCE_MS);
+  }
+
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
+
+  // Immediate type filter handler
+  function handleTypeChange(type: "all" | "hypothesis" | "discussion") {
+    setTypeFilter(type);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    fetchFiltered(getFilters(undefined, type));
+  }
 
   function handleLoadMore() {
+    const filters = getFilters();
     startTransition(async () => {
-      const next = await loadMorePosts(allItems.length);
+      const next = await loadMorePosts(allItems.length, hasActiveFilters(filters) ? filters : undefined);
       setAllItems((prev) => [...prev, ...next]);
       if (next.length < PAGE_SIZE) {
         setHasMore(false);
       }
+    });
+  }
+
+  function handleLoadAll() {
+    const filters = getFilters();
+    startTransition(async () => {
+      const rest = await loadAllPosts(allItems.length, hasActiveFilters(filters) ? filters : undefined);
+      setAllItems((prev) => [...prev, ...rest]);
+      setHasMore(false);
     });
   }
 
@@ -74,14 +135,14 @@ export default function Feed({ items, likedPostIds = [], initialHasMore = false,
             type="text"
             placeholder="Search by title, author..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="border border-smoke-5 bg-smoke-7 px-3 py-1.5 mono-s text-dark-space focus:outline-none focus:border-blue-4"
           />
           <div className="flex gap-0">
             {(["all", "hypothesis", "discussion"] as const).map((f) => (
               <button
                 key={f}
-                onClick={() => setTypeFilter(f)}
+                onClick={() => handleTypeChange(f)}
                 className={`label-s-regular px-3 py-1 border transition-colors capitalize ${
                   typeFilter === f
                     ? "bg-dark-space text-light-space border-dark-space"
@@ -93,22 +154,28 @@ export default function Feed({ items, likedPostIds = [], initialHasMore = false,
             ))}
           </div>
           {(search || typeFilter !== "all") && (
-            <p className="label-s-regular text-smoke-5">{filtered.length} result{filtered.length !== 1 ? "s" : ""}</p>
+            <p className="label-s-regular text-smoke-5">
+              {allItems.length} result{allItems.length !== 1 ? "s" : ""}
+              {hasMore ? "+" : ""}
+              {isPending ? " ..." : ""}
+            </p>
           )}
         </div>
       )}
 
       {/* Feed cards */}
-      {filtered.length === 0 && (
-        <p className="paragraph-s text-smoke-5 py-4 text-center">No hypothesis yet</p>
+      {allItems.length === 0 && !isPending && (
+        <p className="paragraph-s text-smoke-5 py-4 text-center">
+          {isFiltered ? "No matching posts found" : "No hypothesis yet"}
+        </p>
       )}
-      {filtered.map((item, i) => (
+      {allItems.map((item, i) => (
         <FeedCard key={item.id || `feed-${i}`} {...item} initialLiked={likedPostIds.includes(item.id)} />
       ))}
 
-      {/* Load more */}
+      {/* Load more / Load all */}
       {hasMore && (
-        <div className="flex justify-center py-2">
+        <div className="flex justify-center gap-2 py-2">
           <PixelButton
             bg="smoke-7"
             textColor="smoke-5"
@@ -120,6 +187,18 @@ export default function Feed({ items, likedPostIds = [], initialHasMore = false,
             className="font-ibm-bios text-[11px]"
           >
             {isPending ? "Loading..." : "Load more"}
+          </PixelButton>
+          <PixelButton
+            bg="smoke-7"
+            textColor="smoke-5"
+            shadowColor="smoke-6"
+            textShadowTop="smoke-5"
+            textShadowBottom="smoke-7"
+            onClick={handleLoadAll}
+            disabled={isPending}
+            className="font-ibm-bios text-[11px]"
+          >
+            {isPending ? "Loading..." : "Load all"}
           </PixelButton>
         </div>
       )}
