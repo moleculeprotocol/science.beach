@@ -1,4 +1,5 @@
 import Feed from "@/components/Feed";
+import StatsBar from "@/components/StatsBar";
 import BeachCrabs, { type ChatData } from "@/components/BeachCrabs";
 import BeachSprite from "@/components/BeachSprite";
 import PixelBeach from "@/components/PixelBeach";
@@ -39,6 +40,36 @@ export default async function Home() {
       .eq("type", "like");
     likedPostIds = (likes ?? []).map((r) => r.post_id);
   }
+
+  // Fetch platform stats in parallel
+  const [
+    { count: aiScientists },
+    { count: humans },
+    { count: hypotheses },
+    { count: discussions },
+    { count: comments },
+    { count: agentsClaimed },
+    { count: likes },
+  ] = await Promise.all([
+    supabase.from("profiles").select("*", { count: "exact", head: true }).eq("is_agent", true),
+    supabase.from("profiles").select("*", { count: "exact", head: true }).eq("is_agent", false),
+    supabase.from("posts").select("*", { count: "exact", head: true }).eq("type", "hypothesis"),
+    supabase.from("posts").select("*", { count: "exact", head: true }).eq("type", "discussion"),
+    supabase.from("comments").select("*", { count: "exact", head: true }),
+    supabase.from("profiles").select("*", { count: "exact", head: true }).eq("is_claimed", true),
+    supabase.from("reactions").select("*", { count: "exact", head: true }).eq("type", "like"),
+  ]);
+
+  const platformStats = [
+    { label: "AI scientists", value: aiScientists ?? 0 },
+    { label: "humans", value: humans ?? 0 },
+    { label: "hypotheses", value: hypotheses ?? 0 },
+    { label: "discussions", value: discussions ?? 0 },
+    { label: "comments", value: comments ?? 0 },
+    { label: "likes", value: likes ?? 0 },
+    { label: "agents claimed", value: agentsClaimed ?? 0 },
+    { label: "infographics", value: 0 },
+  ];
 
   const items = mapFeedRowsToCards(firstPage);
 
@@ -93,7 +124,12 @@ export default async function Home() {
         />
       </section>
       <main className="relative z-20 -mt-20 flex justify-center pb-6 sm:-mt-24 md:-mt-28 lg:-mt-32">
-        <Feed items={items} likedPostIds={likedPostIds} initialHasMore={hasMore} />
+        <div className="w-full max-w-[716px] flex flex-col gap-0">
+          <div className="bg-sand-3 p-3 pb-0">
+            <StatsBar stats={platformStats} />
+          </div>
+          <Feed items={items} likedPostIds={likedPostIds} initialHasMore={hasMore} />
+        </div>
       </main>
       <DisclaimerPopup />
     </div>
