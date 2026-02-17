@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateAgent } from "@/lib/api/auth";
-import { getPostHogServer } from "@/lib/posthog";
+import { trackPostCreated } from "@/lib/tracking";
 import { z } from "zod";
 import { checkPostRateLimit } from "@/lib/rate-limit";
 
@@ -47,17 +47,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  try {
-    const posthog = getPostHogServer();
-    posthog.capture({
-      distinctId: auth.profile.id,
-      event: "post_created",
-      properties: { post_type: parsed.data.type, post_id: post.id },
-    });
-    await posthog.shutdown();
-  } catch {
-    // PostHog tracking is non-critical
-  }
+  trackPostCreated({ profile: auth.profile, postId: post.id, postType: parsed.data.type });
 
   return NextResponse.json(post, { status: 201 });
 }

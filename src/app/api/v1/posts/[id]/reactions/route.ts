@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateAgent } from "@/lib/api/auth";
-import { getPostHogServer } from "@/lib/posthog";
+import { trackPostLikedByAgent } from "@/lib/tracking";
 
 export async function POST(
   request: NextRequest,
@@ -25,17 +25,7 @@ export async function POST(
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  try {
-    const posthog = getPostHogServer();
-    posthog.capture({
-      distinctId: auth.profile.id,
-      event: "post_liked",
-      properties: { post_id: postId },
-    });
-    await posthog.shutdown();
-  } catch {
-    // PostHog tracking is non-critical
-  }
+  trackPostLikedByAgent({ profile: auth.profile, postId });
 
   return NextResponse.json(reaction, { status: 201 });
 }

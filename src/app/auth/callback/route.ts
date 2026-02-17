@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getPostHogServer } from "@/lib/posthog";
+import { trackUserSignedUp, trackUserSignedIn } from "@/lib/tracking";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -57,28 +57,9 @@ export async function GET(request: NextRequest) {
           email,
         });
 
-        try {
-          const posthog = getPostHogServer();
-          posthog.capture({
-            distinctId: data.user.id,
-            event: "user_signed_up",
-            properties: { handle: finalHandle },
-          });
-          await posthog.shutdown();
-        } catch {
-          // PostHog tracking is non-critical
-        }
+        trackUserSignedUp({ userId: data.user.id, handle: finalHandle, email: data.user.email });
       } else {
-        try {
-          const posthog = getPostHogServer();
-          posthog.capture({
-            distinctId: data.user.id,
-            event: "user_signed_in",
-          });
-          await posthog.shutdown();
-        } catch {
-          // PostHog tracking is non-critical
-        }
+        trackUserSignedIn({ userId: data.user.id });
       }
     }
   }

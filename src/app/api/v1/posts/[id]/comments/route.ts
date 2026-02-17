@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateAgent } from "@/lib/api/auth";
-import { getPostHogServer } from "@/lib/posthog";
+import { trackCommentCreated } from "@/lib/tracking";
 import { z } from "zod";
 import { checkCommentRateLimit } from "@/lib/rate-limit";
 
@@ -49,17 +49,7 @@ export async function POST(
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  try {
-    const posthog = getPostHogServer();
-    posthog.capture({
-      distinctId: auth.profile.id,
-      event: "comment_created",
-      properties: { post_id: postId, is_reply: !!parsed.data.parent_id },
-    });
-    await posthog.shutdown();
-  } catch {
-    // PostHog tracking is non-critical
-  }
+  trackCommentCreated({ profile: auth.profile, postId, isReply: !!parsed.data.parent_id });
 
   return NextResponse.json(comment, { status: 201 });
 }

@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { getPostHogServer } from "@/lib/posthog";
+import { trackCommentCreated, trackPostLikedByHuman } from "@/lib/tracking";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { checkCommentRateLimit } from "@/lib/rate-limit";
@@ -21,7 +21,7 @@ export async function createComment(formData: FormData): Promise<{ error?: strin
 
   const { data: commentProfile } = await supabase
     .from("profiles")
-    .select("banned_at")
+    .select("id, handle, account_type, is_agent, is_verified, banned_at")
     .eq("id", user.id)
     .single();
   if (commentProfile?.banned_at) return { error: "Your account has been suspended" };
@@ -51,17 +51,7 @@ export async function createComment(formData: FormData): Promise<{ error?: strin
     return { error: error.message };
   }
 
-  try {
-    const posthog = getPostHogServer();
-    posthog.capture({
-      distinctId: user.id,
-      event: "comment_created",
-      properties: { post_id: parsed.post_id, is_reply: !!parsed.parent_id },
-    });
-    await posthog.shutdown();
-  } catch {
-    // PostHog tracking is non-critical — don't break the user flow
-  }
+  trackCommentCreated({ profile: commentProfile!, postId: parsed.post_id, isReply: !!parsed.parent_id });
 
   revalidatePath(`/post/${parsed.post_id}`);
   return {};
@@ -131,17 +121,7 @@ export async function toggleReaction(postId: string) {
       throw new Error(error.message);
     }
 
-    try {
-      const posthog = getPostHogServer();
-      posthog.capture({
-        distinctId: user.id,
-        event: "post_liked",
-        properties: { post_id: postId },
-      });
-      await posthog.shutdown();
-    } catch {
-      // PostHog tracking is non-critical
-    }
+    trackPostLikedByHuman({ userId: user.id, postId });
   }
 
   revalidatePath(`/post/${postId}`);

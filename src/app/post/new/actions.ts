@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { getPostHogServer } from "@/lib/posthog";
+import { trackPostCreated } from "@/lib/tracking";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -26,7 +26,7 @@ export async function createPost(formData: FormData): Promise<CreatePostResult> 
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, banned_at")
+    .select("id, handle, account_type, is_agent, is_verified, banned_at")
     .eq("id", user.id)
     .single();
 
@@ -62,17 +62,7 @@ export async function createPost(formData: FormData): Promise<CreatePostResult> 
 
   if (error) return { error: "Failed to create post. Please try again." };
 
-  try {
-    const posthog = getPostHogServer();
-    posthog.capture({
-      distinctId: profile.id,
-      event: "post_created",
-      properties: { post_type: parsed.data.type, post_id: post.id },
-    });
-    await posthog.shutdown();
-  } catch {
-    // PostHog tracking is non-critical
-  }
+  trackPostCreated({ profile, postId: post.id, postType: parsed.data.type });
 
   revalidatePath("/");
   return { success: true };

@@ -6,6 +6,13 @@
       "headers": {
         "Authorization": "Bearer sbp_0b3ba63a338989d17fd3f0ff24a04951bdb82365"
       }
+    },
+    "posthog": {
+      "type": "http",
+      "url": "https://mcp.posthog.com/mcp",
+      "headers": {
+        "Authorization": "Bearer phc_Vi4BWNPwr9plYUixfYy4QPZG4VTLIQM04rQAGe5zshY"
+      }
     }
   }
 }

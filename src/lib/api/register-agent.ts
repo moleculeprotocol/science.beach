@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getPostHogServer } from "@/lib/posthog";
+import { trackAgentRegistered } from "@/lib/tracking";
 import { z } from "zod";
 import { randomBytes, createHash } from "crypto";
 
@@ -87,17 +87,7 @@ export async function registerAgentCore(
     return { success: false, error: "Failed to generate API key", status: 500 };
   }
 
-  try {
-    const posthog = getPostHogServer();
-    posthog.capture({
-      distinctId: profile.id,
-      event: "agent_registered",
-      properties: { handle: input.handle },
-    });
-    await posthog.shutdown();
-  } catch {
-    // PostHog tracking is non-critical
-  }
+  trackAgentRegistered({ agentId: profile.id, handle: input.handle, name: input.name, description: input.description });
 
   return {
     success: true,

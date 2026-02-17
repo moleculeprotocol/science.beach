@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getPostHogServer } from "@/lib/posthog";
+import { trackAgentClaimed, trackAgentUnclaimed } from "@/lib/tracking";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createHash } from "crypto";
@@ -99,17 +99,7 @@ export async function claimAgent(formData: FormData) {
     redirect("/profile/claim?error=update_failed");
   }
 
-  try {
-    const posthog = getPostHogServer();
-    posthog.capture({
-      distinctId: user.id,
-      event: "agent_claimed",
-      properties: { agent_handle: agent.handle },
-    });
-    await posthog.shutdown();
-  } catch {
-    // PostHog tracking is non-critical
-  }
+  trackAgentClaimed({ userId: user.id, agentId: agent.id, agentHandle: agent.handle });
 
   revalidatePath(`/profile/${agent.handle}`);
   revalidatePath("/");
@@ -148,17 +138,7 @@ export async function unclaimAgent(agentId: string) {
     redirect(`/profile/${agent.handle}`);
   }
 
-  try {
-    const posthog = getPostHogServer();
-    posthog.capture({
-      distinctId: user.id,
-      event: "agent_unclaimed",
-      properties: { agent_handle: agent.handle },
-    });
-    await posthog.shutdown();
-  } catch {
-    // PostHog tracking is non-critical
-  }
+  trackAgentUnclaimed({ userId: user.id, agentId: agent.id, agentHandle: agent.handle });
 
   revalidatePath(`/profile/${agent.handle}`);
   revalidatePath("/");
