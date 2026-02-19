@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef, useTransition } from "react";
-import { adminDeleteInfographic, adminRegenerateInfographic } from "@/app/admin/actions";
+import { adminDeleteInfographic } from "@/app/admin/actions";
+import RegenToast, { useRegenerate } from "@/components/RegenToast";
 
 type InfographicImageProps = {
   src: string;
@@ -27,10 +28,13 @@ export default function InfographicImage({
   const [expanded, setExpanded] = useState(false);
   const [thumbFailed, setThumbFailed] = useState(false);
   const [fullReady, setFullReady] = useState(variant === "full");
-  const [isPending, startTransition] = useTransition();
+  const [deletePending, startDeleteTransition] = useTransition();
+  const regen = useRegenerate(postId ?? "");
   const preloaded = useRef(false);
 
   const close = useCallback(() => setExpanded(false), []);
+
+  const anyPending = deletePending || regen.isPending;
 
   // Preload full-res in the background once the thumbnail is visible
   useEffect(() => {
@@ -61,13 +65,19 @@ export default function InfographicImage({
         <div className="relative group">
           <button
             type="button"
-            onClick={() => setExpanded(true)}
-            className="relative w-full border-2 border-sand-4 overflow-hidden cursor-zoom-in"
+            onClick={() => !regen.isPending && setExpanded(true)}
+            className={`relative w-full border-2 overflow-hidden transition-colors duration-300 ${
+              regen.isPending
+                ? "border-blue-4 cursor-default"
+                : "border-sand-4 cursor-zoom-in"
+            }`}
           >
             <img
               src={inlineSrc}
               alt={alt}
-              className="w-full h-auto"
+              className={`w-full h-auto transition-all duration-500 ${
+                regen.isPending ? "grayscale opacity-40 scale-[1.01]" : ""
+              }`}
               style={{ imageRendering: "pixelated" }}
               loading="lazy"
               decoding="async"
@@ -77,30 +87,45 @@ export default function InfographicImage({
                   : undefined
               }
             />
+            {regen.isPending && (
+              <>
+                <style>{`@keyframes regen-scan{0%,100%{top:-2px}50%{top:calc(100% - 2px)}}`}</style>
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute inset-0 bg-dark-space/30" />
+                  <div
+                    className="absolute left-0 right-0 h-[2px] bg-linear-to-r from-transparent via-blue-4 to-transparent"
+                    style={{
+                      animation: "regen-scan 2s ease-in-out infinite",
+                      boxShadow: "0 0 12px var(--blue-4), 0 0 4px var(--blue-4)",
+                    }}
+                  />
+                </div>
+              </>
+            )}
           </button>
           {showAdmin && (
             <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
-                disabled={isPending}
+                disabled={anyPending}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (!confirm("Regenerate the infographic? This will replace the current one.")) return;
-                  startTransition(() => adminRegenerateInfographic(postId));
+                  regen.regenerate();
                 }}
-                className={`label-s-bold px-3 py-1.5 bg-light-space text-blue-4 border-2 border-blue-4 hover:bg-blue-4 hover:text-light-space transition-colors shadow-[2px_2px_0_rgba(0,0,0,0.3)] ${isPending ? "opacity-50" : ""}`}
+                className={`label-s-bold px-3 py-1.5 bg-light-space text-blue-4 border-2 border-blue-4 hover:bg-blue-4 hover:text-light-space transition-colors shadow-[2px_2px_0_rgba(0,0,0,0.3)] ${anyPending ? "opacity-50" : ""}`}
               >
-                {isPending ? "..." : "Regen"}
+                Regen
               </button>
               <button
-                disabled={isPending}
+                disabled={anyPending}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (!confirm("Delete the infographic for this post?")) return;
-                  startTransition(() => adminDeleteInfographic(postId));
+                  startDeleteTransition(() => adminDeleteInfographic(postId));
                 }}
-                className={`label-s-bold px-3 py-1.5 bg-light-space text-orange-1 border-2 border-orange-1 hover:bg-orange-1 hover:text-light-space transition-colors shadow-[2px_2px_0_rgba(0,0,0,0.3)] ${isPending ? "opacity-50" : ""}`}
+                className={`label-s-bold px-3 py-1.5 bg-light-space text-orange-1 border-2 border-orange-1 hover:bg-orange-1 hover:text-light-space transition-colors shadow-[2px_2px_0_rgba(0,0,0,0.3)] ${anyPending ? "opacity-50" : ""}`}
               >
-                {isPending ? "..." : "Delete"}
+                {deletePending ? "..." : "Delete"}
               </button>
             </div>
           )}
@@ -138,6 +163,8 @@ export default function InfographicImage({
           </div>
         </div>
       )}
+
+      <RegenToast step={regen.step} error={regen.error} onDismiss={regen.dismiss} />
     </>
   );
 }
