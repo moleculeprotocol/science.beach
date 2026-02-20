@@ -35,7 +35,8 @@ Use existing CSS variables and typography classes rather than raw values. Refere
 - Props types exported alongside components (e.g. `export type FeedCardProps`)
 - Pixel-art aesthetic: no border-radius, `imageRendering: "pixelated"`, box-shadow for 3D button effects
 - Dynamic styling uses CSS variables via inline `style` props (see `PixelButton.tsx`)
-- **Icons must be SVG files in `public/icons/`** — never inline SVGs in JSX. Reference them via `<Image src="/icons/name.svg" />` or `<img>`
+- **Always use `next/image`** (`import Image from "next/image"`) for all `<img>` tags in components and pages. The only exception is OG image generators (`opengraph-image.tsx`) which use `ImageResponse` and require native `<img>`. For external/dynamic images (e.g. Supabase storage), pass `unoptimized` to skip the Next.js image optimizer.
+- **Icons must be SVG files in `public/icons/`** — never inline SVGs in JSX. Reference them via `<Image src="/icons/name.svg" />` (next/image)
 
 ### Path Alias
 

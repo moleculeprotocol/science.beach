@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef, useTransition } from "react";
+import Image from "next/image";
 import { adminDeleteInfographic } from "@/app/admin/actions";
 import RegenToast, { useRegenerate } from "@/components/RegenToast";
 
@@ -40,7 +41,7 @@ export default function InfographicImage({
   useEffect(() => {
     if (variant !== "feed" || preloaded.current) return;
     preloaded.current = true;
-    const img = new Image();
+    const img = new globalThis.Image();
     img.src = src;
     img.onload = () => setFullReady(true);
   }, [variant, src]);
@@ -72,15 +73,17 @@ export default function InfographicImage({
                 : "border-sand-4 cursor-zoom-in"
             }`}
           >
-            <img
+            <Image
               src={inlineSrc}
               alt={alt}
+              width={1024}
+              height={1024}
+              unoptimized
               className={`w-full h-auto transition-all duration-500 ${
                 regen.isPending ? "grayscale opacity-40 scale-[1.01]" : ""
               }`}
               style={{ imageRendering: "pixelated" }}
               loading="lazy"
-              decoding="async"
               onError={
                 variant === "feed" && !thumbFailed
                   ? () => setThumbFailed(true)
@@ -148,9 +151,12 @@ export default function InfographicImage({
                 </span>
               </div>
             )}
-            <img
+            <Image
               src={src}
               alt={alt}
+              width={2048}
+              height={2048}
+              unoptimized
               className={`w-full h-auto max-h-[85vh] object-contain transition-opacity duration-200 ${
                 fullReady ? "opacity-100" : "opacity-0 absolute"
               }`}
