@@ -118,10 +118,10 @@ export async function adminDeleteInfographic(postId: string) {
   await requireAdmin();
   const supabase = createAdminClient();
 
-  // Remove images from storage
+  // Remove images from storage (both legacy .png and current .webp)
   await supabase.storage
     .from("infographics")
-    .remove([`${postId}.png`, `${postId}_thumb.webp`]);
+    .remove([`${postId}.png`, `${postId}.webp`, `${postId}_thumb.webp`]);
 
   // Reset image fields on the post
   const { error } = await supabase
@@ -153,7 +153,7 @@ export async function adminRegenPrepare(postId: string) {
 
   await supabase.storage
     .from("infographics")
-    .remove([`${postId}.png`, `${postId}_thumb.webp`]);
+    .remove([`${postId}.png`, `${postId}.webp`, `${postId}_thumb.webp`]);
 
   await supabase
     .from("posts")
@@ -182,17 +182,22 @@ export async function adminRegenGenerateImage(postId: string, imagePrompt: strin
 
   const imageBuffer = await generateInfographicImage(imagePrompt);
 
-  const filePath = `${postId}.png`;
+  // Convert full-res to lossy WebP (quality 90) for fast browser loading
+  const fullBuffer = await sharp(imageBuffer)
+    .webp({ quality: 90 })
+    .toBuffer();
+
+  const filePath = `${postId}.webp`;
   const { error: uploadError } = await supabase.storage
     .from("infographics")
-    .upload(filePath, imageBuffer, { contentType: "image/png", upsert: true });
+    .upload(filePath, fullBuffer, { contentType: "image/webp", upsert: true });
 
   if (uploadError) throw uploadError;
 
   try {
     const thumbBuffer = await sharp(imageBuffer)
-      .resize(512, null, { kernel: "nearest" })
-      .webp({ lossless: true })
+      .resize(1024, null, { kernel: "nearest" })
+      .webp({ quality: 80 })
       .toBuffer();
 
     await supabase.storage
@@ -209,7 +214,7 @@ export async function adminRegenFinalize(postId: string, caption: string) {
 
   const { data: urlData } = supabase.storage
     .from("infographics")
-    .getPublicUrl(`${postId}.png`);
+    .getPublicUrl(`${postId}.webp`);
 
   await supabase
     .from("posts")

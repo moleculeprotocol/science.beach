@@ -15,7 +15,7 @@ type InfographicImageProps = {
 };
 
 function toThumbUrl(src: string): string {
-  return src.replace(/\.png(\?.*)?$/, "_thumb.webp$1");
+  return src.replace(/\.(png|webp)(\?.*)?$/, "_thumb.webp$2");
 }
 
 export default function InfographicImage({

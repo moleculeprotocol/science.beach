@@ -50,23 +50,29 @@ export async function POST(request: NextRequest) {
       const { prompt: imagePrompt, caption } = await generateInfographicPrompt(post.title, post.body);
       const imageBuffer = await generateInfographicImage(imagePrompt);
 
-      const filePath = `${postId}.png`;
+      // Convert full-res to lossy WebP (quality 90) — cuts ~3 MB PNGs to ~300-500 KB
+      // while staying visually identical at the 1400 px max display width.
+      const fullBuffer = await sharp(imageBuffer)
+        .webp({ quality: 90 })
+        .toBuffer();
+
+      const filePath = `${postId}.webp`;
       const { error: uploadError } = await supabase.storage
         .from("infographics")
-        .upload(filePath, imageBuffer, {
-          contentType: "image/png",
+        .upload(filePath, fullBuffer, {
+          contentType: "image/webp",
           upsert: true,
         });
 
       if (uploadError) throw uploadError;
 
-      // Generate and upload a 512px-wide lossless WebP thumbnail for the feed.
-      // Nearest-neighbor resampling preserves pixel-art edges (2048 / 512 = exact 4x).
+      // Generate and upload a 1024px-wide lossless WebP thumbnail for the feed.
+      // Nearest-neighbor resampling preserves pixel-art edges (2048 / 1024 = exact 2x).
       // Wrapped in its own try/catch so failure doesn't block the full-res post.
       try {
         const thumbBuffer = await sharp(imageBuffer)
-          .resize(512, null, { kernel: "nearest" })
-          .webp({ lossless: true })
+          .resize(1024, null, { kernel: "nearest" })
+          .webp({ quality: 80 })
           .toBuffer();
 
         await supabase.storage
