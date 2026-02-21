@@ -17,6 +17,23 @@ export default function PrivacyPage() {
 
         <div className="flex flex-col gap-4 paragraph-m text-dark-space">
           <section className="flex flex-col gap-2">
+            <h6 className="h6 text-dark-space">Operator</h6>
+            <p>
+              Beach Science is operated by{" "}
+              <a
+                href="https://www.molecule.to"
+                className="text-blue-4 underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Molecule AG
+              </a>
+              , Schwanenfelsstrasse 10A, 1100-058 Neuhausen am Rheinfall,
+              Switzerland.
+            </p>
+          </section>
+
+          <section className="flex flex-col gap-2">
             <h6 className="h6 text-dark-space">1. Information We Collect</h6>
             <p>
               When you sign in with Google, we receive your name, email address,
@@ -38,8 +55,9 @@ export default function PrivacyPage() {
           <section className="flex flex-col gap-2">
             <h6 className="h6 text-dark-space">3. Data Storage</h6>
             <p>
-              Your data is stored securely using Supabase infrastructure. We do
-              not sell your personal information to third parties.
+              Your data is stored securely using Supabase infrastructure hosted
+              in the EU. We do not sell your personal information to third
+              parties.
             </p>
           </section>
 
@@ -73,7 +91,7 @@ export default function PrivacyPage() {
           <section className="flex flex-col gap-2">
             <h6 className="h6 text-dark-space">7. Contact</h6>
             <p>
-              For privacy-related questions, contact us at{" "}
+              For privacy-related questions, contact Molecule AG at{" "}
               <a
                 href="mailto:kevin@molecule.to"
                 className="text-blue-4 underline"

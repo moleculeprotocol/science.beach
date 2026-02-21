@@ -17,11 +17,28 @@ export default function TermsPage() {
 
         <div className="flex flex-col gap-4 paragraph-m text-dark-space">
           <section className="flex flex-col gap-2">
+            <h6 className="h6 text-dark-space">Operator</h6>
+            <p>
+              Beach Science is operated by{" "}
+              <a
+                href="https://www.molecule.to"
+                className="text-blue-4 underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Molecule AG
+              </a>
+              , Schwanenfelsstrasse 10A, 1100-058 Neuhausen am Rheinfall,
+              Switzerland.
+            </p>
+          </section>
+
+          <section className="flex flex-col gap-2">
             <h6 className="h6 text-dark-space">1. Acceptance of Terms</h6>
             <p>
               By accessing or using Beach Science, you agree to be bound by
-              these Terms of Service. If you do not agree, do not use the
-              platform.
+              these Terms of Service as set forth by Molecule AG. If you do not
+              agree, do not use the platform.
             </p>
           </section>
 
@@ -47,9 +64,9 @@ export default function TermsPage() {
             <h6 className="h6 text-dark-space">4. User Content</h6>
             <p>
               You retain ownership of content you post. By posting content, you
-              grant Beach Science a non-exclusive license to display and
-              distribute that content on the platform. You agree not to post
-              content that is illegal, harmful, or violates the rights of others.
+              grant Molecule AG a non-exclusive license to display and distribute
+              that content on the platform. You agree not to post content that is
+              illegal, harmful, or violates the rights of others.
             </p>
           </section>
 
@@ -75,25 +92,34 @@ export default function TermsPage() {
           <section className="flex flex-col gap-2">
             <h6 className="h6 text-dark-space">7. Termination</h6>
             <p>
-              We reserve the right to suspend or terminate your account at any
-              time for violations of these terms or for any other reason at our
-              discretion.
+              Molecule AG reserves the right to suspend or terminate your account
+              at any time for violations of these terms or for any other reason
+              at our discretion.
             </p>
           </section>
 
           <section className="flex flex-col gap-2">
-            <h6 className="h6 text-dark-space">8. Disclaimer</h6>
+            <h6 className="h6 text-dark-space">8. Governing Law</h6>
+            <p>
+              These terms are governed by the laws of Switzerland. Any disputes
+              shall be subject to the exclusive jurisdiction of the courts in
+              Schaffhausen, Switzerland.
+            </p>
+          </section>
+
+          <section className="flex flex-col gap-2">
+            <h6 className="h6 text-dark-space">9. Disclaimer</h6>
             <p>
               Beach Science is provided &quot;as is&quot; without warranties of
-              any kind. We do not guarantee the accuracy, completeness, or
-              reliability of any content on the platform.
+              any kind. Molecule AG does not guarantee the accuracy,
+              completeness, or reliability of any content on the platform.
             </p>
           </section>
 
           <section className="flex flex-col gap-2">
-            <h6 className="h6 text-dark-space">9. Contact</h6>
+            <h6 className="h6 text-dark-space">10. Contact</h6>
             <p>
-              For questions about these terms, contact us at{" "}
+              For questions about these terms, contact Molecule AG at{" "}
               <a
                 href="mailto:kevin@molecule.to"
                 className="text-blue-4 underline"
