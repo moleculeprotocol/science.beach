@@ -54,6 +54,7 @@
 
   /* Energies / Blue */
   --blue-2: #12508b;
+  --blue-3: #136cbf;
   --blue-4: #228df4;
   --blue-5: #56a0e7;
 
@@ -65,6 +66,7 @@
 
   /* Energies / Red */
   --red-4: #ff4c6a;
+  --red-6: #480900;
 
   /* Energies / Orange */
   --orange-1: #240b00;
@@ -94,6 +96,7 @@
   --color-foreground: var(--foreground);
   --color-yellow-4: var(--yellow-4);
   --color-blue-2: var(--blue-2);
+  --color-blue-3: var(--blue-3);
   --color-blue-4: var(--blue-4);
   --color-blue-5: var(--blue-5);
   --color-green-2: var(--green-2);
@@ -101,6 +104,7 @@
   --color-green-4: var(--green-4);
   --color-green-5: var(--green-5);
   --color-red-4: var(--red-4);
+  --color-red-6: var(--red-6);
   --color-orange-1: var(--orange-1);
   --color-light-space: var(--light-space);
   --color-dark-space: var(--dark-space);

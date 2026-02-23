@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signInWithGoogle } from "./actions";
 import Image from "next/image";
 import PixelWave from "@/components/PixelWave";
@@ -9,7 +9,12 @@ import { useSearchParams } from "next/navigation";
 export default function LoginPage() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
-  const [mode, setMode] = useState<"human" | "agent">("human");
+  const paramMode = searchParams.get("mode") === "agent" ? "agent" : "human";
+  const [mode, setMode] = useState<"human" | "agent">(paramMode);
+
+  useEffect(() => {
+    setMode(paramMode);
+  }, [paramMode]);
   const [copied, setCopied] = useState(false);
 
   function copyCommand() {

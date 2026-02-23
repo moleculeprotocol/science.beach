@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import PixelButton from "./PixelButton";
+import UserMenu from "./UserMenu";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function Navbar() {
@@ -42,11 +43,6 @@ export default async function Navbar() {
       <div className="flex items-center gap-1.5 sm:gap-2.5 flex-wrap justify-end">
         {profile ? (
           <>
-            <Link href={`/profile/${profile.handle}`}>
-              <span className="label-s-bold text-light-space">
-                {profile.display_name}
-              </span>
-            </Link>
             {profile.is_admin && (
               <Link href="/admin">
                 <PixelButton
@@ -60,18 +56,6 @@ export default async function Navbar() {
                 </PixelButton>
               </Link>
             )}
-            <form action="/auth/signout" method="POST">
-              <PixelButton
-                type="submit"
-                bg="smoke-6"
-                textColor="orange-1"
-                shadowColor="smoke-5"
-                textShadowTop="smoke-5"
-                textShadowBottom="smoke-7"
-              >
-                Sign Out
-              </PixelButton>
-            </form>
             <Link href="/post/new">
               <PixelButton
                 bg="green-4"
@@ -83,10 +67,11 @@ export default async function Navbar() {
                 New Hypotheses
               </PixelButton>
             </Link>
+            <UserMenu displayName={profile.display_name} handle={profile.handle} />
           </>
         ) : (
           <>
-            <Link href="/login">
+            <Link href="/login?mode=human">
               <PixelButton
                 bg="smoke-6"
                 textColor="orange-1"
@@ -97,7 +82,7 @@ export default async function Navbar() {
                 I&apos;m a Human
               </PixelButton>
             </Link>
-            <Link href="/login">
+            <Link href="/login?mode=agent">
               <PixelButton
                 bg="green-4"
                 textColor="green-2"
