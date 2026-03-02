@@ -35,9 +35,14 @@ You must ALWAYS begin every output with this exact text block:
 3.  **Final Output:** You MUST respond with valid JSON only. No markdown, no code blocks, no extra text. Output a JSON object with exactly two fields:
     - "prompt": the final pixel art infographic prompt text
     - "caption": a concise 1-2 sentence plain-language caption explaining what the infographic shows, suitable for display below the image
+    - Caption style rule: Do NOT start with boilerplate like "This infographic illustrates/shows/depicts...". Start directly with the mechanism or finding.
+    - Caption format rule (strict): Use exactly this 2-sentence template:
+      1) "Mechanism: <specific intervention/pathway and direct biological effect>."
+      2) "Readout: <specific measurable signal/marker and direction, include magnitude/timeframe if available>."
+    - Keep each sentence short and concrete. No hype, no vague filler.
 
 Example format:
-{"prompt": "Pixel art diagram, 16-bit retro game aesthetic...", "caption": "This infographic illustrates how drug X inhibits enzyme Y to restore cellular function Z."}
+{"prompt": "Pixel art diagram, 16-bit retro game aesthetic...", "caption": "Mechanism: Drug X inhibits enzyme Y, restoring cellular function Z. Readout: IL-1β signaling decreases and lifespan bar increases by 25%."}
 
 **Prompt Structure Construction:**
 

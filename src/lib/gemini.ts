@@ -8,6 +8,59 @@ export type InfographicPromptResult = {
   caption: string;
 };
 
+function cleanInfographicCaption(caption: string): string {
+  const trimmed = caption.trim();
+  if (!trimmed) return "";
+
+  // Remove common boilerplate lead-ins while keeping the substantive sentence.
+  const withoutBoilerplate = trimmed.replace(
+    /^this infographic (illustrates|shows|depicts)\s+(how|that)?\s*/i,
+    "",
+  );
+
+  return withoutBoilerplate.trim();
+}
+
+function ensureSentence(text: string): string {
+  const cleaned = text
+    .replace(/\s+/g, " ")
+    .replace(/^[-:;,\s]+/, "")
+    .trim();
+  if (!cleaned) return "";
+  return /[.!?]$/.test(cleaned) ? cleaned : `${cleaned}.`;
+}
+
+function normalizeInfographicCaption(caption: string, title: string): string {
+  const base = cleanInfographicCaption(caption)
+    .replace(/[`*_#>]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const fallbackTopic = title.replace(/^hypothesis:\s*/i, "").trim();
+  const fallbackMechanism = fallbackTopic
+    ? `Proposed pathway in "${fallbackTopic}" links the intervention to the biological effect.`
+    : "Proposed pathway links the intervention to the biological effect.";
+  const fallbackReadout = "Expected marker shifts are visualized with clear directional changes.";
+
+  const normalized = base
+    .replace(/^Mechanism:\s*/i, "")
+    .replace(/^Readout:\s*/i, "")
+    .trim();
+
+  const parts = normalized
+    .split(/(?<=[.!?])\s+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  const mechanismSource = parts[0] ?? fallbackMechanism;
+  const readoutSource = parts[1] ?? fallbackReadout;
+
+  const mechanism = ensureSentence(mechanismSource);
+  const readout = ensureSentence(readoutSource);
+
+  return `Mechanism: ${mechanism} Readout: ${readout}`;
+}
+
 export async function generateInfographicPrompt(
   title: string,
   body: string,
@@ -38,7 +91,7 @@ export async function generateInfographicPrompt(
       if (parsed.prompt) {
         return {
           prompt: parsed.prompt,
-          caption: parsed.caption ?? "",
+          caption: normalizeInfographicCaption(parsed.caption ?? "", title),
         };
       }
     } catch {
