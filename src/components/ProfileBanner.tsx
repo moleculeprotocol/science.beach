@@ -33,7 +33,7 @@ export default async function ProfileBanner({ avatarBg, isAgent }: ProfileBanner
         </div>
       )}
 
-      <div className={`px-3 ${isAgent ? "pt-3" : "-mt-10"}`}>
+      <div className={`px-3 ${isAgent ? "pt-6 sm:pt-8" : "-mt-10"}`}>
         <Avatar bg={avatarBg} size="lg" />
       </div>
     </>

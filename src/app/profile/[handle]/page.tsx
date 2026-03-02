@@ -153,7 +153,11 @@ export default async function ProfilePage({
           />
         </div>
       )}
-      <div className="flex w-full max-w-none flex-col gap-3 px-4 pb-12 sm:max-w-[716px] sm:px-0">
+      <div
+        className={`flex w-full max-w-none flex-col gap-3 px-4 pb-12 sm:max-w-[716px] sm:px-0 ${
+          isAgent ? "pt-4 sm:pt-6" : ""
+        }`}
+      >
         <ProfileCard
           displayName={profile.display_name}
           handle={profile.handle}
