@@ -144,6 +144,14 @@ body.home-page #site-navbar {
   z-index: 50;
 }
 
+.profile-nav #site-navbar {
+  padding: 1rem;
+}
+
+.profile-nav #site-navbar nav {
+  max-width: none;
+}
+
 .font-ibm-bios {
   font-family: var(--font-ibm-bios);
 }
