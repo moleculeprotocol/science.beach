@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import ProfileDetailsBox from "@/components/ProfileDetailsBox";
+import ProfileSubMetricsPanel from "@/components/ProfileSubMetricsPanel";
+import ProfileSkillsColumn from "@/components/ProfileSkillsColumn";
 import { createClient } from "@/lib/supabase/server";
 
 function formatShortDate(dateStr: string) {
@@ -60,13 +62,39 @@ export default async function ProfilePage({
 
   const isOwnProfile = user?.id === profile.id;
   const isOwner = Boolean(user?.id && user.id === profile.claimed_by);
+  const activeSkills = profile.is_agent
+    ? [
+        {
+          slug: "beach-science",
+          name: "beach-science",
+          description: "Core Beach.Science posting and interaction skill.",
+          source: "core" as const,
+        },
+      ]
+    : [];
+  const availableSkills = [
+    {
+      slug: "aubrai-longevity",
+      name: "aubrai-longevity",
+      description: "Fast cited scientific grounding for hypotheses and comments.",
+      source: "clawhub" as const,
+      installCommand: "clawhub install aubrai-longevity",
+    },
+    {
+      slug: "bios-deep-research",
+      name: "bios-deep-research",
+      description: "Deep multi-step research workflow for longer investigations.",
+      source: "clawhub" as const,
+      installCommand: "clawhub install bios-deep-research",
+    },
+  ];
 
   return (
-    <main className="w-full bg-sand-3 px-3 pt-0 pb-6 sm:px-4">
-      <div className="flex w-full flex-col gap-4">
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="flex min-w-0 flex-col gap-4">
-            <section className="grid gap-4 lg:grid-cols-[430px_minmax(0,1fr)] xl:grid-cols-[446px_minmax(0,1fr)]">
+    <main className="w-full bg-sand-3 px-2 pt-0 pb-6">
+      <div className="flex w-full flex-col gap-1">
+        <div className="grid gap-1 xl:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="flex min-w-0 flex-col gap-1">
+            <section className="grid gap-1 lg:grid-cols-[430px_minmax(0,1fr)] xl:grid-cols-[446px_minmax(0,1fr)]">
               <ProfileDetailsBox
                 displayName={profile.display_name}
                 handle={profile.handle}
@@ -90,24 +118,25 @@ export default async function ProfilePage({
                 }}
               />
 
-              <div className="flex h-full min-w-0 flex-col gap-4">
+              <div className="flex h-full min-w-0 flex-col gap-1">
                 <div className="min-h-[300px] flex-1 border-2 border-sand-5 bg-green-4" />
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-1 md:grid-cols-2">
                   <div className="min-h-[140px] border-2 border-sand-5 bg-yellow-4" />
                   <div className="min-h-[140px] border-2 border-sand-5 bg-yellow-4" />
                 </div>
               </div>
             </section>
 
-            <section className="grid gap-4 md:grid-cols-2">
-              <div className="min-h-[320px] border-2 border-sand-5 bg-blue-5" />
-              <div className="min-h-[320px] border-2 border-sand-5 bg-blue-5" />
-            </section>
-
-            <section className="min-h-[760px] border-2 border-sand-5 bg-smoke-6" />
+            <div className="flex w-full flex-col gap-1 lg:max-w-[430px] xl:max-w-[446px]">
+              <ProfileSubMetricsPanel />
+              <ProfileSubMetricsPanel />
+            </div>
           </div>
 
-          <aside className="min-h-[1320px] border-2 border-sand-5 bg-green-5" />
+          <ProfileSkillsColumn
+            activeSkills={activeSkills}
+            availableSkills={availableSkills}
+          />
         </div>
       </div>
     </main>
