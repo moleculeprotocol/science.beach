@@ -3,13 +3,6 @@ import Link from "next/link";
 import Icon from "./Icon";
 import SectionHeading from "./SectionHeading";
 
-type BreakdownRow = {
-  label: string;
-  percentLabel: string;
-  barWidthClass: string;
-  barColorClass: string;
-};
-
 export type ProfileHypothesis = {
   id: string;
   title: string;
@@ -18,26 +11,7 @@ export type ProfileHypothesis = {
   likes: number;
 };
 
-const BREAKDOWN_ROWS: BreakdownRow[] = [
-  {
-    label: "Consistency",
-    percentLabel: "30%",
-    barWidthClass: "w-[60%]",
-    barColorClass: "bg-green-4",
-  },
-  {
-    label: "Quality",
-    percentLabel: "20%",
-    barWidthClass: "w-[35%]",
-    barColorClass: "bg-blue-4",
-  },
-  {
-    label: "Volume",
-    percentLabel: "10%",
-    barWidthClass: "w-[18%]",
-    barColorClass: "bg-[#ff4d00]",
-  },
-];
+const BREAKDOWN_LABELS = ["Consistency", "Quality", "Volume"];
 
 type ProfileMiddleColumnPanelProps = {
   hypotheses: ProfileHypothesis[];
@@ -65,46 +39,44 @@ export default function ProfileMiddleColumnPanel({ hypotheses }: ProfileMiddleCo
           Score Breakdown
         </SectionHeading>
 
-        <div className="border border-sand-4 bg-sand-1 p-3">
-          <div className="flex items-start justify-between gap-3">
+        <div className="relative border border-sand-4 bg-sand-1 p-3">
+          <div className="flex items-start justify-between gap-3 opacity-30">
             <div className="flex min-w-0 items-center gap-3">
-              <ScoreDial score={72} />
-
+              <ScoreDialPlaceholder />
               <div className="flex min-w-0 flex-col gap-2">
                 <p className="font-ibm-bios h8 text-sand-8 text-shadow-bubble">
                   Composite Score
                 </p>
-                <p className="label-s-bold leading-[1.4] text-sand-6">
-                  AP2 Integrates Membrane Tension And Cargo Signals To Trigger Actin Switch At Clathrin Pits
-                </p>
+                <div className="h-3 w-32 rounded-[2px] bg-sand-4" />
               </div>
             </div>
-
-            <button
-              type="button"
-              className="inline-flex shrink-0 items-center gap-1 label-s-regular text-sand-5 hover:text-sand-6"
-            >
-              <span className="label-s-bold">i</span>
-              How it works
-            </button>
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="font-ibm-bios text-[14px] text-sand-6 text-shadow-bubble">
+              Coming Soon
+            </p>
           </div>
         </div>
 
-        <div className="flex flex-col gap-6 border border-sand-4 bg-sand-1 p-3">
-          {BREAKDOWN_ROWS.map((row) => (
-            <div key={row.label} className="flex flex-col gap-2">
-              <div className="flex items-center justify-between gap-3">
-                <p className="label-m-bold leading-[0.9] text-sand-6">{row.label}</p>
-                <p className="inline-flex h-5 items-center border border-green-4 bg-green-4 px-1.5 label-s-bold leading-[0.9] text-green-2 [text-shadow:0px_-1px_0px_var(--green-5),0px_1px_0px_var(--green-3)]">
-                  {row.percentLabel}
-                </p>
+        <div className="relative border border-sand-4 bg-sand-1 p-3">
+          <div className="flex flex-col gap-6 opacity-30">
+            {BREAKDOWN_LABELS.map((label) => (
+              <div key={label} className="flex flex-col gap-2">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="label-m-bold leading-[0.9] text-sand-6">{label}</p>
+                  <div className="inline-flex h-5 w-10 items-center border border-sand-4 bg-sand-4 px-1.5" />
+                </div>
+                <div className="h-3 border border-sand-4 bg-sand-1 p-px">
+                  <div className="h-full w-0 rounded-[2px] bg-sand-4" />
+                </div>
               </div>
-              <div className="h-3 border border-sand-4 bg-sand-1 p-px">
-                <div className={`h-full rounded-[2px] ${row.barWidthClass} ${row.barColorClass}`} />
-              </div>
-            </div>
-          ))}
-
+            ))}
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="font-ibm-bios text-[14px] text-sand-6 text-shadow-bubble">
+              Coming Soon
+            </p>
+          </div>
         </div>
 
         <section className="rounded-[2px] border-2 border-sand-4 bg-sand-2 p-2">
@@ -172,13 +144,11 @@ export default function ProfileMiddleColumnPanel({ hypotheses }: ProfileMiddleCo
   );
 }
 
-function ScoreDial({ score }: { score: number }) {
+function ScoreDialPlaceholder() {
   return (
-    <div className="flex size-[72px] shrink-0 items-center justify-center rounded-full border-[6px] border-dark-space bg-yellow-4">
-      <div className="flex size-[46px] items-center justify-center rounded-full border-2 border-yellow-4 bg-sand-1">
-        <span className="label-s-bold text-yellow-4 [text-shadow:0px_-1px_0px_var(--orange-1),0px_1px_0px_var(--yellow-4)]">
-          {score}
-        </span>
+    <div className="flex size-[72px] shrink-0 items-center justify-center rounded-full border-[6px] border-sand-4 bg-sand-3">
+      <div className="flex size-[46px] items-center justify-center rounded-full border-2 border-sand-4 bg-sand-1">
+        <span className="label-s-bold text-sand-5">--</span>
       </div>
     </div>
   );

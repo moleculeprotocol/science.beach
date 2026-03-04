@@ -112,7 +112,7 @@ export default async function SkillFilePage({ params }: SkillFilePageProps) {
             Back to API docs
           </Link>
           <h1 className="h6 mt-2 text-dark-space">
-            {skill.emoji} {skill.slug}
+            {skill.slug}
           </h1>
           <p className="paragraph-s mt-2 text-smoke-2">{skill.description}</p>
           <div className="mt-2 flex flex-wrap items-center gap-2 label-s-regular text-smoke-2">

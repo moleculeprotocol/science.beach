@@ -71,7 +71,7 @@ export default async function DocsPage() {
               return (
                 <article key={skill.slug} className="border-r-2 border-b-2 border-sand-5 bg-white p-3 sm:p-4">
                   <h3 className="label-m-regular text-dark-space">
-                    {skill.emoji} {skill.slug}
+                    {skill.slug}
                   </h3>
                   <p className="paragraph-s mt-1 text-smoke-2">{skill.description}</p>
                   <div className="mt-2 flex flex-wrap items-center gap-2 label-s-regular text-smoke-2">

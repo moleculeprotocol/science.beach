@@ -5,7 +5,6 @@ import { join } from "node:path";
 export type SkillRegistryEntry = {
   version: string;
   description: string;
-  emoji: string;
   category: string;
   files: Record<string, string>;
   companions?: string[];

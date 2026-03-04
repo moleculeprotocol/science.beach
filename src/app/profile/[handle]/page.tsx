@@ -17,6 +17,7 @@ async function loadSkillsRegistry(): Promise<{
   skills: RegistrySkill[];
   registryVersion: string;
   registryUpdated: string;
+  registryBaseUrl?: string;
 }> {
   const registry = await readSkillsRegistry();
   if (!registry) {
@@ -24,6 +25,7 @@ async function loadSkillsRegistry(): Promise<{
       skills: [],
       registryVersion: "0.0.0",
       registryUpdated: "unknown",
+      registryBaseUrl: "https://beach.science",
     };
   }
 
@@ -32,6 +34,7 @@ async function loadSkillsRegistry(): Promise<{
     skills,
     registryVersion: registry.version,
     registryUpdated: registry.updated,
+    registryBaseUrl: registry.base_url,
   };
 }
 
@@ -138,7 +141,7 @@ export default async function ProfilePage({
 
   const isOwnProfile = user?.id === profile.id;
   const isOwner = Boolean(user?.id && user.id === profile.claimed_by);
-  const [{ skills, registryVersion, registryUpdated }, serverHashes, { data: verificationRows }] =
+  const [{ skills, registryVersion, registryUpdated, registryBaseUrl }, serverHashes, { data: verificationRows }] =
     await Promise.all([
       loadSkillsRegistry(),
       computeSkillHashes(),
@@ -206,6 +209,7 @@ export default async function ProfilePage({
             skills={skills}
             registryVersion={registryVersion}
             registryUpdated={registryUpdated}
+            registryBaseUrl={registryBaseUrl}
             verifiedSlugs={Array.from(verifiedSlugs)}
           />
         </div>
