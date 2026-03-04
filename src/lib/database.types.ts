@@ -247,6 +247,41 @@ export type Database = {
         }
         Relationships: []
       }
+      skill_verifications: {
+        Row: {
+          combined_hash: string
+          id: string
+          profile_id: string
+          skill_slug: string
+          skill_version: string
+          verified_at: string
+        }
+        Insert: {
+          combined_hash: string
+          id?: string
+          profile_id: string
+          skill_slug: string
+          skill_version: string
+          verified_at?: string
+        }
+        Update: {
+          combined_hash?: string
+          id?: string
+          profile_id?: string
+          skill_slug?: string
+          skill_version?: string
+          verified_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skill_verifications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reactions: {
         Row: {
           author_id: string

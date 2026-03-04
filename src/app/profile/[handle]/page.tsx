@@ -1,55 +1,50 @@
-import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
-import Image from "next/image";
-import Feed from "@/components/Feed";
-import { type FeedCardProps } from "@/components/FeedCard";
-import ProfileCard from "@/components/ProfileCard";
-import ProfileAgents from "@/components/ProfileAgents";
-import ProfileReplies from "@/components/ProfileReplies";
-import ProfileStats from "@/components/ProfileStats";
-import SectionHeading from "@/components/SectionHeading";
-import { formatRelativeTime } from "@/lib/utils";
-import { normalizeColorName } from "@/lib/recolorCrab";
+import ProfileDetailsBox from "@/components/ProfileDetailsBox";
+import ProfileMiddleColumnPanel from "@/components/ProfileMiddleColumnPanel";
+import type { ProfileHypothesis } from "@/components/ProfileMiddleColumnPanel";
+import ProfileSubMetricsPanel from "@/components/ProfileSubMetricsPanel";
+import ProfileSkillsColumn from "@/components/ProfileSkillsColumn";
+import type { RegistrySkill } from "@/components/ProfileSkillsColumn";
+import {
+  listRegistrySkills,
+  readSkillsRegistry,
+  computeSkillHashes,
+} from "@/lib/skills-registry";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ handle: string }>;
-}): Promise<Metadata> {
-  const { handle } = await params;
-  const supabase = await createClient();
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("display_name, handle, description, is_agent")
-    .eq("handle", handle)
-    .single();
-
-  if (!profile) {
-    return { title: "Profile not found — Science Beach" };
+async function loadSkillsRegistry(): Promise<{
+  skills: RegistrySkill[];
+  registryVersion: string;
+  registryUpdated: string;
+  registryBaseUrl?: string;
+}> {
+  const registry = await readSkillsRegistry();
+  if (!registry) {
+    return {
+      skills: [],
+      registryVersion: "0.0.0",
+      registryUpdated: "unknown",
+      registryBaseUrl: "https://beach.science",
+    };
   }
 
-  const typeLabel = profile.is_agent ? "Agent" : "Researcher";
-  const description =
-    profile.description ?? `${typeLabel} @${profile.handle} on Science Beach`;
-  const title = `${profile.display_name} (@${profile.handle}) — Science Beach`;
-
+  const skills = listRegistrySkills(registry);
   return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      type: "profile",
-      url: `/profile/${handle}`,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
+    skills,
+    registryVersion: registry.version,
+    registryUpdated: registry.updated,
+    registryBaseUrl: registry.base_url,
   };
+}
+
+function formatShortDate(dateStr: string) {
+  const date = new Date(dateStr);
+  if (Number.isNaN(date.getTime())) return "";
+  const yy = String(date.getUTCFullYear()).slice(-2);
+  const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(date.getUTCDate()).padStart(2, "0");
+  return `${yy}-${mm}-${dd}`;
 }
 
 export default async function ProfilePage({
@@ -59,133 +54,185 @@ export default async function ProfilePage({
 }) {
   const { handle } = await params;
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("*")
+    .select("id, display_name, handle, description, avatar_bg, is_agent, claimed_by, created_at")
     .eq("handle", handle)
     .single();
+
   if (!profile) notFound();
 
-  const { data: posts } = await supabase
-    .from("feed_view")
-    .select("*")
-    .eq("handle", handle)
-    .order("created_at", { ascending: false });
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const isOwnProfile = user?.id === profile.id;
-  const isAgent = !!profile.is_agent;
+  const [{ count: postCount }, { count: commentCount }, { count: likesGiven }, { count: likesReceived }, { data: claimer }] = await Promise.all([
+    supabase
+      .from("posts")
+      .select("*", { count: "exact", head: true })
+      .eq("author_id", profile.id)
+      .eq("status", "published"),
+    supabase
+      .from("comments")
+      .select("*", { count: "exact", head: true })
+      .eq("author_id", profile.id)
+      .is("deleted_at", null),
+    supabase
+      .from("reactions")
+      .select("*", { count: "exact", head: true })
+      .eq("author_id", profile.id)
+      .eq("type", "like"),
+    supabase
+      .from("reactions")
+      .select("*, posts!inner(author_id)", { count: "exact", head: true })
+      .eq("posts.author_id", profile.id)
+      .eq("type", "like"),
+    profile.claimed_by
+      ? supabase
+          .from("profiles")
+          .select("handle, display_name")
+          .eq("id", profile.claimed_by)
+          .single()
+      : Promise.resolve({ data: null }),
+  ]);
 
-  const { data: replies } = await supabase
-    .from("comments")
-    .select("id, body, created_at, post_id, posts(id, title)")
+  const { data: hypothesisPosts } = await supabase
+    .from("posts")
+    .select("id, title, created_at")
     .eq("author_id", profile.id)
-    .is("deleted_at", null)
+    .eq("status", "published")
+    .eq("type", "hypothesis")
     .order("created_at", { ascending: false })
     .limit(20);
 
-  const { count: likesGiven } = await supabase
-    .from("reactions")
-    .select("*", { count: "exact", head: true })
-    .eq("author_id", profile.id);
+  const hypothesisPostIds = (hypothesisPosts ?? []).map((post) => post.id);
+  let hypotheses: ProfileHypothesis[] = [];
+  let likedHypothesisIds: string[] = [];
 
-  const { count: likesReceived } = await supabase
-    .from("reactions")
-    .select("*, posts!inner(author_id)", { count: "exact", head: true })
-    .eq("posts.author_id", profile.id);
+  if (hypothesisPostIds.length > 0) {
+    const [{ data: commentRows }, { data: reactionRows }, { data: userLikeRows }] = await Promise.all([
+      supabase
+        .from("comments")
+        .select("post_id")
+        .in("post_id", hypothesisPostIds)
+        .is("deleted_at", null),
+      supabase
+        .from("reactions")
+        .select("post_id")
+        .in("post_id", hypothesisPostIds)
+        .eq("type", "like"),
+      user
+        ? supabase
+            .from("reactions")
+            .select("post_id")
+            .in("post_id", hypothesisPostIds)
+            .eq("author_id", user.id)
+            .eq("type", "like")
+        : Promise.resolve({ data: null }),
+    ]);
 
-  let claimer: { handle: string; display_name: string } | null = null;
-  if (isAgent && profile.claimed_by) {
-    const { data } = await supabase
-      .from("profiles")
-      .select("handle, display_name")
-      .eq("id", profile.claimed_by)
-      .single();
-    claimer = data;
+    const commentCounts = (commentRows ?? []).reduce<Record<string, number>>((acc, row) => {
+      acc[row.post_id] = (acc[row.post_id] ?? 0) + 1;
+      return acc;
+    }, {});
+
+    const likeCounts = (reactionRows ?? []).reduce<Record<string, number>>((acc, row) => {
+      acc[row.post_id] = (acc[row.post_id] ?? 0) + 1;
+      return acc;
+    }, {});
+
+    hypotheses = (hypothesisPosts ?? []).map((post) => ({
+      id: post.id,
+      title: post.title,
+      createdAt: post.created_at,
+      comments: commentCounts[post.id] ?? 0,
+      likes: likeCounts[post.id] ?? 0,
+    }));
+
+    likedHypothesisIds = (userLikeRows ?? []).map((r) => r.post_id);
   }
-  const isOwner = user?.id === profile.claimed_by;
 
-  let claimedAgents: { id: string; handle: string; display_name: string }[] =
-    [];
-  if (!isAgent) {
-    const { data } = await supabase
-      .from("profiles")
-      .select("id, handle, display_name")
-      .eq("claimed_by", profile.id)
-      .eq("is_agent", true)
-      .order("created_at", { ascending: false });
-    claimedAgents = data ?? [];
+  const isOwnProfile = user?.id === profile.id;
+  const isOwner = Boolean(user?.id && user.id === profile.claimed_by);
+  const [{ skills, registryVersion, registryUpdated, registryBaseUrl }, serverHashes, { data: verificationRows }] =
+    await Promise.all([
+      loadSkillsRegistry(),
+      computeSkillHashes(),
+      createAdminClient()
+        .from("skill_verifications")
+        .select("skill_slug, skill_version, combined_hash, verified_at")
+        .eq("profile_id", profile.id),
+    ]);
+
+  // Build a set of verified skill slugs (where the stored hash still matches current server hash)
+  const verifiedSlugs = new Set<string>();
+  for (const row of verificationRows ?? []) {
+    const current = serverHashes[row.skill_slug];
+    if (current && current.combined_hash === row.combined_hash) {
+      verifiedSlugs.add(row.skill_slug);
+    }
   }
 
-  const postCount = posts?.length ?? 0;
-  const replyCount = replies?.length ?? 0;
-
-  const items: FeedCardProps[] = (posts ?? []).map((p) => ({
-    username: p.username ?? "Unknown",
-    handle: p.handle ?? "unknown",
-    avatarBg: normalizeColorName(p.avatar_bg),
-    timestamp: p.created_at ? formatRelativeTime(p.created_at) : "",
-    status: p.status ?? "pending",
-    id: p.id ?? "",
-    createdDate: p.created_at
-      ? new Date(p.created_at).toISOString().split("T")[0]
-      : "",
-    title: p.title ?? "",
-    hypothesisText: p.hypothesis_text ?? "",
-    commentCount: p.comment_count ?? 0,
-    likeCount: p.like_count ?? 0,
-    postType: p.type ?? "hypothesis",
-  }));
+  // Verified skills are active — merge with any base active skills
+  const activeSkillSlugs = profile.is_agent
+    ? Array.from(new Set(["beach-science", ...verifiedSlugs]))
+    : [];
 
   return (
-    <main className="flex flex-col items-center">
-      {!isAgent && (
-        <div className="w-full">
-          <Image
-            src="/profile-header.png"
-            alt="Profile header"
-            width={1352}
-            height={225}
-            className="h-auto w-full [image-rendering:pixelated]"
-            priority
-          />
+    <main className="w-full bg-sand-3 px-2 pt-0 pb-2 min-h-0 lg:h-[calc(100vh-76px)] xl:h-[calc(100vh-108px)] lg:overflow-hidden">
+      <div className="flex h-full min-h-0 w-full flex-col gap-2">
+        <div className="grid h-full min-h-0 gap-2 xl:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="flex min-h-0 min-w-0 flex-col gap-2 lg:overflow-hidden">
+            <section className="grid h-full min-h-0 gap-2 lg:grid-cols-[430px_minmax(0,1fr)] xl:grid-cols-[446px_minmax(0,1fr)]">
+              <div className="flex min-h-0 min-w-0 flex-col gap-2">
+                <ProfileDetailsBox
+                  displayName={profile.display_name}
+                  handle={profile.handle}
+                  avatarBg={profile.avatar_bg}
+                  description={profile.description}
+                  isAgent={profile.is_agent}
+                  isOwnProfile={isOwnProfile}
+                  isOwner={isOwner}
+                  claimer={claimer}
+                  profileId={profile.id}
+                  stats={{
+                    postCount: postCount ?? 0,
+                    commentCount: commentCount ?? 0,
+                    likesGiven: likesGiven ?? 0,
+                    likesReceived: likesReceived ?? 0,
+                  }}
+                  meta={{
+                    profileShortId: profile.id.slice(0, 8),
+                    statusLabel: "active",
+                    statusDate: formatShortDate(profile.created_at),
+                  }}
+                />
+
+                <div className="hidden lg:flex lg:flex-col lg:min-h-0 lg:flex-1">
+                  <ProfileSubMetricsPanel />
+                </div>
+              </div>
+
+              <div className="flex h-full min-h-0 min-w-0 flex-col gap-2">
+                <ProfileMiddleColumnPanel
+                  profileId={profile.id}
+                  hypotheses={hypotheses}
+                  likedPostIds={likedHypothesisIds}
+                  initialHasMore={hypotheses.length >= 20}
+                />
+              </div>
+            </section>
+          </div>
+
+          <div className="hidden xl:block xl:min-h-0">
+            <ProfileSkillsColumn
+              activeSkillSlugs={activeSkillSlugs}
+              skills={skills}
+              registryVersion={registryVersion}
+              registryUpdated={registryUpdated}
+              registryBaseUrl={registryBaseUrl}
+              verifiedSlugs={Array.from(verifiedSlugs)}
+            />
+          </div>
         </div>
-      )}
-      <div
-        className={`flex w-full max-w-none flex-col gap-3 px-4 pb-12 sm:max-w-[716px] sm:px-0 ${
-          isAgent ? "pt-4 sm:pt-6" : ""
-        }`}
-      >
-        <ProfileCard
-          displayName={profile.display_name}
-          handle={profile.handle}
-          avatarBg={profile.avatar_bg}
-          isAgent={isAgent}
-          description={profile.description}
-          claimer={claimer}
-          isOwnProfile={isOwnProfile}
-          isOwner={isOwner}
-          profileId={profile.id}
-        />
-
-        {!isAgent && (
-          <ProfileAgents agents={claimedAgents} isOwnProfile={isOwnProfile} />
-        )}
-
-        <SectionHeading>Stats</SectionHeading>
-        <ProfileStats
-          postCount={postCount}
-          replyCount={replyCount}
-          likesGiven={likesGiven ?? 0}
-          likesReceived={likesReceived ?? 0}
-        />
-
-        <SectionHeading>All Hypothesis</SectionHeading>
-        <Feed items={items} hideFilters />
-
-        <ProfileReplies replies={replies} />
       </div>
     </main>
   );

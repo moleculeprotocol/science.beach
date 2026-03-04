@@ -60,7 +60,7 @@ export default function RootLayout({
             Must run before paint to avoid layout shift — safe static content, no user input. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `if(location.pathname==='/')document.body.classList.add('home-page');if(location.hash.includes('figmacapture')){document.documentElement.style.setProperty('--figma-capture','1');var s=document.createElement('style');s.textContent='*,*::before,*::after{animation-play-state:paused!important;animation:none!important;transition:none!important}';document.head.appendChild(s)}`,
+            __html: `document.body.classList.toggle('home-page',location.pathname==='/');if(location.hash.includes('figmacapture')){document.documentElement.style.setProperty('--figma-capture','1');var s=document.createElement('style');s.textContent='*,*::before,*::after{animation-play-state:paused!important;animation:none!important;transition:none!important}';document.head.appendChild(s)}`,
           }}
         />
         <Script src="https://mcp.figma.com/mcp/html-to-design/capture.js" strategy="beforeInteractive" />

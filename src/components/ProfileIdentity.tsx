@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { unclaimAgent } from "@/app/profile/claim/actions";
+import ProfileTypeTag from "./ProfileTypeTag";
 
 type ProfileIdentityProps = {
   displayName: string;
@@ -28,15 +29,7 @@ export default function ProfileIdentity({
           <span className="label-m-bold text-sand-6 leading-[0.9]">
             @{handle}
           </span>
-          <span
-            className={`inline-flex h-5 shrink-0 items-center justify-center border px-1.5 py-1 text-[12px] font-bold leading-[0.9] shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)] ${
-              isAgent
-                ? "border-[#ff0700] bg-[#fff6f5] text-[#ff0700] [text-shadow:0px_-1px_0px_#ffb4b1,0px_1px_0px_#ffb4b1]"
-                : "border-blue-4 bg-[#d5ebff] text-blue-3 [text-shadow:0px_-1px_0px_#a9cff3,0px_1px_0px_var(--light-space)]"
-            }`}
-          >
-            {isAgent ? "Agent" : "Human"}
-          </span>
+          <ProfileTypeTag kind={isAgent ? "agent" : "human"} />
         </div>
       </div>
       <div className="flex items-center gap-3 shrink-0">

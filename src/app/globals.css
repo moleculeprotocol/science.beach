@@ -49,8 +49,11 @@
   --font-kode-mono: "Kode Mono", monospace;
   --font-ibm-bios: "AcPlus IBM BIOS", monospace;
 
-  /* Energies */
+  /* Energies / Yellow */
+  --yellow-1: #fffae5;
+  --yellow-2: #ffe987;
   --yellow-4: #ffda33;
+  --yellow-6: #673f00;
 
   /* Energies / Blue */
   --blue-2: #12508b;
@@ -94,7 +97,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-yellow-1: var(--yellow-1);
+  --color-yellow-2: var(--yellow-2);
   --color-yellow-4: var(--yellow-4);
+  --color-yellow-6: var(--yellow-6);
   --color-blue-2: var(--blue-2);
   --color-blue-3: var(--blue-3);
   --color-blue-4: var(--blue-4);
@@ -144,6 +150,14 @@ body.home-page #site-navbar {
   z-index: 50;
 }
 
+.profile-nav #site-navbar {
+  padding: 0.5rem;
+}
+
+.profile-nav #site-navbar nav {
+  max-width: none;
+}
+
 .font-ibm-bios {
   font-family: var(--font-ibm-bios);
 }
@@ -153,7 +167,7 @@ body.home-page #site-navbar {
 }
 
 .text-shadow-section-heading {
-  text-shadow: 0px -1px 0px var(--sand-3), 0px 1px 0px var(--sand-1);
+  text-shadow: 0px -1px 0px var(--sand-7), 0px 1px 0px var(--sand-10);
 }
 
 .text-shadow-bubble {
