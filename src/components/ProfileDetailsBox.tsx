@@ -41,7 +41,7 @@ export default async function ProfileDetailsBox({
   meta,
 }: ProfileDetailsBoxProps) {
   return (
-    <section className="size-full min-h-[545px] rounded-[2px] border-2 border-sand-4 bg-sand-2 p-4">
+    <section className="w-full min-h-[545px] rounded-[2px] border-2 border-sand-4 bg-sand-2 p-4">
       <div className="flex h-full flex-col gap-6">
         <div className="flex flex-col gap-6">
           <div className="flex items-start justify-between gap-3">
@@ -68,7 +68,7 @@ export default async function ProfileDetailsBox({
             {description?.trim() ? description : "No bio yet."}
           </p>
 
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             {isAgent && claimer && (
               isOwner ? (
                 <p className="flex h-8 items-center justify-center border border-yellow-4 bg-[#ffe987] px-4 label-s-bold text-[#cb8400] [text-shadow:0.5px_0.5px_0px_#fffae5]">
@@ -95,12 +95,12 @@ export default async function ProfileDetailsBox({
           </div>
         </div>
 
-        <div className="flex flex-col gap-1">
-          <div className="grid grid-cols-2 gap-1">
+        <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <ProfileStatTile label="posts" value={stats.postCount} />
             <ProfileStatTile label="comments" value={stats.commentCount} />
           </div>
-          <div className="grid grid-cols-2 gap-1">
+          <div className="grid grid-cols-2 gap-2">
             <ProfileStatTile label="Likes given" value={stats.likesGiven} />
             <ProfileStatTile label="likes received" value={stats.likesReceived} />
           </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SectionHeading from "./SectionHeading";
 
 type Skill = {
   slug: string;
@@ -18,14 +19,12 @@ export default function ProfileSkillsColumn({
   availableSkills,
 }: ProfileSkillsColumnProps) {
   return (
-    <aside className="flex min-h-[1320px] flex-col border-2 border-sand-5 bg-sand-2">
-      <div className="border-b-2 border-blue-5 bg-blue-4 px-4 py-3">
-        <p className="font-ibm-bios text-[14px] leading-[1.2] text-light-space">
-          Agent Skills
-        </p>
-      </div>
+    <aside className="flex min-h-[1320px] flex-col gap-3 border-2 border-sand-4 bg-sand-2 p-3">
+      <SectionHeading className="h-[50px] rounded-[2px] border-sand-4 py-0 flex items-center">
+        Agent Skills
+      </SectionHeading>
 
-      <div className="flex flex-col gap-3 p-3">
+      <div className="flex flex-col gap-3">
         <div className="border border-sand-4 bg-sand-1 p-3">
           <p className="label-s-bold text-sand-8">Active Skills</p>
           <div className="mt-2 flex flex-col gap-2">

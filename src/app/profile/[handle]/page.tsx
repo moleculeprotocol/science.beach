@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import ProfileDetailsBox from "@/components/ProfileDetailsBox";
+import ProfileMiddleColumnPanel from "@/components/ProfileMiddleColumnPanel";
 import ProfileSubMetricsPanel from "@/components/ProfileSubMetricsPanel";
 import ProfileSkillsColumn from "@/components/ProfileSkillsColumn";
 import { createClient } from "@/lib/supabase/server";
@@ -91,46 +92,42 @@ export default async function ProfilePage({
 
   return (
     <main className="w-full bg-sand-3 px-2 pt-0 pb-6">
-      <div className="flex w-full flex-col gap-1">
-        <div className="grid gap-1 xl:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="flex min-w-0 flex-col gap-1">
-            <section className="grid gap-1 lg:grid-cols-[430px_minmax(0,1fr)] xl:grid-cols-[446px_minmax(0,1fr)]">
-              <ProfileDetailsBox
-                displayName={profile.display_name}
-                handle={profile.handle}
-                avatarBg={profile.avatar_bg}
-                description={profile.description}
-                isAgent={profile.is_agent}
-                isOwnProfile={isOwnProfile}
-                isOwner={isOwner}
-                claimer={claimer}
-                profileId={profile.id}
-                stats={{
-                  postCount: postCount ?? 0,
-                  commentCount: commentCount ?? 0,
-                  likesGiven: likesGiven ?? 0,
-                  likesReceived: likesReceived ?? 0,
-                }}
-                meta={{
-                  profileShortId: profile.id.slice(0, 8),
-                  statusLabel: "active",
-                  statusDate: formatShortDate(profile.created_at),
-                }}
-              />
+      <div className="flex w-full flex-col gap-2">
+        <div className="grid gap-2 xl:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="flex min-w-0 flex-col gap-2">
+            <section className="grid items-start gap-2 lg:grid-cols-[430px_minmax(0,1fr)] xl:grid-cols-[446px_minmax(0,1fr)]">
+              <div className="flex min-w-0 flex-col gap-2">
+                <ProfileDetailsBox
+                  displayName={profile.display_name}
+                  handle={profile.handle}
+                  avatarBg={profile.avatar_bg}
+                  description={profile.description}
+                  isAgent={profile.is_agent}
+                  isOwnProfile={isOwnProfile}
+                  isOwner={isOwner}
+                  claimer={claimer}
+                  profileId={profile.id}
+                  stats={{
+                    postCount: postCount ?? 0,
+                    commentCount: commentCount ?? 0,
+                    likesGiven: likesGiven ?? 0,
+                    likesReceived: likesReceived ?? 0,
+                  }}
+                  meta={{
+                    profileShortId: profile.id.slice(0, 8),
+                    statusLabel: "active",
+                    statusDate: formatShortDate(profile.created_at),
+                  }}
+                />
 
-              <div className="flex h-full min-w-0 flex-col gap-1">
-                <div className="min-h-[300px] flex-1 border-2 border-sand-5 bg-green-4" />
-                <div className="grid gap-1 md:grid-cols-2">
-                  <div className="min-h-[140px] border-2 border-sand-5 bg-yellow-4" />
-                  <div className="min-h-[140px] border-2 border-sand-5 bg-yellow-4" />
-                </div>
+                <ProfileSubMetricsPanel />
+                <ProfileSubMetricsPanel />
+              </div>
+
+              <div className="flex h-full min-w-0 flex-col gap-2">
+                <ProfileMiddleColumnPanel />
               </div>
             </section>
-
-            <div className="flex w-full flex-col gap-1 lg:max-w-[430px] xl:max-w-[446px]">
-              <ProfileSubMetricsPanel />
-              <ProfileSubMetricsPanel />
-            </div>
           </div>
 
           <ProfileSkillsColumn

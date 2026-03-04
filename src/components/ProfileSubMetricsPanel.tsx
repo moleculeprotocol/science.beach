@@ -23,7 +23,7 @@ export default function ProfileSubMetricsPanel() {
         <SectionHeading className="h-[50px] rounded-[2px] border-sand-4 py-0 flex items-center">
           Sub Metrics
         </SectionHeading>
-
+        image.png
         <div className="flex flex-col gap-6 border border-sand-4 bg-sand-1 p-3">
           {SUB_METRIC_ROWS.map((row) => (
             <div key={`${row.label}-${row.target}-${row.score}`} className="flex items-center justify-between">
