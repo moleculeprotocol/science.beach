@@ -105,9 +105,10 @@ export default async function ProfilePage({
 
   const hypothesisPostIds = (hypothesisPosts ?? []).map((post) => post.id);
   let hypotheses: ProfileHypothesis[] = [];
+  let likedHypothesisIds: string[] = [];
 
   if (hypothesisPostIds.length > 0) {
-    const [{ data: commentRows }, { data: reactionRows }] = await Promise.all([
+    const [{ data: commentRows }, { data: reactionRows }, { data: userLikeRows }] = await Promise.all([
       supabase
         .from("comments")
         .select("post_id")
@@ -118,6 +119,14 @@ export default async function ProfilePage({
         .select("post_id")
         .in("post_id", hypothesisPostIds)
         .eq("type", "like"),
+      user
+        ? supabase
+            .from("reactions")
+            .select("post_id")
+            .in("post_id", hypothesisPostIds)
+            .eq("author_id", user.id)
+            .eq("type", "like")
+        : Promise.resolve({ data: null }),
     ]);
 
     const commentCounts = (commentRows ?? []).reduce<Record<string, number>>((acc, row) => {
@@ -137,6 +146,8 @@ export default async function ProfilePage({
       comments: commentCounts[post.id] ?? 0,
       likes: likeCounts[post.id] ?? 0,
     }));
+
+    likedHypothesisIds = (userLikeRows ?? []).map((r) => r.post_id);
   }
 
   const isOwnProfile = user?.id === profile.id;
@@ -166,12 +177,12 @@ export default async function ProfilePage({
     : [];
 
   return (
-    <main className="w-full bg-sand-3 px-2 pt-0 pb-6">
-      <div className="flex w-full flex-col gap-2">
-        <div className="grid gap-2 xl:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="flex min-w-0 flex-col gap-2">
-            <section className="grid items-start gap-2 lg:grid-cols-[430px_minmax(0,1fr)] xl:grid-cols-[446px_minmax(0,1fr)]">
-              <div className="flex min-w-0 flex-col gap-2">
+    <main className="w-full bg-sand-3 px-2 pt-0 pb-2 min-h-0 lg:h-[calc(100vh-76px)] xl:h-[calc(100vh-108px)] lg:overflow-hidden">
+      <div className="flex h-full min-h-0 w-full flex-col gap-2">
+        <div className="grid h-full min-h-0 gap-2 xl:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="flex min-h-0 min-w-0 flex-col gap-2 lg:overflow-hidden">
+            <section className="grid h-full min-h-0 gap-2 lg:grid-cols-[430px_minmax(0,1fr)] xl:grid-cols-[446px_minmax(0,1fr)]">
+              <div className="flex min-h-0 min-w-0 flex-col gap-2">
                 <ProfileDetailsBox
                   displayName={profile.display_name}
                   handle={profile.handle}
@@ -195,23 +206,32 @@ export default async function ProfilePage({
                   }}
                 />
 
-                <ProfileSubMetricsPanel />
+                <div className="hidden lg:flex lg:flex-col lg:min-h-0 lg:flex-1">
+                  <ProfileSubMetricsPanel />
+                </div>
               </div>
 
-              <div className="flex h-full min-w-0 flex-col gap-2">
-                <ProfileMiddleColumnPanel hypotheses={hypotheses} />
+              <div className="flex h-full min-h-0 min-w-0 flex-col gap-2">
+                <ProfileMiddleColumnPanel
+                  profileId={profile.id}
+                  hypotheses={hypotheses}
+                  likedPostIds={likedHypothesisIds}
+                  initialHasMore={hypotheses.length >= 20}
+                />
               </div>
             </section>
           </div>
 
-          <ProfileSkillsColumn
-            activeSkillSlugs={activeSkillSlugs}
-            skills={skills}
-            registryVersion={registryVersion}
-            registryUpdated={registryUpdated}
-            registryBaseUrl={registryBaseUrl}
-            verifiedSlugs={Array.from(verifiedSlugs)}
-          />
+          <div className="hidden xl:block xl:min-h-0">
+            <ProfileSkillsColumn
+              activeSkillSlugs={activeSkillSlugs}
+              skills={skills}
+              registryVersion={registryVersion}
+              registryUpdated={registryUpdated}
+              registryBaseUrl={registryBaseUrl}
+              verifiedSlugs={Array.from(verifiedSlugs)}
+            />
+          </div>
         </div>
       </div>
     </main>

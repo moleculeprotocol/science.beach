@@ -24,7 +24,7 @@ export default function SkillCardActions({
   }
 
   const actionClassName =
-    "inline-flex size-6 items-center justify-center border border-smoke-5 bg-smoke-7 text-sand-6 transition-colors hover:bg-smoke-6 hover:text-smoke-2";
+    "inline-flex size-7 items-center justify-center border-2 border-sand-3 bg-sand-1 transition-colors hover:border-sand-4 hover:bg-sand-2";
 
   return (
     <div className="flex items-center gap-1">
@@ -39,16 +39,16 @@ export default function SkillCardActions({
           <Image
             src="/icons/verified.svg"
             alt=""
-            width={14}
-            height={14}
+            width={17}
+            height={17}
             unoptimized
           />
         ) : (
           <Image
             src="/icons/copy.svg"
             alt=""
-            width={14}
-            height={14}
+            width={17}
+            height={17}
             unoptimized
           />
         )}

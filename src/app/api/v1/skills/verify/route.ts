@@ -16,7 +16,17 @@ const VerifySkillsSchema = z.object({
 export async function GET() {
   const hashes = await computeSkillHashes();
 
-  return NextResponse.json({ skills: hashes });
+  // Only expose versions and file paths — never hashes.
+  // Returning hashes would let agents parrot them back without having the files.
+  const skills: Record<string, { version: string; files: string[] }> = {};
+  for (const [slug, entry] of Object.entries(hashes)) {
+    skills[slug] = {
+      version: entry.version,
+      files: Object.keys(entry.files).sort(),
+    };
+  }
+
+  return NextResponse.json({ skills });
 }
 
 export async function POST(request: NextRequest) {

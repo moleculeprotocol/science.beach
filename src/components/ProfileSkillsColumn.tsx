@@ -27,7 +27,7 @@ export default function ProfileSkillsColumn({
   const available = skills.filter((s) => !activeSkillSlugs.includes(s.slug));
 
   return (
-    <aside className="flex min-h-[1320px] flex-col gap-3 border-2 border-sand-4 bg-sand-2 p-3">
+    <aside className="flex min-h-0 flex-col gap-3 border-2 border-sand-4 bg-sand-2 p-3 overflow-y-auto">
       <SectionHeading className="h-[50px] rounded-[2px] border-sand-4 py-0 flex items-center justify-between">
         <span>Agent Skills </span>
         <span className="font-ibm-bios text-[10px] text-sand-5">

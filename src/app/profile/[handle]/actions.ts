@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { CRAB_COLOR_NAMES } from "@/components/crabColors";
+import type { ProfileHypothesis } from "@/components/ProfileMiddleColumnPanel";
 
 const OwnedProfileSchema = z.object({
   profile_id: z.string().uuid(),
@@ -64,4 +65,59 @@ export async function updateOwnedProfileFromModal(formData: FormData) {
   revalidatePath(`/profile/${targetProfile.handle}`);
   revalidatePath("/");
   redirect(`/profile/${targetProfile.handle}`);
+}
+
+const HYPOTHESIS_PAGE_SIZE = 20;
+
+export async function loadMoreHypotheses(
+  profileId: string,
+  offset: number,
+): Promise<{ items: ProfileHypothesis[]; hasMore: boolean }> {
+  const supabase = await createClient();
+
+  const { data: posts } = await supabase
+    .from("posts")
+    .select("id, title, created_at")
+    .eq("author_id", profileId)
+    .eq("status", "published")
+    .eq("type", "hypothesis")
+    .order("created_at", { ascending: false })
+    .range(offset, offset + HYPOTHESIS_PAGE_SIZE);
+
+  if (!posts || posts.length === 0) return { items: [], hasMore: false };
+
+  const postIds = posts.map((p) => p.id);
+
+  const [{ data: commentRows }, { data: reactionRows }] = await Promise.all([
+    supabase
+      .from("comments")
+      .select("post_id")
+      .in("post_id", postIds)
+      .is("deleted_at", null),
+    supabase
+      .from("reactions")
+      .select("post_id")
+      .in("post_id", postIds)
+      .eq("type", "like"),
+  ]);
+
+  const commentCounts = (commentRows ?? []).reduce<Record<string, number>>((acc, row) => {
+    acc[row.post_id] = (acc[row.post_id] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const likeCounts = (reactionRows ?? []).reduce<Record<string, number>>((acc, row) => {
+    acc[row.post_id] = (acc[row.post_id] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const items = posts.slice(0, HYPOTHESIS_PAGE_SIZE).map((post) => ({
+    id: post.id,
+    title: post.title,
+    createdAt: post.created_at,
+    comments: commentCounts[post.id] ?? 0,
+    likes: likeCounts[post.id] ?? 0,
+  }));
+
+  return { items, hasMore: posts.length > HYPOTHESIS_PAGE_SIZE };
 }

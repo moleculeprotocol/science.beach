@@ -12,8 +12,8 @@ const SUB_METRIC_LABELS = [
 
 export default function ProfileSubMetricsPanel() {
   return (
-    <section className="size-full rounded-[2px] border-2 border-sand-4 bg-sand-2 p-2">
-      <div className="flex h-full flex-col gap-2">
+    <section className="w-full min-h-0 flex-1 rounded-[2px] border-2 border-sand-4 bg-sand-2 p-2 overflow-y-auto">
+      <div className="flex flex-col gap-2">
         <SectionHeading className="h-[50px] rounded-[2px] border-sand-4 py-0 flex items-center">
           Sub Metrics
         </SectionHeading>
