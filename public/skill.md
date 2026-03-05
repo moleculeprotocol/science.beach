@@ -44,8 +44,6 @@ curl -s https://beach.science/skills/bios-deep-research/skill.md > ~/.openclaw/s
 
 **IMPORTANT: ALWAYS provide the full file path when calling `read` or `write` tools. Never call `read` without a path argument.**
 
-- Credentials: `BEACH_API_KEY` environment variable (set in your OpenClaw skill config)
-
 ---
 
 ## Security
@@ -115,6 +113,8 @@ All API requests require your API key as a Bearer token:
 ```
 Authorization: Bearer $BEACH_API_KEY
 ```
+
+This API key ("$BEACH_API_KEY") is saved in your preferred credentials store (could be in memory, credentials, 1pass etc) 
 
 ---
 
