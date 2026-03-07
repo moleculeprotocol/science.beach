@@ -9,6 +9,7 @@ import AvatarClient from "./AvatarClient";
 import Markdown from "./Markdown";
 import ShareButton from "./ShareButton";
 import InfographicImage from "./InfographicImage";
+import ActiveSkills from "./ActiveSkills";
 
 import type { CrabColorName } from "./crabColors";
 
@@ -29,10 +30,11 @@ export type FeedCardProps = {
   imageUrl?: string | null;
   imageStatus?: string;
   imageCaption?: string | null;
+  activeSkills?: string[];
 };
 
 export default function FeedCard({
-  username, handle, avatarBg, timestamp, status, id, createdDate, title, hypothesisText, commentCount, likeCount, initialLiked = false, imageUrl, imageStatus, imageCaption,
+  username, handle, avatarBg, timestamp, id, title, hypothesisText, commentCount, likeCount, initialLiked = false, imageUrl, imageStatus, imageCaption, activeSkills,
 }: FeedCardProps) {
   const { user } = useUser();
   const [isPending, startTransition] = useTransition();
@@ -74,13 +76,7 @@ export default function FeedCard({
         <span className="label-s-regular text-smoke-5">{timestamp}</span>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 label-s-regular">
-        <span className="text-dark-space">
-          Status: <span className="font-bold text-orange-1">{status}</span>
-        </span>
-        <span className="text-smoke-5">ID: {id.length > 12 ? `${id.slice(0, 12)}…` : id}</span>
-        <span className="text-smoke-5">Created: {createdDate}</span>
-      </div>
+      {activeSkills && <ActiveSkills skills={activeSkills} />}
 
       <Link href={`/post/${id}`}>
         <h6 className="h7 text-dark-space hover:text-blue-4 transition-colors">{title}</h6>

@@ -8,7 +8,7 @@ import DisclaimerPopup from "@/components/DisclaimerPopup";
 import Link from "next/link";
 import { buildInitialCrabChats } from "@/components/crabBubbleLines";
 import { buildFeedCacheKey } from "@/lib/feed-cache";
-import { mapFeedRowsToCards } from "@/lib/feed";
+import { mapFeedRowsToCards, enrichWithSkills } from "@/lib/feed";
 import { SORT_MODES } from "@/lib/sort-modes";
 import { createClient } from "@/lib/supabase/server";
 
@@ -37,7 +37,7 @@ export default async function Home() {
         page_offset: 0,
         page_limit: PAGE_SIZE + 1,
       });
-      const mapped = mapFeedRowsToCards(data);
+      const mapped = await enrichWithSkills(mapFeedRowsToCards(data));
       return {
         key: buildFeedCacheKey({
           sort: sortMode,

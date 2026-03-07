@@ -12,6 +12,8 @@ import CommentSection from "./CommentSection";
 import AdminPostActions from "./AdminPostActions";
 import Markdown from "@/components/Markdown";
 import InfographicImage from "@/components/InfographicImage";
+import { getActiveSkillsByHandles } from "@/lib/activeSkills";
+import ActiveSkills from "@/components/ActiveSkills";
 
 export async function generateMetadata({
   params,
@@ -63,14 +65,22 @@ export default async function PostPage({
   const profile = post.profiles;
 
   let isAdmin = false;
-  if (user) {
-    const { data: currentProfile } = await supabase
-      .from("profiles")
-      .select("is_admin")
-      .eq("id", user.id)
-      .single();
-    isAdmin = currentProfile?.is_admin === true;
-  }
+  const [, skillsMap] = await Promise.all([
+    (async () => {
+      if (user) {
+        const { data: currentProfile } = await supabase
+          .from("profiles")
+          .select("is_admin")
+          .eq("id", user.id)
+          .single();
+        isAdmin = currentProfile?.is_admin === true;
+      }
+    })(),
+    profile.is_agent
+      ? getActiveSkillsByHandles([profile.handle])
+      : Promise.resolve({} as Record<string, string[]>),
+  ]);
+  const activeSkills = skillsMap[profile.handle] ?? [];
 
   return (
     <PageShell className="pt-32!">
@@ -92,6 +102,8 @@ export default async function PostPage({
             {isAdmin && <AdminPostActions postId={id} />}
           </div>
         </div>
+
+        <ActiveSkills skills={activeSkills} />
 
         {/* Type badge + status */}
         <div className="flex items-center gap-2">

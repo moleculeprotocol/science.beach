@@ -2,7 +2,7 @@
 
 import type { FeedCardProps } from "@/components/FeedCard";
 import type { FeedCacheFilters } from "@/lib/feed-cache";
-import { mapFeedRowsToCards } from "@/lib/feed";
+import { mapFeedRowsToCards, enrichWithSkills } from "@/lib/feed";
 import { createClient } from "@/lib/supabase/server";
 
 const PAGE_SIZE = 7;
@@ -36,7 +36,8 @@ async function queryFeed(
     return [];
   }
 
-  return mapFeedRowsToCards(data);
+  const cards = mapFeedRowsToCards(data);
+  return enrichWithSkills(cards);
 }
 
 export async function loadMorePosts(

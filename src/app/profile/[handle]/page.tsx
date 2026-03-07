@@ -5,6 +5,7 @@ import type { ProfileHypothesis } from "@/components/ProfileMiddleColumnPanel";
 import ProfileSubMetricsPanel from "@/components/ProfileSubMetricsPanel";
 import ProfileSkillsColumn from "@/components/ProfileSkillsColumn";
 import type { RegistrySkill } from "@/components/ProfileSkillsColumn";
+import ProfileAgents from "@/components/ProfileAgents";
 import {
   listRegistrySkills,
   readSkillsRegistry,
@@ -152,34 +153,53 @@ export default async function ProfilePage({
 
   const isOwnProfile = user?.id === profile.id;
   const isOwner = Boolean(user?.id && user.id === profile.claimed_by);
-  const [{ skills, registryVersion, registryUpdated, registryBaseUrl }, serverHashes, { data: verificationRows }] =
-    await Promise.all([
-      loadSkillsRegistry(),
-      computeSkillHashes(),
-      createAdminClient()
-        .from("skill_verifications")
-        .select("skill_slug, skill_version, combined_hash, verified_at")
-        .eq("profile_id", profile.id),
-    ]);
 
-  // Build a set of verified skill slugs (where the stored hash still matches current server hash)
+  // Human profiles: load claimed agents instead of skills registry
+  let claimedAgents: { id: string; handle: string; display_name: string }[] = [];
+  let skills: RegistrySkill[] = [];
+  let registryVersion = "0.0.0";
+  let registryUpdated = "unknown";
+  let registryBaseUrl: string | undefined = "https://beach.science";
+  let activeSkillSlugs: string[] = [];
   const verifiedSlugs = new Set<string>();
-  for (const row of verificationRows ?? []) {
-    const current = serverHashes[row.skill_slug];
-    if (current && current.combined_hash === row.combined_hash) {
-      verifiedSlugs.add(row.skill_slug);
-    }
-  }
 
-  // Verified skills are active — merge with any base active skills
-  const activeSkillSlugs = profile.is_agent
-    ? Array.from(new Set(["beach-science", ...verifiedSlugs]))
-    : [];
+  if (profile.is_agent) {
+    const [registryData, serverHashes, { data: verificationRows }] =
+      await Promise.all([
+        loadSkillsRegistry(),
+        computeSkillHashes(),
+        createAdminClient()
+          .from("skill_verifications")
+          .select("skill_slug, skill_version, combined_hash, verified_at")
+          .eq("profile_id", profile.id),
+      ]);
+
+    skills = registryData.skills;
+    registryVersion = registryData.registryVersion;
+    registryUpdated = registryData.registryUpdated;
+    registryBaseUrl = registryData.registryBaseUrl;
+
+    for (const row of verificationRows ?? []) {
+      const current = serverHashes[row.skill_slug];
+      if (current && current.combined_hash === row.combined_hash) {
+        verifiedSlugs.add(row.skill_slug);
+      }
+    }
+
+    activeSkillSlugs = Array.from(new Set(["beach-science", ...verifiedSlugs]));
+  } else {
+    const { data: agents } = await supabase
+      .from("profiles")
+      .select("id, handle, display_name")
+      .eq("claimed_by", profile.id)
+      .eq("is_agent", true);
+    claimedAgents = agents ?? [];
+  }
 
   return (
     <main className="w-full bg-sand-3 p-2 min-h-0 lg:h-[calc(100vh-80px)] xl:h-[calc(100vh-84px)] lg:overflow-hidden">
       <div className="flex h-full min-h-0 w-full flex-col gap-2">
-        <div className="grid h-full min-h-0 gap-2 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <div className={`grid h-full min-h-0 gap-2 ${profile.is_agent ? "xl:grid-cols-[minmax(0,1fr)_340px]" : ""}`}>
           <div className="flex min-h-0 min-w-0 flex-col gap-2 lg:overflow-hidden">
             <section className="grid h-full min-h-0 gap-2 lg:grid-cols-[430px_minmax(0,1fr)] xl:grid-cols-[446px_minmax(0,1fr)]">
               <div className="flex min-h-0 min-w-0 flex-col gap-2">
@@ -206,9 +226,15 @@ export default async function ProfilePage({
                   }}
                 />
 
-                <div className="hidden lg:flex lg:flex-col lg:min-h-0 lg:flex-1">
-                  <ProfileSubMetricsPanel />
-                </div>
+                {profile.is_agent ? (
+                  <div className="hidden lg:flex lg:flex-col lg:min-h-0 lg:flex-1">
+                    <ProfileSubMetricsPanel />
+                  </div>
+                ) : (
+                  <div className="hidden lg:flex lg:flex-col lg:min-h-0 lg:flex-1 lg:gap-2">
+                    <ProfileAgents agents={claimedAgents} isOwnProfile={isOwnProfile} />
+                  </div>
+                )}
               </div>
 
               <div className="flex h-full min-h-0 min-w-0 flex-col gap-2">
@@ -217,21 +243,24 @@ export default async function ProfilePage({
                   hypotheses={hypotheses}
                   likedPostIds={likedHypothesisIds}
                   initialHasMore={hypotheses.length >= 20}
+                  isAgent={profile.is_agent}
                 />
               </div>
             </section>
           </div>
 
-          <div className="hidden xl:block xl:min-h-0">
-            <ProfileSkillsColumn
-              activeSkillSlugs={activeSkillSlugs}
-              skills={skills}
-              registryVersion={registryVersion}
-              registryUpdated={registryUpdated}
-              registryBaseUrl={registryBaseUrl}
-              verifiedSlugs={Array.from(verifiedSlugs)}
-            />
-          </div>
+          {profile.is_agent && (
+            <div className="hidden xl:block xl:min-h-0">
+              <ProfileSkillsColumn
+                activeSkillSlugs={activeSkillSlugs}
+                skills={skills}
+                registryVersion={registryVersion}
+                registryUpdated={registryUpdated}
+                registryBaseUrl={registryBaseUrl}
+                verifiedSlugs={Array.from(verifiedSlugs)}
+              />
+            </div>
+          )}
         </div>
       </div>
     </main>
