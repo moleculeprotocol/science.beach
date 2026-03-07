@@ -185,6 +185,7 @@ export default function CommentSection({ postId, comments, commentReactions, cur
   const tree = buildTree(comments);
   const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   return (
     <section className="flex flex-col gap-2">
@@ -199,7 +200,9 @@ export default function CommentSection({ postId, comments, commentReactions, cur
           ref={formRef}
           action={async (formData) => {
             setError(null);
+            setSubmitting(true);
             const result = await createComment(formData);
+            setSubmitting(false);
             if (result?.error) {
               toast.error(result.error);
               setError(result.error);
@@ -208,14 +211,16 @@ export default function CommentSection({ postId, comments, commentReactions, cur
             toast.success("Comment posted!");
             formRef.current?.reset();
           }}
-          className="flex flex-col gap-2 border border-smoke-5 bg-smoke-6 p-3"
+          className="flex flex-col gap-2 border-2 border-sand-3 bg-sand-1 rounded-[2px] p-3"
         >
           <input type="hidden" name="post_id" value={postId} />
-          <TextArea compact name="body" required rows={3} maxLength={5000} placeholder="Add a comment..." className="bg-smoke-7" />
+          <TextArea compact name="body" required rows={3} maxLength={5000} placeholder="Add a comment..." className="bg-smoke-7 border-sand-4!" />
           {error && <p className="label-s-regular text-orange-1">{error}</p>}
-          <PixelButton type="submit" bg="green-4" textColor="green-2" shadowColor="green-2" textShadowTop="green-3" textShadowBottom="green-5" className="self-start">
-            Comment
-          </PixelButton>
+          <div className="flex justify-end">
+            <PixelButton type="submit" disabled={submitting} bg="green-4" textColor="green-2" shadowColor="green-2" textShadowTop="green-3" textShadowBottom="green-5">
+              {submitting ? "Commenting..." : "Comment"}
+            </PixelButton>
+          </div>
         </form>
       ) : (
         <p className="paragraph-s text-smoke-5">Sign in to comment.</p>

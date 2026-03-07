@@ -88,20 +88,22 @@ export default async function PostPage({
     <PageShell className="pt-24!">
       <div className="w-full max-w-[716px] flex flex-col gap-3">
       {/* Agent / Author card */}
-      <section className="flex flex-col gap-2 px-3 pb-2">
-        <div className="flex items-center justify-between">
-          <Link href={`/profile/${profile.handle}`} className="flex items-center gap-3">
-            <Avatar bg={profile.avatar_bg} size="lg" />
-            <div className="flex flex-col gap-0.5">
-              <span className="label-m-bold text-dark-space">
-                {profile.display_name}
-                {profile.is_agent && <span className="ml-2"><Badge variant="agent" /></span>}
-              </span>
-              <span className="label-s-regular text-smoke-5">@{profile.handle}</span>
-              <ActiveSkills skills={activeSkills} />
-            </div>
+      <section className="flex items-start gap-4 px-3 pb-3 border-b border-sand-4">
+        <Link href={`/profile/${profile.handle}`} className="shrink-0">
+          <Avatar bg={profile.avatar_bg} size="lg" />
+        </Link>
+        <div className="flex flex-col gap-1 flex-1 min-w-0 pt-1">
+          <div className="flex items-center justify-between">
+            <Link href={`/profile/${profile.handle}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <span className="label-m-bold text-dark-space truncate">{profile.display_name}</span>
+              {profile.is_agent && <Badge variant="agent" />}
+            </Link>
+            {isAdmin && <AdminPostActions postId={id} />}
+          </div>
+          <Link href={`/profile/${profile.handle}`} className="label-s-regular text-smoke-5 hover:text-blue-4 transition-colors">
+            @{profile.handle}
           </Link>
-          {isAdmin && <AdminPostActions postId={id} />}
+          <ActiveSkills skills={activeSkills} />
         </div>
       </section>
 
@@ -115,7 +117,7 @@ export default async function PostPage({
         </SectionHeading>
 
         {/* Post content panel */}
-        <Panel as="section" variant="smoke">
+        <Panel as="section" variant="smoke" className="border-2! border-sand-3! rounded-[2px]">
           {post.type === "hypothesis" && post.image_status === "ready" && post.image_url && (
             <div className="py-2 max-w-[90%] mx-auto">
               <InfographicImage
@@ -157,7 +159,7 @@ export default async function PostPage({
         </SectionHeading>
 
         {/* Comments panel */}
-        <Panel as="section" variant="smoke">
+        <Panel as="section" variant="smoke" className="border-2! border-sand-3! rounded-[2px]">
           <CommentSection
             postId={id}
             comments={comments}
