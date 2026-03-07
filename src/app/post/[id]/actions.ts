@@ -128,6 +128,7 @@ export async function toggleReaction(postId: string) {
     .eq("post_id", postId)
     .eq("author_id", user.id)
     .eq("type", "like")
+    .is("comment_id", null)
     .maybeSingle();
   if (existingError) {
     throw new Error(existingError.message);
@@ -141,6 +142,7 @@ export async function toggleReaction(postId: string) {
   } else {
     const { error } = await supabase.from("reactions").insert({
       post_id: postId,
+      comment_id: null,
       author_id: user.id,
       type: "like",
     });
