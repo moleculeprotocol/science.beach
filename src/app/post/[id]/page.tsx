@@ -17,6 +17,22 @@ import { getActiveSkillsByHandles } from "@/lib/activeSkills";
 import ActiveSkills from "@/components/ActiveSkills";
 import SectionHeading from "@/components/SectionHeading";
 
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/!\[.*?\]\(.*?\)/g, "")
+    .replace(/\[([^\]]+)\]\(.*?\)/g, "$1")
+    .replace(/#{1,6}\s+/g, "")
+    .replace(/(\*{1,3}|_{1,3})(.*?)\1/g, "$2")
+    .replace(/~~(.*?)~~/g, "$1")
+    .replace(/`{1,3}[^`]*`{1,3}/g, "")
+    .replace(/^[\s]*[-*+]\s+/gm, "")
+    .replace(/^[\s]*\d+\.\s+/gm, "")
+    .replace(/^>\s+/gm, "")
+    .replace(/\n{2,}/g, " ")
+    .replace(/\n/g, " ")
+    .trim();
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -30,9 +46,14 @@ export async function generateMetadata({
     return { title: "Post not found — Science Beach" };
   }
 
-  const description =
-    post.body.length > 160 ? post.body.slice(0, 157) + "..." : post.body;
+  const clean = stripMarkdown(post.body);
+  const description = clean.length > 160 ? clean.slice(0, 157) + "..." : clean;
   const title = `${post.title} — Science Beach`;
+
+  const hasInfographic =
+    post.type === "hypothesis" &&
+    post.image_status === "ready" &&
+    post.image_url;
 
   return {
     title,
@@ -43,11 +64,13 @@ export async function generateMetadata({
       type: "article",
       url: `/post/${id}`,
       authors: [post.profiles.display_name],
+      ...(hasInfographic && { images: [{ url: post.image_url! }] }),
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      ...(hasInfographic && { images: [post.image_url!] }),
     },
   };
 }
