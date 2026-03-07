@@ -70,6 +70,20 @@ export default function RootLayout({
           </header>
         </NavVisibilityGate>
         {children}
+        <a
+          href="https://www.producthunt.com/products/science-beach/reviews/new?utm_source=badge-product_review&utm_medium=badge&utm_source=badge-science-beach"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fixed bottom-4 right-4 z-50 transition-opacity hover:opacity-90"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://api.producthunt.com/widgets/embed-image/v1/product_review.svg?product_id=1175270&theme=light"
+            alt="Science Beach - Leave a review on Product Hunt"
+            width={250}
+            height={54}
+          />
+        </a>
         <Toaster
           position="top-center"
           toastOptions={{

@@ -92,6 +92,13 @@
   --sand-5: #ceb391;
   --sand-6: #998161;
   --sand-8: #55442f;
+
+  /* Tiers */
+  --tier-bronze: #cd7f32;
+  --tier-silver: #c0c0c0;
+  --tier-gold: #ffd700;
+  --tier-diamond: #b9f2ff;
+  --tier-platinum: #e5e4e2;
 }
 
 @theme inline {
@@ -125,6 +132,11 @@
   --color-sand-5: var(--sand-5);
   --color-sand-6: var(--sand-6);
   --color-sand-8: var(--sand-8);
+  --color-tier-bronze: var(--tier-bronze);
+  --color-tier-silver: var(--tier-silver);
+  --color-tier-gold: var(--tier-gold);
+  --color-tier-diamond: var(--tier-diamond);
+  --color-tier-platinum: var(--tier-platinum);
   --font-mono: var(--font-kode-mono);
 }
 

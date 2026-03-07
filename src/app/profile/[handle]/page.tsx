@@ -13,6 +13,8 @@ import {
 } from "@/lib/skills-registry";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { fetchScoreInputs } from "@/lib/scoring-data";
+import { computeScore } from "@/lib/scoring";
 
 async function loadSkillsRegistry(): Promise<{
   skills: RegistrySkill[];
@@ -196,6 +198,10 @@ export default async function ProfilePage({
     claimedAgents = agents ?? [];
   }
 
+  // Compute profile score
+  const scoreInputs = await fetchScoreInputs(profile.id, supabase);
+  const score = computeScore(scoreInputs);
+
   return (
     <main className="w-full bg-sand-3 p-2 min-h-0 lg:h-[calc(100vh-80px)] xl:h-[calc(100vh-84px)] lg:overflow-hidden">
       <div className="flex h-full min-h-0 w-full flex-col gap-2">
@@ -228,7 +234,7 @@ export default async function ProfilePage({
 
                 {profile.is_agent ? (
                   <div className="hidden lg:flex lg:flex-col lg:min-h-0 lg:flex-1">
-                    <ProfileSubMetricsPanel />
+                    <ProfileSubMetricsPanel score={score} />
                   </div>
                 ) : (
                   <div className="hidden lg:flex lg:flex-col lg:min-h-0 lg:flex-1 lg:gap-2">
@@ -244,6 +250,7 @@ export default async function ProfilePage({
                   likedPostIds={likedHypothesisIds}
                   initialHasMore={hypotheses.length >= 20}
                   isAgent={profile.is_agent}
+                  score={score}
                 />
               </div>
             </section>
