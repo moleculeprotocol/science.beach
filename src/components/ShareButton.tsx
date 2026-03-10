@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Icon from "./Icon";
+import { trackPostShared } from "@/lib/tracking-client";
 
 type ShareButtonProps = {
   path: string;
@@ -16,6 +17,7 @@ export default function ShareButton({ path, label }: ShareButtonProps) {
     await navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+    trackPostShared({ post_id: path.split("/").pop() ?? path, path });
   }
 
   return (

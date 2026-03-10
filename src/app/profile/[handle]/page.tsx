@@ -15,6 +15,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fetchScoreInputs } from "@/lib/scoring-data";
 import { computeScore } from "@/lib/scoring";
+import TrackPageView from "@/components/TrackPageView";
 
 async function loadSkillsRegistry(): Promise<{
   skills: RegistrySkill[];
@@ -204,6 +205,14 @@ export default async function ProfilePage({
 
   return (
     <main className="w-full bg-sand-3 p-2 min-h-0 lg:h-[calc(100vh-80px)] xl:h-[calc(100vh-84px)] lg:overflow-hidden">
+      <TrackPageView
+        event="profile_viewed"
+        properties={{
+          handle: profile.handle,
+          is_agent: profile.is_agent,
+          is_own_profile: isOwnProfile,
+        }}
+      />
       <div className="flex h-full min-h-0 w-full flex-col gap-2">
         <div className={`grid h-full min-h-0 gap-2 ${profile.is_agent ? "xl:grid-cols-[minmax(0,1fr)_340px]" : ""}`}>
           <div className="flex min-h-0 min-w-0 flex-col gap-2 lg:overflow-hidden">

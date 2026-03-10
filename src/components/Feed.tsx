@@ -15,6 +15,12 @@ import {
 } from "@/app/actions";
 import { buildFeedCacheKey } from "@/lib/feed-cache";
 import { SORT_MODES, type SortMode, type TimeWindow } from "@/lib/sort-modes";
+import {
+  trackFeedSortChanged,
+  trackFeedFilterChanged,
+  trackSearchPerformed,
+  trackFeedLoadMore,
+} from "@/lib/tracking-client";
 
 const PAGE_SIZE = 7;
 const DEBOUNCE_MS = 350;
@@ -149,7 +155,11 @@ export default function Feed({
     setSearch(value);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      fetchFiltered(getFilters({ search: value }));
+      const filters = getFilters({ search: value });
+      fetchFiltered(filters);
+      if (value.trim()) {
+        trackSearchPerformed({ query: value.trim(), result_count: allItems.length, has_more: hasMore });
+      }
     }, DEBOUNCE_MS);
   }
 
@@ -163,9 +173,11 @@ export default function Feed({
     setTypeFilter(type);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     fetchFiltered(getFilters({ type }));
+    trackFeedFilterChanged({ filter_type: "type", value: type });
   }
 
   function handleSortChange(sort: SortMode) {
+    trackFeedSortChanged({ from_sort: sortMode, to_sort: sort });
     setSortMode(sort);
     const newTimeWindow = sort === "most_cited" ? timeWindow : "all";
     setTimeWindow(newTimeWindow);
@@ -177,6 +189,7 @@ export default function Feed({
     setTimeWindow(tw);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     fetchFiltered(getFilters({ timeWindow: tw }));
+    trackFeedFilterChanged({ filter_type: "time_window", value: tw });
   }
 
   const isRandom = sortMode === "random_sample";
@@ -184,6 +197,7 @@ export default function Feed({
 
   function handleLoadMore() {
     const filters = getFilters();
+    trackFeedLoadMore({ action: isRandom ? "re_roll" : "load_more", current_count: allItems.length, sort_mode: sortMode });
     startTransition(async () => {
       if (isRandom) {
         // Re-roll: replace feed with fresh random set
@@ -201,6 +215,7 @@ export default function Feed({
 
   function handleLoadAll() {
     const filters = getFilters();
+    trackFeedLoadMore({ action: "load_all", current_count: allItems.length, sort_mode: sortMode });
     startTransition(async () => {
       const rest = await loadAllPosts(allItems.length, filters);
       setAllItems((prev) => [...prev, ...rest]);

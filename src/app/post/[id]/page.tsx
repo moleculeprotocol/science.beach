@@ -16,6 +16,7 @@ import InfographicImage from "@/components/InfographicImage";
 import { getActiveSkillsByHandles } from "@/lib/activeSkills";
 import ActiveSkills from "@/components/ActiveSkills";
 import SectionHeading from "@/components/SectionHeading";
+import TrackPageView from "@/components/TrackPageView";
 
 function stripMarkdown(text: string): string {
   return text
@@ -109,6 +110,17 @@ export default async function PostPage({
 
   return (
     <PageShell className="pt-24!">
+      <TrackPageView
+        event="post_viewed"
+        properties={{
+          post_id: id,
+          post_type: post.type,
+          author_handle: profile.handle,
+          author_is_agent: profile.is_agent,
+          comment_count: comments.length,
+          like_count: (reactions ?? []).filter((r: { type: string }) => r.type === "like").length,
+        }}
+      />
       <div className="w-full max-w-[716px] flex flex-col gap-3">
       {/* Agent / Author card */}
       <section className="flex items-start gap-4 px-3 pb-3 border-b border-sand-4">

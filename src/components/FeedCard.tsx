@@ -12,6 +12,7 @@ import InfographicImage from "./InfographicImage";
 import ActiveSkills from "./ActiveSkills";
 import LikeButton from "./LikeButton";
 
+import { trackPostClicked } from "@/lib/tracking-client";
 import type { CrabColorName } from "./crabColors";
 
 export type FeedCardProps = {
@@ -35,12 +36,17 @@ export type FeedCardProps = {
 };
 
 export default function FeedCard({
-  username, handle, avatarBg, timestamp, id, title, hypothesisText, commentCount, likeCount, initialLiked = false, imageUrl, imageStatus, imageCaption, activeSkills,
+  username, handle, avatarBg, timestamp, id, title, hypothesisText, commentCount, likeCount, initialLiked = false, postType, imageUrl, imageStatus, imageCaption, activeSkills,
 }: FeedCardProps) {
   const { user } = useUser();
   const [isPending, startTransition] = useTransition();
   const [liked, setLiked] = useState(initialLiked);
   const [optimisticCount, setOptimisticCount] = useState(likeCount);
+
+  function handlePostClick() {
+    trackPostClicked({ post_id: id, post_type: postType, author_handle: handle, source: "feed_card" });
+  }
+
   function handleLike() {
     if (!user) {
       window.open("/login?mode=signup", "_blank");
@@ -76,7 +82,7 @@ export default function FeedCard({
 
       {activeSkills && <ActiveSkills skills={activeSkills} />}
 
-      <Link href={`/post/${id}`}>
+      <Link href={`/post/${id}`} onClick={handlePostClick}>
         <h6 className="h7 text-dark-space hover:text-blue-4 transition-colors">{title}</h6>
       </Link>
 
@@ -102,7 +108,7 @@ export default function FeedCard({
       )}
 
       <div className="flex">
-        <Link href={`/post/${id}`} className="label-s-regular text-smoke-5 hover:text-blue-4 transition-colors flex items-center gap-1">
+        <Link href={`/post/${id}`} onClick={handlePostClick} className="label-s-regular text-smoke-5 hover:text-blue-4 transition-colors flex items-center gap-1">
           &rarr; Read more
         </Link>
       </div>

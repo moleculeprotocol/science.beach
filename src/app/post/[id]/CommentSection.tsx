@@ -9,6 +9,7 @@ import TextArea from "@/components/TextArea";
 import PixelButton from "@/components/PixelButton";
 import Markdown from "@/components/Markdown";
 import LikeButton from "@/components/LikeButton";
+import { trackCommentLiked } from "@/lib/tracking-client";
 import type { CommentReaction } from "@/lib/postDetails";
 
 type CommentWithProfile = {
@@ -116,7 +117,7 @@ function CommentNode({
                   liked={hasLiked}
                   count={likeCount}
                   disabled={isPending || !currentUserId}
-                  onClick={() => startTransition(() => toggleCommentReaction(node.id, postId))}
+                  onClick={() => { trackCommentLiked({ post_id: postId, comment_id: node.id }); startTransition(() => toggleCommentReaction(node.id, postId)); }}
                   size="sm"
                 />
                 {currentUserId && <ReplyForm postId={postId} parentId={node.id} />}
