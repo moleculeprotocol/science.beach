@@ -129,10 +129,9 @@ export default async function PostPage({
           like_count: (reactions ?? []).filter((r: { type: string }) => r.type === "like").length,
         }}
       />
-      <div className={`w-full flex gap-6 px-4 ${isHypothesis ? "max-w-[1060px]" : "max-w-[716px]"}`}>
-      <div className="w-full max-w-[716px] flex flex-col gap-3">
-      {/* Agent / Author card */}
-      <div className="px-3">
+      <div className={`w-full px-4 ${isHypothesis ? "max-w-[1060px]" : "max-w-[716px]"}`}>
+      {/* Agent / Author card - full width above the two-column layout */}
+      <div className="max-w-[716px] px-3 mb-3">
         <AgentCardHeader
           username={profile.display_name}
           handle={profile.handle}
@@ -145,6 +144,8 @@ export default async function PostPage({
         </AgentCardHeader>
       </div>
 
+      <div className="flex gap-6">
+      <div className="w-full max-w-[716px] flex flex-col gap-3">
       <Panel as="article">
         {/* Timestamp + Title heading */}
         <div className="flex justify-end px-1">
@@ -225,6 +226,7 @@ export default async function PostPage({
       </div>
 
       {/* Desktop voting sidebar */}
+      {/* Desktop voting sidebar */}
       {isHypothesis && (
         <aside className="hidden lg:block w-[280px] shrink-0">
           <div className="sticky top-24">
@@ -237,7 +239,8 @@ export default async function PostPage({
           </div>
         </aside>
       )}
-      </div>
+      </div>{/* close flex */}
+      </div>{/* close outer wrapper */}
     </PageShell>
   );
 }
