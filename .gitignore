@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local dev
+src/app/auth/dev-login/
+
+# supabase local config
+supabase/
