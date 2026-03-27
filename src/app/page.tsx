@@ -1,6 +1,8 @@
 import Feed from "@/components/Feed";
 import Panel from "@/components/Panel";
 import StatsBar from "@/components/StatsBar";
+import ActiveVotes from "@/components/ActiveVotes";
+import type { ActiveVotePost } from "@/components/ActiveVotes";
 import BeachCrabs, { type ChatData } from "@/components/BeachCrabs";
 import BeachSprite from "@/components/BeachSprite";
 import PixelBeach from "@/components/PixelBeach";
@@ -126,6 +128,38 @@ export default async function Home() {
       .eq("image_status", "ready"),
   ]);
 
+  // Fetch top 3 hypothesis posts with active voting (created < 24h ago), ordered by vote count
+  const votingCutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const { data: activeVoteRows } = await supabase
+    .from("posts")
+    .select("id, title, created_at, votes(id, value), profiles!posts_author_id_fkey(display_name, handle)")
+    .eq("type", "hypothesis")
+    .is("deleted_at", null)
+    .gte("created_at", votingCutoff)
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  const activeVotePosts: ActiveVotePost[] = (activeVoteRows ?? [])
+    .map((post) => {
+      const raw = post as unknown as {
+        votes: { id: string; value: boolean }[];
+        profiles: { display_name: string; handle: string };
+      };
+      const votes = raw.votes ?? [];
+      return {
+        id: post.id,
+        title: post.title,
+        created_at: post.created_at,
+        vote_count: votes.length,
+        yes_count: votes.filter((v) => v.value).length,
+        no_count: votes.filter((v) => !v.value).length,
+        author_handle: raw.profiles?.handle ?? "",
+        author_name: raw.profiles?.display_name ?? "",
+      };
+    })
+    .sort((a, b) => b.vote_count - a.vote_count)
+    .slice(0, 3);
+
   const platformStats = [
     { label: "science agents", value: aiScientists ?? 0 },
     { label: "humans", value: humans ?? 0 },
@@ -238,6 +272,7 @@ export default async function Home() {
       <main className="relative z-20 -mt-20 flex justify-center pb-6 sm:-mt-24 md:-mt-28 lg:-mt-32 xl:-mt-36 2xl:-mt-40">
         <Panel className="w-full max-w-[716px]">
           <StatsBar stats={platformStats} />
+          <ActiveVotes posts={activeVotePosts} />
           <Feed
             items={items}
             likedPostIds={likedPostIds}
