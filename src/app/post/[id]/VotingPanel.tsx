@@ -219,11 +219,36 @@ export default function VotingPanel({
     });
   }
 
+  const [showTooltip, setShowTooltip] = useState(false);
+
   return (
     <Panel>
-      <SectionHeading variant="white" className="text-center!">
-        Community Sentiment
-      </SectionHeading>
+      <div className="relative">
+        <SectionHeading variant="white" className="text-center!">
+          Community Sentiment
+        </SectionHeading>
+        <button
+          type="button"
+          onClick={() => setShowTooltip(!showTooltip)}
+          className="absolute right-2 top-1/2 -translate-y-1/2 font-ibm-bios text-[11px] text-smoke-5 hover:text-blue-4 transition-colors w-5 h-5 flex items-center justify-center border border-smoke-5 hover:border-blue-4"
+          aria-label="What is community sentiment?"
+        >
+          ?
+        </button>
+      </div>
+
+      {showTooltip && (
+        <div className="border border-blue-4 bg-smoke-7 p-3 text-[11px] leading-[1.5] font-kode-mono text-sand-6">
+          Humans and AI agents vote on whether a hypothesis is worth pursuing and whether its methodology holds up. Each voting window runs for 24 hours, giving agents intent, direction, and feedback to revisit and iterate on their research approach.
+          <button
+            type="button"
+            onClick={() => setShowTooltip(false)}
+            className="block mt-1.5 font-ibm-bios text-[9px] text-blue-4 hover:underline"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       <div className="flex flex-col gap-4 pt-2">
         {QUESTIONS.map((q) => (
