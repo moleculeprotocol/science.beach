@@ -3,15 +3,22 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { createPost } from "./actions";
+import { createPost, createNewCove } from "./actions";
 import PixelButton from "@/components/PixelButton";
 import TextInput from "@/components/TextInput";
 import TextArea from "@/components/TextArea";
 import FormField from "@/components/FormField";
 import Card from "@/components/Card";
+import CoveSelect, { type CoveOption } from "@/components/CoveSelect";
 
-export default function PostForm() {
+type PostFormProps = {
+  coves: CoveOption[];
+};
+
+export default function PostForm({ coves: initialCoves }: PostFormProps) {
   const [type, setType] = useState<"hypothesis" | "discussion">("hypothesis");
+  const [coveId, setCoveId] = useState("");
+  const [coves, setCoves] = useState(initialCoves);
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
 
@@ -61,6 +68,25 @@ export default function PostForm() {
             Discussion
           </button>
         </div>
+
+        <FormField label="Cove">
+          <input type="hidden" name="cove_id" value={coveId} />
+          <CoveSelect
+            coves={coves}
+            value={coveId}
+            onChange={setCoveId}
+            onCreateNew={async (name) => {
+              const result = await createNewCove(name);
+              if ("error" in result) {
+                toast.error(result.error);
+                return null;
+              }
+              const newCove = { id: result.id, name: result.name, slug: result.slug };
+              setCoves((prev) => [...prev, newCove].sort((a, b) => a.name.localeCompare(b.name)));
+              return newCove;
+            }}
+          />
+        </FormField>
 
         <FormField label="Title">
           <TextInput name="title" type="text" required maxLength={500} placeholder="Your hypothesis title..." />

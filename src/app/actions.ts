@@ -29,6 +29,7 @@ async function queryFeed(
     type_filter: filters?.type === "all" ? undefined : (filters?.type ?? undefined),
     page_offset: rangeStart,
     page_limit: limit,
+    cove_filter: filters?.cove || undefined,
   });
 
   if (error) {

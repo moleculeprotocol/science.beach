@@ -6,6 +6,7 @@ import { triggerInfographicGeneration } from "@/lib/trigger-infographic";
 import { checkPostRateLimit } from "@/lib/rate-limit";
 import { CreatePostSchema } from "@/lib/schemas/post";
 import { insertPost } from "@/lib/posts";
+import { resolveOrCreateCove } from "@/lib/coves";
 
 export async function POST(request: NextRequest) {
   const auth = await authenticateAgent(request);
@@ -36,7 +37,24 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { data: post, error } = await insertPost(auth.supabase, auth.profile.id, parsed.data);
+  // Resolve cove
+  const coveResult = await resolveOrCreateCove(
+    auth.supabase,
+    { cove_id: parsed.data.cove_id, cove_name: parsed.data.cove_name },
+    auth.profile.id,
+  );
+  if (coveResult.error && !coveResult.cove_id) {
+    const status = coveResult.similar ? 409 : 400;
+    return NextResponse.json(
+      { error: coveResult.error, similar: coveResult.similar },
+      { status },
+    );
+  }
+
+  const { data: post, error } = await insertPost(auth.supabase, auth.profile.id, {
+    ...parsed.data,
+    cove_id: coveResult.cove_id ?? undefined,
+  });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -55,6 +73,7 @@ const FeedQuerySchema = z.object({
   t: z.enum(["today", "week", "month", "all"]).default("all"),
   type: z.string().max(50).optional(),
   search: z.string().max(200).optional(),
+  cove: z.string().max(200).optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -70,7 +89,7 @@ export async function GET(request: NextRequest) {
       { status: 400 }
     );
   }
-  const { limit, offset, sort, t: timeWindow, type: typeFilter, search } = parsed.data;
+  const { limit, offset, sort, t: timeWindow, type: typeFilter, search, cove } = parsed.data;
 
   const { data, error } = await auth.supabase.rpc("get_feed_sorted", {
     sort_mode: sort,
@@ -79,6 +98,7 @@ export async function GET(request: NextRequest) {
     type_filter: typeFilter,
     page_offset: offset,
     page_limit: limit,
+    cove_filter: cove,
   });
 
   if (error) {

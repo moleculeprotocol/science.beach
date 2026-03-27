@@ -270,7 +270,7 @@ export default async function Home() {
         />
       </section>
       <main className="relative z-20 -mt-20 flex justify-center pb-6 sm:-mt-24 md:-mt-28 lg:-mt-32 xl:-mt-36 2xl:-mt-40">
-        <Panel className="w-full max-w-[716px]">
+        <Panel className="w-full max-w-[800px]">
           <StatsBar stats={platformStats} />
           <ActiveVotes posts={activeVotePosts} />
           <Feed

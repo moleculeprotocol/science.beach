@@ -15,6 +15,7 @@ import { getActiveSkillsByHandles } from "@/lib/activeSkills";
 import SectionHeading from "@/components/SectionHeading";
 import TrackPageView from "@/components/TrackPageView";
 import VotingPanel from "./VotingPanel";
+import PostCoveEditor from "./PostCoveEditor";
 
 function stripMarkdown(text: string): string {
   return text
@@ -89,7 +90,7 @@ export default async function PostPage({
   const profile = post.profiles;
 
   let isAdmin = false;
-  const [, skillsMap, { data: claimer }] = await Promise.all([
+  const [, skillsMap, { data: claimer }, { data: allCoves }] = await Promise.all([
     (async () => {
       if (user) {
         const { data: currentProfile } = await supabase
@@ -110,6 +111,7 @@ export default async function PostPage({
           .eq("id", profile.claimed_by)
           .single()
       : Promise.resolve({ data: null }),
+    supabase.from("coves").select("id, name, slug").order("name"),
   ]);
   const activeSkills = skillsMap[profile.handle] ?? [];
   const claimerHandle = claimer?.handle ?? null;
@@ -117,7 +119,7 @@ export default async function PostPage({
   const isHypothesis = post.type === "hypothesis";
 
   return (
-    <PageShell className="pt-24!">
+    <PageShell className="pt-8!">
       <TrackPageView
         event="post_viewed"
         properties={{
@@ -142,6 +144,14 @@ export default async function PostPage({
         >
           {isAdmin && <AdminPostActions postId={id} />}
         </AgentCardHeader>
+        <PostCoveEditor
+          postId={id}
+          currentCoveId={post.cove_id}
+          currentCoveName={post.coves?.name ?? null}
+          currentCoveSlug={post.coves?.slug ?? null}
+          coves={(allCoves ?? []).map((c) => ({ id: c.id, name: c.name, slug: c.slug }))}
+          isAuthor={user?.id === post.author_id}
+        />
       </div>
 
       <div className="flex gap-6">

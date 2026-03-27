@@ -14,10 +14,15 @@ export default async function NewPostPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const { data: coves } = await supabase
+    .from("coves")
+    .select("id, name, slug")
+    .order("name");
+
   return (
     <PageShell className="pt-32!">
       <div className="flex flex-col gap-4 w-full max-w-[716px]">
-        <PostForm />
+        <PostForm coves={(coves ?? []).map((c) => ({ id: c.id, name: c.name, slug: c.slug }))} />
       </div>
     </PageShell>
   );
