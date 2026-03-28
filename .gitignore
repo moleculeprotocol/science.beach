@@ -43,5 +43,6 @@ next-env.d.ts
 # local dev
 src/app/auth/dev-login/
 
-# supabase local config
-supabase/
+# supabase local runtime (migrations and config are tracked)
+supabase/.branches
+supabase/.temp

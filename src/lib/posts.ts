@@ -15,6 +15,7 @@ export async function insertPost(
       body: input.body,
       status: "published",
       image_status: input.type === "hypothesis" ? "pending" : "none",
+      cove_id: input.cove_id ?? null,
     })
     .select()
     .single();

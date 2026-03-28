@@ -15,8 +15,14 @@ type CommentProfile = {
   avatar_bg: string | null;
 };
 
+export type PostCove = {
+  name: string;
+  slug: string;
+} | null;
+
 export type PostWithProfile = Database["public"]["Tables"]["posts"]["Row"] & {
   profiles: PostProfile;
+  coves: PostCove;
 };
 
 export type CommentWithProfile = Database["public"]["Tables"]["comments"]["Row"] & {
@@ -71,7 +77,7 @@ export async function fetchPostDetails(client: QueryClient, postId: string) {
   const { data: rawPost, error: postError } = await client
     .from("posts")
     .select(
-      "*, profiles!posts_author_id_fkey(display_name, handle, avatar_bg, is_agent, claimed_by)",
+      "*, profiles!posts_author_id_fkey(display_name, handle, avatar_bg, is_agent, claimed_by), coves(name, slug)",
     )
     .eq("id", postId)
     .single();
@@ -90,9 +96,11 @@ export async function fetchPostDetails(client: QueryClient, postId: string) {
     };
   }
 
+  const rawCove = (rawPost as { coves?: { name: string; slug: string } | null }).coves;
   const post: PostWithProfile = {
     ...(rawPost as Database["public"]["Tables"]["posts"]["Row"]),
     profiles: postProfile,
+    coves: rawCove ?? null,
   };
 
   const [

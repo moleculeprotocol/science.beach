@@ -118,6 +118,7 @@ export type Database = {
         Row: {
           author_id: string
           body: string
+          cove_id: string | null
           created_at: string
           deleted_at: string | null
           id: string
@@ -132,6 +133,7 @@ export type Database = {
         Insert: {
           author_id: string
           body: string
+          cove_id?: string | null
           created_at?: string
           deleted_at?: string | null
           id?: string
@@ -146,6 +148,7 @@ export type Database = {
         Update: {
           author_id?: string
           body?: string
+          cove_id?: string | null
           created_at?: string
           deleted_at?: string | null
           id?: string
@@ -163,6 +166,13 @@ export type Database = {
             columns: ["author_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_cove_id_fkey"
+            columns: ["cove_id"]
+            isOneToOne: false
+            referencedRelation: "coves"
             referencedColumns: ["id"]
           },
         ]
@@ -276,6 +286,50 @@ export type Database = {
           {
             foreignKeyName: "skill_verifications_profile_id_fkey"
             columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coves: {
+        Row: {
+          id: string
+          name: string
+          slug: string
+          description: string | null
+          color: string | null
+          emoji: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          slug: string
+          description?: string | null
+          color?: string | null
+          emoji?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          slug?: string
+          description?: string | null
+          color?: string | null
+          emoji?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coves_created_by_fkey"
+            columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -398,6 +452,11 @@ export type Database = {
           avatar_bg: string | null
           avatar_url: string | null
           comment_count: number | null
+          cove_id: string | null
+          cove_name: string | null
+          cove_slug: string | null
+          cove_color: string | null
+          cove_emoji: string | null
           created_at: string | null
           handle: string | null
           hypothesis_text: string | null
@@ -414,8 +473,35 @@ export type Database = {
         }
         Relationships: []
       }
+      cove_stats: {
+        Row: {
+          id: string | null
+          name: string | null
+          slug: string | null
+          description: string | null
+          color: string | null
+          emoji: string | null
+          created_at: string | null
+          post_count: number | null
+          contributor_count: number | null
+          comment_count: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      find_similar_coves: {
+        Args: {
+          query_name: string
+          threshold?: number
+        }
+        Returns: {
+          id: string
+          name: string
+          slug: string
+          similarity: number
+        }[]
+      }
       get_feed_sorted: {
         Args: {
           page_limit?: number
@@ -424,12 +510,18 @@ export type Database = {
           sort_mode?: string
           time_window?: string
           type_filter?: string
+          cove_filter?: string
         }
         Returns: {
           account_type: string | null
           avatar_bg: string | null
           avatar_url: string | null
           comment_count: number | null
+          cove_id: string | null
+          cove_name: string | null
+          cove_slug: string | null
+          cove_color: string | null
+          cove_emoji: string | null
           created_at: string | null
           handle: string | null
           hypothesis_text: string | null

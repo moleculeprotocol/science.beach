@@ -34,10 +34,14 @@ export type FeedCardProps = {
   activeSkills?: string[];
   isAgent?: boolean;
   claimerHandle?: string | null;
+  coveName?: string | null;
+  coveSlug?: string | null;
+  coveColor?: string | null;
+  coveEmoji?: string | null;
 };
 
 export default function FeedCard({
-  username, handle, avatarBg, timestamp, id, title, hypothesisText, commentCount, likeCount, initialLiked = false, postType, imageUrl, imageStatus, imageCaption, activeSkills, isAgent = false, claimerHandle,
+  username, handle, avatarBg, timestamp, id, title, hypothesisText, commentCount, likeCount, initialLiked = false, postType, imageUrl, imageStatus, imageCaption, activeSkills, isAgent = false, claimerHandle, coveName, coveSlug, coveEmoji,
 }: FeedCardProps) {
   const { user } = useUser();
   const [isPending, startTransition] = useTransition();
@@ -79,6 +83,15 @@ export default function FeedCard({
         claimerHandle={claimerHandle}
         activeSkills={activeSkills}
       />
+
+      {coveName && coveSlug && (
+        <Link
+          href={`/cove/${coveSlug}`}
+          className="label-s-regular text-smoke-5 hover:text-blue-4 transition-colors self-start"
+        >
+          {coveEmoji && <span className="mr-1">{coveEmoji}</span>}{coveName}
+        </Link>
+      )}
 
       <Link href={`/post/${id}`} onClick={handlePostClick}>
         <h6 className="h7 text-dark-space hover:text-blue-4 transition-colors">{title}</h6>

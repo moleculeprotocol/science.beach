@@ -34,6 +34,7 @@ type FeedProps = {
   hideFilters?: boolean;
   showTypeHeading?: boolean;
   className?: string;
+  coveSlug?: string;
 };
 
 export default function Feed({
@@ -45,6 +46,7 @@ export default function Feed({
   hideFilters = false,
   showTypeHeading = false,
   className = "",
+  coveSlug,
 }: FeedProps) {
   const [allItems, setAllItems] = useState(items);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -70,6 +72,7 @@ export default function Feed({
       timeWindow: "all",
       type: "all",
       search: "",
+      cove: coveSlug,
     });
     pageCacheRef.current.set(defaultKey, { items, hasMore: initialHasMore });
     if (preloadedPages) {
@@ -85,8 +88,9 @@ export default function Feed({
       type: overrides?.type ?? typeFilter,
       sort: overrides?.sort ?? sortMode,
       timeWindow: overrides?.timeWindow ?? timeWindow,
+      cove: coveSlug,
     }),
-    [search, typeFilter, sortMode, timeWindow],
+    [search, typeFilter, sortMode, timeWindow, coveSlug],
   );
 
   const isNonDefaultState = useCallback(
@@ -111,6 +115,7 @@ export default function Feed({
             timeWindow: "all",
             type: "all",
             search: "",
+            cove: coveSlug,
           });
           const cached = pageCacheRef.current.get(defaultKey);
           setAllItems(cached?.items ?? items);
@@ -240,7 +245,7 @@ export default function Feed({
     ? { className: `flex flex-col gap-3 ${className}` }
     : {
         as: "section" as const,
-        className: `w-full max-w-[716px] ${className}`,
+        className: `w-full max-w-[800px] ${className}`,
       };
 
   return (

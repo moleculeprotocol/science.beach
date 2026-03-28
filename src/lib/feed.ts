@@ -23,6 +23,10 @@ export function mapFeedRowsToCards(rows: FeedRow[] | null | undefined): FeedCard
     imageUrl: row.image_url ?? null,
     imageStatus: row.image_status ?? "none",
     imageCaption: row.image_caption ?? null,
+    coveName: row.cove_name ?? null,
+    coveSlug: row.cove_slug ?? null,
+    coveColor: row.cove_color ?? null,
+    coveEmoji: row.cove_emoji ?? null,
   }));
 }
 

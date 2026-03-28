@@ -23,7 +23,7 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
   }
 
   return (
-    <nav className={`relative flex min-h-[72px] w-full items-center justify-between overflow-visible border-r-2 border-blue-5 bg-[#1271CB] px-3 py-2.5 sm:border-b-2 sm:bg-blue-4 xl:min-h-[76px] xl:px-4 ${width === "feed" ? "sm:max-w-[716px]" : ""}`}>
+    <nav className={`relative flex min-h-[72px] w-full items-center justify-between overflow-visible border-r-2 border-blue-5 bg-[#1271CB] px-3 py-2.5 sm:border-b-2 sm:bg-blue-4 xl:min-h-[76px] xl:px-4 ${width === "feed" ? "sm:max-w-[800px]" : ""}`}>
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <Link href="/">
           <Image
@@ -39,6 +39,9 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
           <span className="text-shadow-nav-logo text-[20px] xl:text-[22px] font-bold leading-[1.4] text-light-space">
             Science Beach
           </span>
+        </Link>
+        <Link href="/coves" className="label-s-bold text-sand-1 hover:text-sand-2 px-2 py-1 border border-blue-5 hover:border-sand-1 transition-colors">
+          Coves
         </Link>
       </div>
 

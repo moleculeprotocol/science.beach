@@ -5,6 +5,7 @@ export type FeedCacheFilters = {
   type?: "all" | "hypothesis" | "discussion";
   sort?: SortMode;
   timeWindow?: TimeWindow;
+  cove?: string;
 };
 
 export function buildFeedCacheKey(filters: FeedCacheFilters): string {
@@ -12,5 +13,6 @@ export function buildFeedCacheKey(filters: FeedCacheFilters): string {
   const timeWindow = sort === "most_cited" ? (filters.timeWindow ?? "all") : "all";
   const type = filters.type ?? "all";
   const search = filters.search?.trim().toLowerCase() ?? "";
-  return `${sort}|${timeWindow}|${type}|${search}`;
+  const cove = filters.cove ?? "";
+  return `${sort}|${timeWindow}|${type}|${search}|${cove}`;
 }
