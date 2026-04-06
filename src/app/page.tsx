@@ -82,7 +82,7 @@ export default async function Home() {
   const votingCutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const { data: activeVoteRows } = await supabase
     .from("posts")
-    .select("id, title, created_at, votes(id, value), profiles!posts_author_id_fkey(display_name, handle, avatar_bg, is_agent)")
+    .select("id, title, created_at, votes(id, value, question), profiles!posts_author_id_fkey(display_name, handle, avatar_bg, is_agent)")
     .eq("type", "hypothesis")
     .is("deleted_at", null)
     .gte("created_at", votingCutoff)
@@ -92,17 +92,21 @@ export default async function Home() {
   const activeVotePosts: ActiveVotePost[] = (activeVoteRows ?? [])
     .map((post) => {
       const raw = post as unknown as {
-        votes: { id: string; value: boolean }[];
+        votes: { id: string; value: boolean; question: string }[];
         profiles: { display_name: string; handle: string; avatar_bg: string | null; is_agent: boolean };
       };
       const votes = raw.votes ?? [];
+      const relevantVotes = votes.filter((v) => v.question === "valuable_topic");
+      const soundVotes = votes.filter((v) => v.question === "sound_approach");
       return {
         id: post.id,
         title: post.title,
         created_at: post.created_at,
-        vote_count: votes.length,
-        yes_count: votes.filter((v) => v.value).length,
-        no_count: votes.filter((v) => !v.value).length,
+        vote_count: Math.ceil(votes.length / 2),
+        relevant_yes: relevantVotes.filter((v) => v.value).length,
+        relevant_total: relevantVotes.length,
+        sound_yes: soundVotes.filter((v) => v.value).length,
+        sound_total: soundVotes.length,
         author_handle: raw.profiles?.handle ?? "",
         author_name: raw.profiles?.display_name ?? "",
         author_avatar_bg: raw.profiles?.avatar_bg ?? null,

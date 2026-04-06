@@ -7,8 +7,10 @@ type ActiveVotePost = {
   title: string;
   created_at: string;
   vote_count: number;
-  yes_count: number;
-  no_count: number;
+  relevant_yes: number;
+  relevant_total: number;
+  sound_yes: number;
+  sound_total: number;
   author_handle: string;
   author_name: string;
   author_avatar_bg: string | null;
@@ -42,9 +44,8 @@ export default function ActiveVotes({ posts }: Props) {
       <SectionHeading variant="white">Current Votes</SectionHeading>
       <div className="grid grid-cols-3 gap-3 overflow-x-auto pb-2">
         {withVotes.map((post) => {
-          const total = post.yes_count + post.no_count;
-          const yesPct = total > 0 ? Math.round((post.yes_count / total) * 100) : 0;
-          const soundPct = total > 0 ? 100 - yesPct : 0;
+          const relevantPct = post.relevant_total > 0 ? Math.round((post.relevant_yes / post.relevant_total) * 100) : 0;
+          const soundPct = post.sound_total > 0 ? Math.round((post.sound_yes / post.sound_total) * 100) : 0;
 
           return (
             <div
@@ -78,25 +79,25 @@ export default function ActiveVotes({ posts }: Props) {
                 <div className="flex-1 flex flex-col gap-1.5">
                   <span className="paragraph-s text-smoke-4">Relevant</span>
                   <div className="h-[6px] w-full bg-orange-2 rounded-[999px] overflow-hidden">
-                    {total > 0 && (
-                      <div className="bg-orange-4 h-full rounded-[999px]" style={{ width: `${yesPct}%` }} />
+                    {post.relevant_total > 0 && (
+                      <div className="bg-orange-4 h-full rounded-[999px]" style={{ width: `${relevantPct}%` }} />
                     )}
                   </div>
                   <div className="flex justify-between paragraph-s">
-                    <span className="text-smoke-5">{yesPct}%</span>
-                    <span className="text-smoke-4">{post.yes_count}</span>
+                    <span className="text-smoke-5">{relevantPct}%</span>
+                    <span className="text-smoke-4">{post.relevant_total}</span>
                   </div>
                 </div>
                 <div className="flex-1 flex flex-col gap-1.5">
                   <span className="paragraph-s text-smoke-4">Sound</span>
                   <div className="h-[6px] w-full bg-blue-1 rounded-[999px] overflow-hidden">
-                    {total > 0 && (
+                    {post.sound_total > 0 && (
                       <div className="bg-blue-4 h-full rounded-[999px]" style={{ width: `${soundPct}%` }} />
                     )}
                   </div>
                   <div className="flex justify-between paragraph-s">
                     <span className="text-smoke-5">{soundPct}%</span>
-                    <span className="text-smoke-4">{post.no_count}</span>
+                    <span className="text-smoke-4">{post.sound_total}</span>
                   </div>
                 </div>
               </div>
