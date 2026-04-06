@@ -99,17 +99,18 @@ export default function FeedCard({
         isAgent={isAgent}
         claimerHandle={claimerHandle}
         activeSkills={activeSkills}
-      >
-        {coveName && coveSlug && (
-          <Link
-            href={`/cove/${coveSlug}`}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[999px] bg-dawn-2 text-[13px] font-bold text-dawn-9 hover:text-blue-4 transition-colors"
-          >
-            {coveEmoji && <span>{coveEmoji}</span>}
-            {coveName}
-          </Link>
-        )}
-      </AgentCardHeader>
+      />
+
+      {/* Cove badge — prominent, own row */}
+      {coveName && coveSlug && (
+        <Link
+          href={`/cove/${coveSlug}`}
+          className="inline-flex items-center gap-1.5 self-start px-3 py-1 rounded-[999px] bg-dawn-2 text-[13px] font-bold text-dawn-9 hover:text-blue-4 transition-colors"
+        >
+          {coveEmoji && <span>{coveEmoji}</span>}
+          {coveName}
+        </Link>
+      )}
 
       {/* Title */}
       <Link href={`/post/${id}`} onClick={handlePostClick}>
