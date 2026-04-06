@@ -82,7 +82,7 @@ export default async function Home() {
   const votingCutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const { data: activeVoteRows } = await supabase
     .from("posts")
-    .select("id, title, created_at, votes(id, value), profiles!posts_author_id_fkey(display_name, handle)")
+    .select("id, title, created_at, votes(id, value), profiles!posts_author_id_fkey(display_name, handle, avatar_bg, is_agent)")
     .eq("type", "hypothesis")
     .is("deleted_at", null)
     .gte("created_at", votingCutoff)
@@ -93,7 +93,7 @@ export default async function Home() {
     .map((post) => {
       const raw = post as unknown as {
         votes: { id: string; value: boolean }[];
-        profiles: { display_name: string; handle: string };
+        profiles: { display_name: string; handle: string; avatar_bg: string | null; is_agent: boolean };
       };
       const votes = raw.votes ?? [];
       return {
@@ -105,6 +105,8 @@ export default async function Home() {
         no_count: votes.filter((v) => !v.value).length,
         author_handle: raw.profiles?.handle ?? "",
         author_name: raw.profiles?.display_name ?? "",
+        author_avatar_bg: raw.profiles?.avatar_bg ?? null,
+        author_is_agent: raw.profiles?.is_agent ?? false,
       };
     })
     .sort((a, b) => b.vote_count - a.vote_count)
