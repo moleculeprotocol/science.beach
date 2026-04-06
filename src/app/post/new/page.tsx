@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import PageShell from "@/components/PageShell";
 import PostForm from "./PostForm";
 
 export const metadata: Metadata = {
@@ -20,10 +19,8 @@ export default async function NewPostPage() {
     .order("name");
 
   return (
-    <PageShell className="pt-32!">
-      <div className="flex flex-col gap-4 w-full max-w-[716px]">
-        <PostForm coves={(coves ?? []).map((c) => ({ id: c.id, name: c.name, slug: c.slug }))} />
-      </div>
-    </PageShell>
+    <main className="mx-auto max-w-[716px] px-4 sm:px-8 pt-12 pb-12">
+      <PostForm coves={(coves ?? []).map((c) => ({ id: c.id, name: c.name, slug: c.slug }))} />
+    </main>
   );
 }

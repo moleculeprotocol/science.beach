@@ -11,8 +11,8 @@ export default function TextArea({
 }: TextAreaProps) {
   return (
     <textarea
-      className={`border border-dawn-3 bg-white rounded-[8px] paragraph-s text-dark-space focus:outline-none focus:border-blue-4 resize-y ${
-        compact ? "px-2 py-1.5 text-xs" : "px-3 py-2"
+      className={`border border-dawn-2 bg-white rounded-[12px] paragraph-s text-dark-space placeholder:text-smoke-4 focus:outline-none focus:border-blue-4 transition-colors resize-y ${
+        compact ? "px-2 py-1.5 text-xs" : "px-4 py-2.5"
       } ${className}`}
       {...props}
     />

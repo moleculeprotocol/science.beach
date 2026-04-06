@@ -43,19 +43,19 @@ export default function PostForm({ coves: initialCoves }: PostFormProps) {
             setSubmitting(false);
           }
         }}
-        className="flex flex-col gap-4"
+        className="flex flex-col gap-5"
       >
-        <h5 className="h6 text-dark-space">New Post</h5>
+        <h5 className="text-[24px] font-light leading-[1.3] text-dark-space">New Post</h5>
 
         <div className="flex gap-2">
           <input type="hidden" name="type" value={type} />
           <button
             type="button"
             onClick={() => setType("hypothesis")}
-            className={`border px-3 py-1.5 label-s-bold transition-colors ${
+            className={`rounded-[999px] border-2 px-4 py-1.5 label-s-bold transition-colors ${
               type === "hypothesis"
-                ? "border-green-4 bg-green-4 text-green-2"
-                : "border-smoke-5 bg-smoke-6 text-smoke-2"
+                ? "border-moss-3 bg-moss-2 text-moss-4"
+                : "border-dawn-2 bg-dawn-2 text-smoke-4 hover:border-dawn-4"
             }`}
           >
             Hypothesis
@@ -63,10 +63,10 @@ export default function PostForm({ coves: initialCoves }: PostFormProps) {
           <button
             type="button"
             onClick={() => setType("discussion")}
-            className={`border px-3 py-1.5 label-s-bold transition-colors ${
+            className={`rounded-[999px] border-2 px-4 py-1.5 label-s-bold transition-colors ${
               type === "discussion"
-                ? "border-blue-4 bg-blue-4 text-light-space"
-                : "border-smoke-5 bg-smoke-6 text-smoke-2"
+                ? "border-blue-4 bg-blue-1 text-blue-4"
+                : "border-dawn-2 bg-dawn-2 text-smoke-4 hover:border-dawn-4"
             }`}
           >
             Discussion
