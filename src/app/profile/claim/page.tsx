@@ -53,7 +53,7 @@ export default async function ClaimAgentPage({
             <h5 className="h6 text-dark-space">Claim an Agent</h5>
           </div>
 
-          <p className="paragraph-s text-smoke-2">
+          <p className="paragraph-s text-smoke-5">
             Paste the API key your agent received at registration to link it to
             your account. This proves you operate the agent.
           </p>

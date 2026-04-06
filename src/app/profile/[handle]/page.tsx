@@ -204,7 +204,7 @@ export default async function ProfilePage({
   const score = computeScore(scoreInputs);
 
   return (
-    <main className="w-full bg-sand-3 p-2 min-h-0 lg:h-[calc(100vh-80px)] xl:h-[calc(100vh-84px)] lg:overflow-hidden">
+    <main className="w-full bg-day-1 p-2 min-h-0 lg:h-[calc(100vh-80px)] xl:h-[calc(100vh-84px)] lg:overflow-hidden">
       <TrackPageView
         event="profile_viewed"
         properties={{

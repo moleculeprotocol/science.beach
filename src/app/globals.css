@@ -33,6 +33,31 @@
   font-display: swap;
 }
 
+/* --- Quicksand Font Faces --- */
+@font-face {
+  font-family: "Quicksand";
+  src: url("/fonts/quicksand/Quicksand-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Quicksand";
+  src: url("/fonts/quicksand/Quicksand-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Quicksand";
+  src: url("/fonts/quicksand/Quicksand-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* --- AcPlus IBM BIOS Font --- */
 @font-face {
   font-family: "AcPlus IBM BIOS";
@@ -44,56 +69,117 @@
 
 /* --- CSS Variables --- */
 :root {
-  --background: #F3DFC6;
-  --foreground: #ededed;
+  --background: #f6f3f0;
+  --foreground: #000000;
+  --font-quicksand: "Quicksand", sans-serif;
   --font-kode-mono: "Kode Mono", monospace;
   --font-ibm-bios: "AcPlus IBM BIOS", monospace;
 
   /* Energies / Yellow */
   --yellow-1: #fffae5;
   --yellow-2: #ffe987;
+  --yellow-3: #ffda33;
   --yellow-4: #ffda33;
+  --yellow-5: #cb8400;
   --yellow-6: #673f00;
 
   /* Energies / Blue */
+  --blue-1: #d5ebff;
   --blue-2: #12508b;
-  --blue-3: #136cbf;
+  --blue-3: #1271cb;
   --blue-4: #228df4;
   --blue-5: #56a0e7;
+  --blue-6: #12508b;
 
   /* Energies / Green */
   --green-2: #227613;
   --green-3: #3cbb25;
   --green-4: #67ff4c;
   --green-5: #a6ff96;
+  --green-6: #227613;
 
   /* Energies / Red */
   --red-1: #fff6f5;
-  --red-4: #ff4c6a;
+  --red-3: #ff312b;
+  --red-4: #ff0700;
   --red-5: #940900;
   --red-6: #480900;
 
   /* Energies / Orange */
   --orange-1: #240b00;
+  --orange-2: #ffe7d9;
+  --orange-3: #ff6b00;
+  --orange-4: #ff4d00;
+  --orange-5: #bc3800;
+  --orange-6: #6b2000;
+
+  /* Energies / Cyan */
+  --cyan-3: #56d4e7;
+  --cyan-4: #28e5e2;
+  --cyan-5: #12cbcb;
+  --cyan-6: #128b8b;
+
+  /* Energies / Purple */
+  --purple-1: #e9e4ff;
+  --purple-4: #724cf8;
+
+  /* Energies / Pink */
+  --pink-3: #ff5cf4;
+  --pink-4: #ff00ee;
+  --pink-5: #a20097;
+  --pink-6: #52004d;
 
   /* Eclipse */
   --light-space: #ffffff;
   --dark-space: #000000;
 
-  /* Shades / Smoke */
-  --smoke-2: #1d1d1d;
-  --smoke-5: #b3b3b3;
+  /* Shades / Smoke (V2) */
+  --smoke-1: #fdfdfd;
+  --smoke-2: #f2f2f2;
+  --smoke-3: #b3b3b3;
+  --smoke-4: #757575;
+  --smoke-5: #3d3d3d;
   --smoke-6: #f2f2f2;
   --smoke-7: #fdfdfd;
 
-  /* Shades / Sand */
+  /* Shades / Sand (legacy) */
   --sand-1: #fffaf5;
   --sand-2: #fff2e2;
   --sand-3: #f3dfc6;
   --sand-4: #e7cfb2;
   --sand-5: #ceb391;
   --sand-6: #998161;
+  --sand-7: #ceb391;
   --sand-8: #55442f;
+
+  /* Sand / Day (V2) */
+  --day-1: #f6f3f0;
+  --day-3: #eee7e0;
+  --day-4: #e9dfd5;
+  --day-6: #e2d0be;
+  --day-8: #bda288;
+  --day-10: #84674c;
+  --day-11: #74583f;
+
+  /* Sand / Dawn (V2) */
+  --dawn-2: #ebebee;
+  --dawn-3: #e1e1e6;
+  --dawn-4: #d8d8e0;
+  --dawn-6: #c2c2d2;
+  --dawn-8: #a6a6bf;
+  --dawn-9: #9696b5;
+
+  /* Shades / Moss (V2) */
+  --moss-2: #e1fbd0;
+  --moss-3: #c7e8a8;
+  --moss-4: #98b384;
+
+  /* Border Radius Tokens (V2) */
+  --r-card: 8px;
+  --r-section: 12px;
+  --r-input: 16px;
+  --r-panel: 24px;
+  --r-sidebar: 40px;
 
   /* Tiers */
   --tier-bronze: #cd7f32;
@@ -108,24 +194,48 @@
   --color-foreground: var(--foreground);
   --color-yellow-1: var(--yellow-1);
   --color-yellow-2: var(--yellow-2);
+  --color-yellow-3: var(--yellow-3);
   --color-yellow-4: var(--yellow-4);
+  --color-yellow-5: var(--yellow-5);
   --color-yellow-6: var(--yellow-6);
+  --color-blue-1: var(--blue-1);
   --color-blue-2: var(--blue-2);
   --color-blue-3: var(--blue-3);
   --color-blue-4: var(--blue-4);
   --color-blue-5: var(--blue-5);
+  --color-blue-6: var(--blue-6);
   --color-green-2: var(--green-2);
   --color-green-3: var(--green-3);
   --color-green-4: var(--green-4);
   --color-green-5: var(--green-5);
+  --color-green-6: var(--green-6);
   --color-red-1: var(--red-1);
+  --color-red-3: var(--red-3);
   --color-red-4: var(--red-4);
   --color-red-5: var(--red-5);
   --color-red-6: var(--red-6);
   --color-orange-1: var(--orange-1);
+  --color-orange-2: var(--orange-2);
+  --color-orange-3: var(--orange-3);
+  --color-orange-4: var(--orange-4);
+  --color-orange-5: var(--orange-5);
+  --color-orange-6: var(--orange-6);
+  --color-cyan-3: var(--cyan-3);
+  --color-cyan-4: var(--cyan-4);
+  --color-cyan-5: var(--cyan-5);
+  --color-cyan-6: var(--cyan-6);
+  --color-purple-1: var(--purple-1);
+  --color-purple-4: var(--purple-4);
+  --color-pink-3: var(--pink-3);
+  --color-pink-4: var(--pink-4);
+  --color-pink-5: var(--pink-5);
+  --color-pink-6: var(--pink-6);
   --color-light-space: var(--light-space);
   --color-dark-space: var(--dark-space);
+  --color-smoke-1: var(--smoke-1);
   --color-smoke-2: var(--smoke-2);
+  --color-smoke-3: var(--smoke-3);
+  --color-smoke-4: var(--smoke-4);
   --color-smoke-5: var(--smoke-5);
   --color-smoke-6: var(--smoke-6);
   --color-smoke-7: var(--smoke-7);
@@ -136,12 +246,34 @@
   --color-sand-5: var(--sand-5);
   --color-sand-6: var(--sand-6);
   --color-sand-8: var(--sand-8);
+  --color-day-1: var(--day-1);
+  --color-day-3: var(--day-3);
+  --color-day-4: var(--day-4);
+  --color-day-6: var(--day-6);
+  --color-day-8: var(--day-8);
+  --color-day-10: var(--day-10);
+  --color-day-11: var(--day-11);
+  --color-dawn-2: var(--dawn-2);
+  --color-dawn-3: var(--dawn-3);
+  --color-dawn-4: var(--dawn-4);
+  --color-dawn-6: var(--dawn-6);
+  --color-dawn-8: var(--dawn-8);
+  --color-dawn-9: var(--dawn-9);
+  --color-moss-2: var(--moss-2);
+  --color-moss-3: var(--moss-3);
+  --color-moss-4: var(--moss-4);
   --color-tier-bronze: var(--tier-bronze);
   --color-tier-silver: var(--tier-silver);
   --color-tier-gold: var(--tier-gold);
   --color-tier-diamond: var(--tier-diamond);
   --color-tier-platinum: var(--tier-platinum);
   --font-mono: var(--font-kode-mono);
+  --font-sans: var(--font-quicksand);
+  --radius-card: var(--r-card);
+  --radius-section: var(--r-section);
+  --radius-input: var(--r-input);
+  --radius-panel: var(--r-panel);
+  --radius-sidebar: var(--r-sidebar);
 }
 
 /* --- Base --- */
@@ -149,7 +281,7 @@ html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   line-height: 1.5;
 }
 
@@ -240,39 +372,40 @@ body.home-page #site-navbar {
   padding-top: 0 !important;
 }
 
-/* --- Headlines (exact Figma specs) --- */
+/* --- Headlines (V2 Figma specs — Quicksand) --- */
 h1 {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 5rem; /* 80px */
-  font-weight: 400;
+  font-weight: 300;
   line-height: 1;
-  letter-spacing: -0.05em; /* -5% */
+  letter-spacing: -0.0625em; /* -5px at 80px */
+  text-transform: capitalize;
 }
 
 h2 {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 3.625rem; /* 58px */
   font-weight: 400;
   line-height: 1.1;
-  letter-spacing: -0.05em; /* -5% */
+  letter-spacing: -0.05em;
 }
 
 h3 {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 3rem; /* 48px */
   font-weight: 400;
   line-height: 1.2;
 }
 
 h4 {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 2.5rem; /* 40px */
   font-weight: 400;
   line-height: 1.2;
 }
 
 h5 {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 2rem; /* 32px */
   font-weight: 400;
   line-height: 1.2;
@@ -280,7 +413,7 @@ h5 {
 
 h6,
 .h6 {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 1.5rem; /* 24px */
   font-weight: 400;
   line-height: 1.4;
@@ -288,85 +421,85 @@ h6,
 
 /* H7/H8 don't map to HTML elements — use classes */
 .h7 {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 1.125rem; /* 18px */
   font-weight: 700;
   line-height: 1.4;
 }
 
 .h8 {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 1rem; /* 16px */
-  font-weight: 500;
+  font-weight: 700;
   line-height: 1;
 }
 
 /* --- Paragraph --- */
 .paragraph-l {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 1.125rem; /* 18px */
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.52;
 }
 
 .paragraph-m {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 1rem; /* 16px */
   font-weight: 400;
   line-height: 1.5;
 }
 
 .paragraph-m-bold {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 1rem; /* 16px */
   font-weight: 700;
-  line-height: 1.5;
+  line-height: 1.46;
 }
 
 .paragraph-s {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 0.875rem; /* 14px */
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 /* --- Label --- */
 .label-s-semibold {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 0.75rem; /* 12px */
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.5;
 }
 
 .label-m-regular {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 0.875rem; /* 14px */
   font-weight: 400;
   line-height: 1.5;
 }
 
 .label-m-bold {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 0.875rem; /* 14px */
   font-weight: 700;
   line-height: 1.5;
 }
 
 .label-s-bold {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 0.75rem; /* 12px */
   font-weight: 700;
   line-height: 1.5;
 }
 
 .label-s-regular {
-  font-family: var(--font-kode-mono);
+  font-family: var(--font-quicksand);
   font-size: 0.75rem; /* 12px */
   font-weight: 400;
   line-height: 1.5;
 }
 
-/* --- Mono --- */
+/* --- Mono (keep Kode Mono for code/monospace contexts) --- */
 .mono-m {
   font-family: var(--font-kode-mono);
   font-size: 1rem; /* 16px */

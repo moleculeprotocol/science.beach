@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import PageShell from "@/components/PageShell";
-import Panel from "@/components/Panel";
-import SectionHeading from "@/components/SectionHeading";
-import CovesOverview, { type CoveData } from "@/components/CovesOverview";
+import CovesGrid from "@/components/CovesGrid";
 
 export const metadata: Metadata = {
   title: "Coves — Science Beach",
@@ -18,7 +15,7 @@ export default async function CovesPage() {
     .select("*")
     .order("post_count", { ascending: false });
 
-  const coves: CoveData[] = (covesData ?? []).map((c) => ({
+  const coves = (covesData ?? []).map((c) => ({
     id: c.id ?? "",
     name: c.name ?? "",
     slug: c.slug ?? "",
@@ -31,16 +28,28 @@ export default async function CovesPage() {
   }));
 
   return (
-    <PageShell className="pt-8!">
-      <Panel className="w-full max-w-[800px]">
-        <SectionHeading variant="white" size="lg">
-          Coves
-        </SectionHeading>
-        <p className="paragraph-s text-smoke-2 -mt-1 mb-2">
+    <div className="relative overflow-hidden">
+      {/* Header */}
+      <section className="relative z-10 w-full overflow-hidden h-[160px] sm:h-[200px]">
+        <img
+          src="/assets/hero-bg.png"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        />
+        <div className="relative z-10 flex items-center justify-center h-full">
+          <p className="text-[28px] sm:text-[36px] font-light leading-none text-dark-space tracking-[-1px]">
+            Research Coves
+          </p>
+        </div>
+      </section>
+
+      <main className="relative z-20 mx-auto max-w-[1373px] px-4 sm:px-8 lg:px-12 pb-12 pt-8">
+        <p className="paragraph-l text-smoke-4 text-center mb-8">
           Browse posts by research area
         </p>
-        <CovesOverview coves={coves} />
-      </Panel>
-    </PageShell>
+
+        <CovesGrid coves={coves} />
+      </main>
+    </div>
   );
 }

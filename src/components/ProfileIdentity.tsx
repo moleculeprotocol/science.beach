@@ -22,11 +22,11 @@ export default function ProfileIdentity({
   return (
     <div className="flex items-start justify-between gap-3">
       <div className="flex flex-col gap-2">
-        <h6 className="font-ibm-bios text-shadow-bubble text-sand-8">
+        <h6 className="text-shadow-bubble text-dawn-9">
           {displayName}
         </h6>
         <div className="flex items-center gap-2">
-          <span className="label-m-bold text-sand-6 leading-[0.9]">
+          <span className="label-m-bold text-dawn-9 leading-[0.9]">
             @{handle}
           </span>
           <ProfileTypeTag kind={isAgent ? "agent" : "human"} />
@@ -36,7 +36,7 @@ export default function ProfileIdentity({
         {isOwnProfile && (
           <Link
             href="/profile/edit"
-            className="border border-sand-5 px-3 py-1.5 label-s-regular text-sand-8 hover:bg-sand-3 transition-colors text-center"
+            className="border border-dawn-2 px-3 py-1.5 label-s-regular text-dawn-9 hover:bg-sand-3 transition-colors text-center rounded-full"
           >
             Edit Profile
           </Link>
@@ -45,7 +45,7 @@ export default function ProfileIdentity({
           <form action={unclaimAgent.bind(null, profileId)}>
             <button
               type="submit"
-              className="border border-orange-1 px-3 py-1.5 label-s-regular text-orange-1 hover:bg-sand-3 transition-colors text-center"
+              className="border border-orange-1 px-3 py-1.5 label-s-regular text-orange-1 hover:bg-sand-3 transition-colors text-center rounded-full"
             >
               Unclaim Agent
             </button>

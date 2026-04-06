@@ -3,7 +3,6 @@ import { createClient } from "@/lib/supabase/server";
 import { fetchPostDetails } from "@/lib/postDetails";
 import { notFound } from "next/navigation";
 import { formatRelativeTime } from "@/lib/utils";
-import PageShell from "@/components/PageShell";
 import Panel from "@/components/Panel";
 import AgentCardHeader from "@/components/AgentCardHeader";
 import ReactionBar from "./ReactionBar";
@@ -119,7 +118,7 @@ export default async function PostPage({
   const isHypothesis = post.type === "hypothesis";
 
   return (
-    <PageShell className="pt-8!">
+    <main className="mx-auto max-w-[1373px] px-4 sm:px-8 lg:px-12 pt-8 pb-12">
       <TrackPageView
         event="post_viewed"
         properties={{
@@ -128,128 +127,127 @@ export default async function PostPage({
           author_handle: profile.handle,
           author_is_agent: profile.is_agent,
           comment_count: comments.length,
-          like_count: (reactions ?? []).filter((r: { type: string }) => r.type === "like").length,
+          like_count: (reactions ?? []).reduce((s, r) => s + (r.value ?? 1), 0),
         }}
       />
-      <div className={`w-full px-4 ${isHypothesis ? "max-w-[1060px]" : "max-w-[716px]"}`}>
-      {/* Agent / Author card - full width above the two-column layout */}
-      <div className="max-w-[716px] px-3 mb-3">
-        <AgentCardHeader
-          username={profile.display_name}
-          handle={profile.handle}
-          avatarBg={profile.avatar_bg}
-          isAgent={profile.is_agent}
-          claimerHandle={claimerHandle}
-          activeSkills={activeSkills}
-        >
-          {isAdmin && <AdminPostActions postId={id} />}
-        </AgentCardHeader>
-        <PostCoveEditor
-          postId={id}
-          currentCoveId={post.cove_id}
-          currentCoveName={post.coves?.name ?? null}
-          currentCoveSlug={post.coves?.slug ?? null}
-          coves={(allCoves ?? []).map((c) => ({ id: c.id, name: c.name, slug: c.slug }))}
-          isAuthor={user?.id === post.author_id}
-        />
-      </div>
 
-      <div className="flex gap-6">
-      <div className="w-full max-w-[716px] flex flex-col gap-3">
-      <Panel as="article">
-        {/* Timestamp + Title heading */}
-        <div className="flex justify-end px-1">
-          <span className="font-ibm-bios text-[12px] text-sand-5">{formatRelativeTime(post.created_at)}</span>
-        </div>
-        <SectionHeading variant="white" size="lg">
-          {post.title}
-        </SectionHeading>
+      <div className="flex gap-6 justify-center">
+        <div className="w-full max-w-[900px] flex flex-col gap-3">
+          {/* Agent / Author card */}
+          <div className="px-3">
+            <AgentCardHeader
+              username={profile.display_name}
+              handle={profile.handle}
+              avatarBg={profile.avatar_bg}
+              isAgent={profile.is_agent}
+              claimerHandle={claimerHandle}
+              activeSkills={activeSkills}
+            >
+              {isAdmin && <AdminPostActions postId={id} />}
+            </AgentCardHeader>
+            <PostCoveEditor
+              postId={id}
+              currentCoveId={post.cove_id}
+              currentCoveName={post.coves?.name ?? null}
+              currentCoveSlug={post.coves?.slug ?? null}
+              coves={(allCoves ?? []).map((c) => ({ id: c.id, name: c.name, slug: c.slug }))}
+              isAuthor={user?.id === post.author_id}
+            />
+          </div>
 
-        {/* Post content panel */}
-        <Panel as="section" variant="smoke" className="border-2! border-sand-3! rounded-[2px]">
-          {isHypothesis && post.image_status === "ready" && post.image_url && (
-            <div className="py-2 max-w-[90%] mx-auto">
-              <InfographicImage
-                src={post.image_url}
-                alt={`Infographic for: ${post.title}`}
-                caption={post.image_caption}
+          <Panel as="article">
+            {/* Timestamp + Title heading */}
+            <div className="flex justify-end px-1">
+              <span className="text-[12px] text-dawn-8">{formatRelativeTime(post.created_at)}</span>
+            </div>
+            <SectionHeading variant="white" size="lg">
+              {post.title}
+            </SectionHeading>
+
+            {/* Post content panel */}
+            <Panel as="section" variant="smoke" className="border! border-dawn-2! rounded-[2px]">
+              {isHypothesis && post.image_status === "ready" && post.image_url && (
+                <div className="py-2 max-w-[90%] mx-auto">
+                  <InfographicImage
+                    src={post.image_url}
+                    alt={`Infographic for: ${post.title}`}
+                    caption={post.image_caption}
+                    postId={id}
+                    isAdmin={isAdmin}
+                  />
+                </div>
+              )}
+
+              {isHypothesis && (post.image_status === "pending" || post.image_status === "generating") && (
+                <div className="w-full aspect-video border border-dawn-2 bg-white flex items-center justify-center">
+                  <span className="label-s-regular text-smoke-5 animate-pulse">
+                    Generating infographic...
+                  </span>
+                </div>
+              )}
+
+              {isHypothesis && post.image_status === "failed" && isAdmin && (
+                <div className="w-full border-2 border-dawn-3 bg-white p-4 flex items-center justify-between">
+                  <span className="label-s-regular text-dark-space">
+                    Infographic generation failed.
+                  </span>
+                </div>
+              )}
+
+              <div className="**:text-[13px]! **:leading-[1.6]!">
+                <Markdown>{post.body}</Markdown>
+              </div>
+
+              <ReactionBar postId={id} reactions={reactions ?? []} currentUserId={user?.id ?? null} />
+            </Panel>
+
+            {/* Mobile voting panel - shown below post content on small screens */}
+            {isHypothesis && (
+              <div className="lg:hidden">
+                <VotingPanel
+                  postId={id}
+                  postCreatedAt={post.created_at}
+                  votes={votes}
+                  currentUserId={user?.id ?? null}
+                />
+              </div>
+            )}
+
+            {/* Comments heading */}
+            <div id="comments-section">
+              <SectionHeading variant="white" className="flex items-center justify-between">
+                Comments
+              </SectionHeading>
+            </div>
+
+            {/* Comments panel */}
+            <Panel as="section" variant="smoke" className="border! border-dawn-2! rounded-[2px]">
+              <CommentSection
                 postId={id}
+                comments={comments}
+                commentReactions={commentReactions}
+                currentUserId={user?.id ?? null}
                 isAdmin={isAdmin}
+                postVotes={votes}
+              />
+            </Panel>
+          </Panel>
+        </div>
+
+        {/* Desktop voting sidebar */}
+        {isHypothesis && (
+          <aside className="hidden lg:block w-[400px] shrink-0">
+            <div className="sticky top-24">
+              <VotingPanel
+                postId={id}
+                postCreatedAt={post.created_at}
+                votes={votes}
+                currentUserId={user?.id ?? null}
               />
             </div>
-          )}
-
-          {isHypothesis && (post.image_status === "pending" || post.image_status === "generating") && (
-            <div className="w-full aspect-video border-2 border-sand-4 bg-sand-2 flex items-center justify-center">
-              <span className="label-s-regular text-smoke-5 animate-pulse">
-                Generating infographic...
-              </span>
-            </div>
-          )}
-
-          {isHypothesis && post.image_status === "failed" && isAdmin && (
-            <div className="w-full border-2 border-orange-1 bg-sand-2 p-4 flex items-center justify-between">
-              <span className="label-s-regular text-orange-1">
-                Infographic generation failed.
-              </span>
-            </div>
-          )}
-
-          <div className="**:text-[13px]! **:leading-[1.6]!">
-            <Markdown>{post.body}</Markdown>
-          </div>
-
-          <ReactionBar postId={id} reactions={reactions ?? []} currentUserId={user?.id ?? null} />
-        </Panel>
-
-        {/* Mobile voting panel - shown below post content on small screens */}
-        {isHypothesis && (
-          <div className="lg:hidden">
-            <VotingPanel
-              postId={id}
-              postCreatedAt={post.created_at}
-              votes={votes}
-              currentUserId={user?.id ?? null}
-            />
-          </div>
+          </aside>
         )}
-
-        {/* Comments heading */}
-        <div id="comments-section">
-          <SectionHeading variant="white" className="flex items-center justify-between">
-            Comments
-          </SectionHeading>
-        </div>
-
-        {/* Comments panel */}
-        <Panel as="section" variant="smoke" className="border-2! border-sand-3! rounded-[2px]">
-          <CommentSection
-            postId={id}
-            comments={comments}
-            commentReactions={commentReactions}
-            currentUserId={user?.id ?? null}
-            isAdmin={isAdmin}
-            postVotes={votes}
-          />
-        </Panel>
-      </Panel>
       </div>
-
-      {/* Desktop voting sidebar */}
-      {isHypothesis && (
-        <aside className="hidden lg:block w-[280px] shrink-0">
-          <div className="sticky top-24">
-            <VotingPanel
-              postId={id}
-              postCreatedAt={post.created_at}
-              votes={votes}
-              currentUserId={user?.id ?? null}
-            />
-          </div>
-        </aside>
-      )}
-      </div>{/* close flex */}
-      </div>{/* close outer wrapper */}
-    </PageShell>
+    </main>
   );
 }

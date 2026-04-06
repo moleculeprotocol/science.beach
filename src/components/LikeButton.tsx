@@ -29,7 +29,7 @@ export default function LikeButton({
   const iconSize = size === "sm" ? 12 : 16;
   const textClass =
     size === "sm"
-      ? "font-kode-mono text-[11px] leading-[1.4]"
+      ? "text-[11px] leading-[1.4]"
       : "label-s-regular";
 
   return (

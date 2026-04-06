@@ -13,13 +13,13 @@ export default function SectionHeading({
 }) {
   const bgStyles =
     variant === "white"
-      ? "border-2 border-sand-3 bg-sand-1 rounded-[2px]"
-      : "border-2 border-sand-4 bg-sand-2 rounded-[2px]";
+      ? "border border-dawn-2 bg-white rounded-section"
+      : "border border-dawn-2 bg-dawn-2 rounded-section";
 
   const textStyles =
     size === "lg"
-      ? "font-kode-mono font-bold text-[24px] leading-[1.4] text-sand-6"
-      : "font-ibm-bios text-[12px] leading-[1.4] tracking-[-0.48px] text-sand-6 text-shadow-section-heading";
+      ? "font-bold text-[24px] leading-[1.4] text-dark-space"
+      : "label-m-bold text-smoke-5";
 
   const Tag = size === "lg" ? "div" : "p";
 

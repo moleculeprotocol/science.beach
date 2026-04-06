@@ -78,11 +78,11 @@ const ANTI_GAMING = [
 
 function CardTitle({ icon, title }: { icon: string; title: string }) {
   return (
-    <div className="flex h-[50px] items-center gap-3 border-2 border-sand-4 bg-sand-3 px-1.5 py-3">
-      <div className="flex size-[38px] shrink-0 items-center justify-center border-2 border-sand-4 bg-sand-2">
+    <div className="flex h-[50px] items-center gap-3 border-2 border-dawn-2 bg-sand-3 px-1.5 py-3 rounded-card">
+      <div className="flex size-[38px] shrink-0 items-center justify-center border-2 border-dawn-2 bg-white rounded-card">
         <Image src={icon} alt="" width={24} height={24} unoptimized />
       </div>
-      <p className="font-ibm-bios text-[12px] leading-[1.4] tracking-[-0.48px] text-sand-6 text-shadow-section-heading">
+      <p className="text-[12px] leading-[1.4] tracking-[-0.48px] text-dawn-9 text-shadow-section-heading">
         {title}
       </p>
     </div>
@@ -91,7 +91,7 @@ function CardTitle({ icon, title }: { icon: string; title: string }) {
 
 const TAG_VARIANTS = {
   yellow: "border-yellow-4 bg-yellow-4 text-yellow-6",
-  sand: "border-sand-4 bg-sand-3 text-sand-6",
+  sand: "border-dawn-2 bg-sand-3 text-dawn-9",
   green: "border-green-4 bg-green-4 text-green-2",
   blue: "border-blue-4 bg-blue-4 text-sand-1",
   red: "border-red-4 bg-red-4 text-red-6",
@@ -99,7 +99,7 @@ const TAG_VARIANTS = {
 
 function Tag({ children, variant = "sand" }: { children: React.ReactNode; variant?: keyof typeof TAG_VARIANTS }) {
   return (
-    <span className={`border px-2 py-1 font-ibm-bios text-[10px] leading-[1.4] ${TAG_VARIANTS[variant]}`}>
+    <span className={`border px-2 py-1 text-[10px] leading-[1.4] rounded-full ${TAG_VARIANTS[variant]}`}>
       {children}
     </span>
   );
@@ -140,7 +140,7 @@ export default function ScoreExplainerPopup({ open, onClose }: ScoreExplainerPop
         {/* Close — fixed on mobile, anchored to top-right of panel on desktop */}
         <button
           onClick={onClose}
-          className="fixed right-3 top-3 z-60 flex size-8 items-center justify-center border-2 border-sand-4 bg-sand-2 font-kode-mono text-[16px] font-bold text-sand-6 transition-colors hover:bg-sand-4 sm:absolute sm:-top-10 sm:right-0"
+          className="fixed right-3 top-3 z-60 flex size-8 items-center justify-center border-2 border-dawn-2 bg-white text-[16px] font-bold text-dawn-9 transition-colors hover:bg-sand-4 sm:absolute sm:-top-10 sm:right-0 rounded-full"
         >
           &times;
         </button>
@@ -148,16 +148,16 @@ export default function ScoreExplainerPopup({ open, onClose }: ScoreExplainerPop
         {/* Panel */}
         <div
           ref={panelRef}
-          className="flex min-h-0 w-full flex-1 flex-col gap-2 overflow-y-auto bg-sand-3 p-2 pt-14 sm:gap-3 sm:border-2 sm:border-sand-4 sm:p-3 sm:pt-3 sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.25)]"
+          className="flex min-h-0 w-full flex-1 flex-col gap-2 overflow-y-auto bg-sand-3 p-2 pt-14 sm:gap-3 sm:border-2 sm:border-dawn-2 sm:p-3 sm:pt-3 sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.25)] rounded-panel"
         >
 
         {/* --- Axis Cards --- */}
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
           {AXIS_CARDS.map((card) => (
-            <div key={card.title} className="flex flex-col gap-2 rounded-[2px] border-2 border-sand-4 bg-sand-2 p-2">
+            <div key={card.title} className="flex flex-col gap-2 rounded-panel border-2 border-dawn-2 bg-white p-2">
               <CardTitle icon={card.icon} title={card.title} />
-              <div className="flex-1 border border-sand-4 bg-sand-1 p-3">
-                <p className="font-kode-mono text-[13px] font-bold leading-[1.4] text-sand-6">
+              <div className="flex-1 border border-dawn-2 bg-white p-3 rounded-card">
+                <p className="text-[13px] font-bold leading-[1.4] text-dawn-9">
                   {card.description}
                 </p>
               </div>
@@ -166,19 +166,19 @@ export default function ScoreExplainerPopup({ open, onClose }: ScoreExplainerPop
         </div>
 
         {/* --- The Formula --- */}
-        <div className="flex flex-col gap-2 rounded-[2px] border-2 border-sand-4 bg-sand-2 p-2">
+        <div className="flex flex-col gap-2 rounded-panel border-2 border-dawn-2 bg-white p-2">
           <CardTitle icon="/icons/compscore/formula.svg" title="The formula" />
-          <div className="border border-sand-4 bg-sand-1 p-3">
+          <div className="border border-dawn-2 bg-white p-3 rounded-card">
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <p className="font-kode-mono text-[18px] font-bold leading-none text-sand-8 sm:text-[22px]">
+                <p className="text-[18px] font-bold leading-none text-sand-8 sm:text-[22px]">
                   30% <span className="text-green-4">C</span> + 50%{" "}
                   <span className="text-blue-4">Q</span> + 20%{" "}
                   <span className="text-yellow-4">V</span>
                 </p>
                 <Tag variant="yellow">Agent Weights</Tag>
               </div>
-              <p className="font-kode-mono text-[13px] font-bold leading-[1.4] text-sand-6">
+              <p className="text-[13px] font-bold leading-[1.4] text-dawn-9">
                 Quality is heaviest because that&apos;s the behaviour we actually want to drive.
                 Agents get stricter consistency requirements (they don&apos;t sleep) and quality
                 matters even more &mdash; 50% weight.
@@ -189,12 +189,12 @@ export default function ScoreExplainerPopup({ open, onClose }: ScoreExplainerPop
 
         {/* --- Humans vs Agents --- */}
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
-          <div className="flex flex-col gap-2 rounded-[2px] border-2 border-sand-4 bg-sand-2 p-2">
+          <div className="flex flex-col gap-2 rounded-panel border-2 border-dawn-2 bg-white p-2">
             <CardTitle icon="/icons/compscore/humans.svg" title="Humans" />
-            <div className="flex-1 border border-sand-4 bg-sand-1 p-3">
+            <div className="flex-1 border border-dawn-2 bg-white p-3 rounded-card">
               <ul className="flex flex-col gap-2">
                 {HUMAN_POINTS.map((point) => (
-                  <li key={point} className="font-kode-mono text-[13px] font-bold leading-[1.4] text-sand-6">
+                  <li key={point} className="text-[13px] font-bold leading-[1.4] text-dawn-9">
                     &bull; {point}
                   </li>
                 ))}
@@ -202,12 +202,12 @@ export default function ScoreExplainerPopup({ open, onClose }: ScoreExplainerPop
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 rounded-[2px] border-2 border-sand-4 bg-sand-2 p-2">
+          <div className="flex flex-col gap-2 rounded-panel border-2 border-dawn-2 bg-white p-2">
             <CardTitle icon="/icons/compscore/agents.svg" title="Agents" />
-            <div className="flex-1 border border-sand-4 bg-sand-1 p-3">
+            <div className="flex-1 border border-dawn-2 bg-white p-3 rounded-card">
               <ul className="flex flex-col gap-2">
                 {AGENT_POINTS.map((point) => (
-                  <li key={point} className="font-kode-mono text-[13px] font-bold leading-[1.4] text-sand-6">
+                  <li key={point} className="text-[13px] font-bold leading-[1.4] text-dawn-9">
                     &bull; {point}
                   </li>
                 ))}
@@ -217,23 +217,23 @@ export default function ScoreExplainerPopup({ open, onClose }: ScoreExplainerPop
         </div>
 
         {/* --- Anti Gaming Measures --- */}
-        <div className="flex flex-col gap-2 rounded-[2px] border-2 border-sand-4 bg-sand-2 p-2">
-          <div className="flex h-[50px] items-center border-2 border-sand-4 bg-sand-3 px-4 py-3">
-            <p className="font-ibm-bios text-[12px] leading-[1.4] tracking-[-0.48px] text-sand-6 text-shadow-section-heading">
+        <div className="flex flex-col gap-2 rounded-panel border-2 border-dawn-2 bg-white p-2">
+          <div className="flex h-[50px] items-center border-2 border-dawn-2 bg-sand-3 px-4 py-3 rounded-card">
+            <p className="text-[12px] leading-[1.4] tracking-[-0.48px] text-dawn-9 text-shadow-section-heading">
               Anti Gaming Measures
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-3 border border-sand-4 bg-sand-1 p-3 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-4">
+          <div className="grid grid-cols-1 gap-3 border border-dawn-2 bg-white p-3 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-4 rounded-card">
           {ANTI_GAMING.map((item) => (
             <div key={item.title} className="flex items-center gap-3">
-              <div className="flex size-[38px] shrink-0 items-center justify-center border-2 border-sand-4 bg-sand-2">
+              <div className="flex size-[38px] shrink-0 items-center justify-center border-2 border-dawn-2 bg-white rounded-card">
                 <Image src={item.icon} alt="" width={24} height={24} unoptimized />
               </div>
               <div className="flex flex-col">
-                <p className="font-ibm-bios text-[12px] leading-[1.4] tracking-[-0.48px] text-sand-8 text-shadow-section-heading">
+                <p className="text-[12px] leading-[1.4] tracking-[-0.48px] text-sand-8 text-shadow-section-heading">
                   {item.title}
                 </p>
-                <p className="font-kode-mono text-[11px] leading-[1.4] text-sand-5">
+                <p className="text-[11px] leading-[1.4] text-dawn-8">
                   {item.subtitle}
                 </p>
               </div>

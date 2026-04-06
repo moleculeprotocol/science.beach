@@ -107,17 +107,17 @@ export default async function SkillFilePage({ params }: SkillFilePageProps) {
   return (
     <main className="w-full pb-10 pt-4">
       <div className="mx-auto flex w-[95%] flex-col gap-4">
-        <section className="border-r-2 border-b-2 border-sand-5 bg-sand-1 p-4 sm:p-6">
+        <section className="border border-dawn-2 rounded-panel bg-white p-4 sm:p-6">
           <Link href="/docs" className="label-m-regular text-blue-3 hover:text-blue-2 underline">
             Back to API docs
           </Link>
           <h1 className="h6 mt-2 text-dark-space">
             {skill.slug}
           </h1>
-          <p className="paragraph-s mt-2 text-smoke-2">{skill.description}</p>
-          <div className="mt-2 flex flex-wrap items-center gap-2 label-s-regular text-smoke-2">
-            <span className="border border-smoke-5 bg-smoke-7 px-2 py-1">{skill.category}</span>
-            <span className="border border-smoke-5 bg-smoke-7 px-2 py-1">v{skill.version}</span>
+          <p className="paragraph-s mt-2 text-smoke-5">{skill.description}</p>
+          <div className="mt-2 flex flex-wrap items-center gap-2 label-s-regular text-smoke-5">
+            <span className="border border-dawn-3 bg-white px-2 py-1">{skill.category}</span>
+            <span className="border border-dawn-3 bg-white px-2 py-1">v{skill.version}</span>
           </div>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <Link href={filePath} className="label-m-regular text-blue-3 hover:text-blue-2 underline">
@@ -125,12 +125,12 @@ export default async function SkillFilePage({ params }: SkillFilePageProps) {
             </Link>
             <CopyTextButton text={content} />
           </div>
-          <section className="mt-4 border-r-2 border-b-2 border-sand-5 bg-sand-2 p-3">
+          <section className="mt-4 border border-dawn-2 rounded-panel bg-white p-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="label-m-bold text-dark-space">Install via curl</p>
               <CopyTextButton text={installCommand} />
             </div>
-            <pre className="mono-s mt-2 overflow-x-auto whitespace-pre-wrap break-words text-xs text-smoke-2">
+            <pre className="mono-s mt-2 overflow-x-auto whitespace-pre-wrap break-words text-xs text-smoke-5">
               {installCommand}
             </pre>
           </section>
@@ -140,8 +140,8 @@ export default async function SkillFilePage({ params }: SkillFilePageProps) {
                 key={key}
                 href={`/docs/skills/${skill.slug}/${key}`}
                 className={`border px-2 py-1 ${key === fileKey
-                  ? "border-sand-5 bg-sand-2 text-dark-space"
-                  : "border-smoke-5 bg-smoke-7 text-blue-3 hover:text-blue-2"}`}
+                  ? "border-dawn-2 bg-white text-dark-space"
+                  : "border-dawn-3 bg-white text-blue-3 hover:text-blue-2"}`}
               >
                 {key}: {path.split("/").pop()}
               </Link>
@@ -153,8 +153,8 @@ export default async function SkillFilePage({ params }: SkillFilePageProps) {
                 key={item.slug}
                 href={`/docs/skills/${item.slug}`}
                 className={`border px-2 py-1 ${item.slug === skill.slug
-                  ? "border-sand-5 bg-sand-2 text-dark-space"
-                  : "border-smoke-5 bg-smoke-7 text-blue-3 hover:text-blue-2"}`}
+                  ? "border-dawn-2 bg-white text-dark-space"
+                  : "border-dawn-3 bg-white text-blue-3 hover:text-blue-2"}`}
               >
                 {item.slug}
               </Link>
@@ -162,11 +162,11 @@ export default async function SkillFilePage({ params }: SkillFilePageProps) {
           </div>
         </section>
 
-        <section className="border-r-2 border-b-2 border-sand-5 bg-white p-4 sm:p-6">
+        <section className="border border-dawn-2 rounded-panel bg-white p-4 sm:p-6">
           {markdownFile ? (
             <Markdown>{content}</Markdown>
           ) : (
-            <pre className="mono-s whitespace-pre-wrap break-words text-xs text-smoke-2">{content}</pre>
+            <pre className="mono-s whitespace-pre-wrap break-words text-xs text-smoke-5">{content}</pre>
           )}
         </section>
       </div>

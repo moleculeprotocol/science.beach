@@ -25,6 +25,14 @@ import {
 const PAGE_SIZE = 7;
 const DEBOUNCE_MS = 350;
 
+type CoveTab = {
+  id: string;
+  name: string;
+  slug: string;
+  emoji: string | null;
+  postCount: number;
+};
+
 type FeedProps = {
   items: FeedCardProps[];
   likedPostIds?: string[];
@@ -35,6 +43,7 @@ type FeedProps = {
   showTypeHeading?: boolean;
   className?: string;
   coveSlug?: string;
+  coves?: CoveTab[];
 };
 
 export default function Feed({
@@ -47,6 +56,7 @@ export default function Feed({
   showTypeHeading = false,
   className = "",
   coveSlug,
+  coves = [],
 }: FeedProps) {
   const [allItems, setAllItems] = useState(items);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -58,9 +68,9 @@ export default function Feed({
   const [sortMode, setSortMode] = useState<SortMode>("breakthrough");
   const [timeWindow, setTimeWindow] = useState<TimeWindow>("all");
   const [isFiltered, setIsFiltered] = useState(false);
-  const [showMoreFilters, setShowMoreFilters] = useState(false);
-  const activeSortHeading =
-    SORT_MODES.find((mode) => mode.value === sortMode)?.label ?? "All Posts";
+  const [activeCove, setActiveCove] = useState<string | undefined>(coveSlug);
+  const activeConfig = SORT_MODES.find((mode) => mode.value === sortMode);
+  const activeSortHeading = activeConfig?.label ?? "All Posts";
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const currentFiltersRef = useRef<FeedFilters>({});
@@ -88,9 +98,9 @@ export default function Feed({
       type: overrides?.type ?? typeFilter,
       sort: overrides?.sort ?? sortMode,
       timeWindow: overrides?.timeWindow ?? timeWindow,
-      cove: coveSlug,
+      cove: overrides?.cove ?? activeCove,
     }),
-    [search, typeFilter, sortMode, timeWindow, coveSlug],
+    [search, typeFilter, sortMode, timeWindow, activeCove],
   );
 
   const isNonDefaultState = useCallback(
@@ -98,7 +108,8 @@ export default function Feed({
       (filters.type && filters.type !== "all") ||
       filters.search?.trim() ||
       filters.sort !== "breakthrough" ||
-      filters.timeWindow !== "all",
+      filters.timeWindow !== "all" ||
+      !!filters.cove,
     [],
   );
 
@@ -245,90 +256,100 @@ export default function Feed({
     ? { className: `flex flex-col gap-3 ${className}` }
     : {
         as: "section" as const,
-        className: `w-full max-w-[800px] ${className}`,
+        className: `w-full ${className}`,
       };
 
   return (
     <Wrapper {...wrapperProps}>
-      {showTypeHeading && (
-        <SectionHeading variant="white">{activeSortHeading}</SectionHeading>
+      {/* Cove filter tabs */}
+      {coves.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <button
+            type="button"
+            onClick={() => {
+              setActiveCove(undefined);
+              fetchFiltered(getFilters({ cove: undefined }));
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[14px] font-bold whitespace-nowrap shrink-0 transition-colors ${
+              !activeCove
+                ? "bg-dark-space text-light-space"
+                : "border border-dawn-3 text-smoke-4 hover:bg-dawn-2"
+            }`}
+          >
+            🔬 All Coves
+          </button>
+          {coves.map((cove) => {
+            const isActive = activeCove === cove.slug;
+            return (
+              <button
+                key={cove.id}
+                type="button"
+                onClick={() => {
+                  setActiveCove(cove.slug);
+                  fetchFiltered(getFilters({ cove: cove.slug }));
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[14px] font-bold whitespace-nowrap shrink-0 transition-colors ${
+                  isActive
+                    ? "bg-dark-space text-light-space"
+                    : "border border-dawn-3 text-smoke-4 hover:bg-dawn-2"
+                }`}
+              >
+                {cove.emoji || "🔬"} {cove.name}
+              </button>
+            );
+          })}
+        </div>
       )}
 
       {!hideFilters && (
-        <div className="border-2 border-sand-3 bg-sand-1 px-4 py-3 flex flex-col gap-2">
-          {/* Search */}
-          <input
-            type="text"
-            placeholder="Search by title, author..."
-            value={search}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            className="border-2 border-sand-4 bg-sand-1 px-3 py-1.5 mono-s text-dark-space focus:outline-none focus:border-blue-4"
-          />
-
-          {/* Sort bar */}
-          <SortBar
-            activeSort={sortMode}
-            activeTimeWindow={timeWindow}
-            onSortChange={handleSortChange}
-            onTimeWindowChange={handleTimeWindowChange}
-          />
-
-          {/* More filters toggle */}
-          <button
-            type="button"
-            aria-expanded={showMoreFilters}
-            onClick={() => setShowMoreFilters((prev) => !prev)}
-            className="mt-1 inline-flex w-fit self-end items-center gap-1 label-s-regular leading-[0.9] text-sand-6 transition-colors hover:text-sand-8 focus:outline-none focus:text-sand-8"
-          >
-            <span
-              aria-hidden="true"
-              className={`text-[10px] transition-transform ${showMoreFilters ? "rotate-90" : ""}`}
-            >
-              &gt;
-            </span>
-            <span>More filters</span>
-            {typeFilter !== "all" && (
-              <span className="label-s-bold text-blue-4">(active)</span>
-            )}
-          </button>
-
-          {/* Type filters (collapsible) */}
-          {showMoreFilters && (
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-0 w-full sm:w-auto">
-                {(["all", "hypothesis", "discussion"] as const).map((f) => (
-                  <button
-                    key={f}
-                    onClick={() => handleTypeChange(f)}
-                    className={`label-s-regular flex-1 sm:flex-initial px-2.5 py-1 min-h-8 leading-[0.9] border transition-colors capitalize ${
-                      typeFilter === f
-                        ? "bg-dark-space text-light-space border-dark-space"
-                        : "bg-smoke-7 text-smoke-2 border-smoke-5 hover:bg-sand-1"
-                    }`}
-                  >
-                    {f}
-                  </button>
+        <div className="flex flex-col gap-3">
+          {/* Sort row + search */}
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              <span className="paragraph-s text-smoke-4">Sort By</span>
+              <select
+                value={sortMode}
+                onChange={(e) => handleSortChange(e.target.value as SortMode)}
+                className="border border-dawn-3 bg-white rounded-card px-3 py-1.5 paragraph-s text-dark-space focus:outline-none focus:border-blue-4"
+              >
+                {SORT_MODES.map((mode) => (
+                  <option key={mode.value} value={mode.value}>
+                    {mode.label}
+                  </option>
                 ))}
-              </div>
-              {typeFilter !== "all" && (
-                <p className="label-s-regular text-smoke-5">
-                  {allItems.length} result{allItems.length !== 1 ? "s" : ""}
-                  {hasMore ? "+" : ""}
-                  {isPending ? " ..." : ""}
-                </p>
-              )}
+              </select>
             </div>
+            <div className="flex-1 min-w-[200px]">
+              <input
+                type="text"
+                placeholder="🔍 Search Posts"
+                value={search}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="w-full border border-dawn-3 bg-white rounded-card px-3 py-1.5 paragraph-s text-dark-space focus:outline-none focus:border-blue-4"
+              />
+            </div>
+          </div>
+
+          {/* Time window sub-filter for applicable sorts */}
+          {activeConfig?.supportsTimeWindow && (
+            <SortBar
+              activeSort={sortMode}
+              activeTimeWindow={timeWindow}
+              onSortChange={handleSortChange}
+              onTimeWindowChange={handleTimeWindowChange}
+            />
           )}
+
         </div>
       )}
 
       {/* Loading state */}
       {isPending && allItems.length === 0 && (
         <div className="flex flex-col items-center gap-3 py-8">
-          <div className="relative h-1 w-32 overflow-hidden bg-smoke-7 border border-smoke-5">
-            <div className="absolute inset-0 w-1/3 bg-blue-4 animate-feed-scan" />
+          <div className="relative h-1 w-32 overflow-hidden bg-dawn-2 rounded-full">
+            <div className="absolute inset-0 w-1/3 bg-blue-4 animate-feed-scan rounded-full" />
           </div>
-          <p className="font-ibm-bios text-[11px] text-smoke-5">
+          <p className="paragraph-s text-smoke-4">
             Analyzing data...
           </p>
         </div>
@@ -347,7 +368,6 @@ export default function Feed({
           <FeedCard
             key={item.id || `feed-${i}`}
             {...item}
-            initialLiked={likedPostIds.includes(item.id)}
           />
         ))}
       </div>
@@ -356,27 +376,21 @@ export default function Feed({
       {(hasMore || isRandom) && (
         <div className="flex justify-center gap-2 py-2">
           <PixelButton
-            bg="smoke-7"
-            textColor="smoke-5"
-            shadowColor="smoke-6"
-            textShadowTop="smoke-5"
-            textShadowBottom="smoke-7"
+            bg="dawn-2"
+            textColor="dark-space"
+            pill
             onClick={handleLoadMore}
             disabled={isPending}
-            className="font-ibm-bios text-[11px]"
           >
             {isPending ? "Loading..." : isRandom ? "Re-roll" : "Load more"}
           </PixelButton>
           {!isRandom && (
             <PixelButton
-              bg="smoke-7"
-              textColor="smoke-5"
-              shadowColor="smoke-6"
-              textShadowTop="smoke-5"
-              textShadowBottom="smoke-7"
+              bg="dawn-2"
+              textColor="dark-space"
+              pill
               onClick={handleLoadAll}
               disabled={isPending}
-              className="font-ibm-bios text-[11px]"
             >
               {isPending ? "Loading..." : "Load all"}
             </PixelButton>

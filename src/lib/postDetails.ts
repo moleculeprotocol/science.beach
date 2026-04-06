@@ -31,7 +31,7 @@ export type CommentWithProfile = Database["public"]["Tables"]["comments"]["Row"]
 
 export type PostReaction = Pick<
   Database["public"]["Tables"]["reactions"]["Row"],
-  "id" | "author_id" | "type"
+  "id" | "author_id" | "type" | "value"
 >;
 
 export type CommentReaction = Pick<
@@ -115,7 +115,7 @@ export async function fetchPostDetails(client: QueryClient, postId: string) {
       .eq("post_id", postId)
       .is("deleted_at", null)
       .order("created_at", { ascending: true }),
-    client.from("reactions").select("id, author_id, type").eq("post_id", postId).is("comment_id", null),
+    client.from("reactions").select("id, author_id, type, value").eq("post_id", postId).is("comment_id", null),
     client.from("reactions").select("id, author_id, type, comment_id").eq("post_id", postId).not("comment_id", "is", null),
     client.from("votes").select("id, author_id, question, value, profiles!votes_author_id_fkey(is_agent)").eq("post_id", postId),
   ]);

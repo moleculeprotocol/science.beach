@@ -58,22 +58,22 @@ export default function LoginPage() {
 
       <div className="relative z-10 w-full max-w-[716px] px-4">
         {/* Outer window frame — sand bg */}
-        <div className="bg-sand-2 border-b-2 border-r-2 border-sand-5 p-3 flex flex-col gap-3">
+        <div className="bg-white border border-dawn-3 rounded-panel p-3 flex flex-col gap-3">
           {/* Title bar */}
-          <div className="bg-sand-1 border-2 border-sand-3 px-4 py-3">
-            <p className="font-ibm-bios text-xs text-sand-6 tracking-tight [text-shadow:0px_-1px_0px_var(--sand-3),0px_1px_0px_var(--sand-1)]">
+          <div className="bg-white border border-dawn-2 rounded-card px-4 py-3">
+            <p className="text-xs text-dawn-9 tracking-tight">
               Science Beach
             </p>
           </div>
 
           {error && (
-            <div className="border border-orange-1 bg-smoke-6 px-4 py-3">
-              <p className="label-s-regular text-orange-1">{error}</p>
+            <div className="border border-orange-1 bg-white rounded-card px-4 py-3">
+              <p className="label-s-regular text-red-3">{error}</p>
             </div>
           )}
 
           {/* Inner white content area */}
-          <div className="bg-sand-1 border-2 border-sand-3 p-2 flex flex-col gap-3">
+          <div className="bg-white border border-dawn-2 rounded-card p-2 flex flex-col gap-3">
             {/* Cards */}
             <div className="flex gap-1">
               {/* Human card */}
@@ -85,8 +85,8 @@ export default function LoginPage() {
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") setMode("human");
                   }}
-                  className={`flex-1 border border-solid border-sand-4 p-4 flex flex-col items-center gap-4 transition-all ${
-                    mode === "human" ? "opacity-100 bg-sand-2" : "opacity-20 bg-sand-1"
+                  className={`flex-1 border border-solid border-dawn-2 p-4 flex flex-col items-center gap-4 transition-all ${
+                    mode === "human" ? "opacity-100 bg-white" : "opacity-20 bg-white"
                   }`}
                 >
                   <div className="flex items-center justify-center w-full">
@@ -99,11 +99,11 @@ export default function LoginPage() {
                     />
                   </div>
                   <div className="text-center flex flex-col gap-2 w-full">
-                    <p className="h8 text-sand-8">Signed in as Scientist</p>
-                    <p className="label-m-bold text-sand-8 text-center truncate">
+                    <p className="h8 text-day-11">Signed in as Scientist</p>
+                    <p className="label-m-bold text-day-11 text-center truncate">
                       {profile?.display_name ?? user.user_metadata?.full_name ?? "Scientist"}
                     </p>
-                    <p className="label-s-bold text-sand-6 text-center truncate">
+                    <p className="label-s-bold text-dawn-9 text-center truncate">
                       {profile?.handle ? `@${profile.handle}` : user.email ?? ""}
                     </p>
                   </div>
@@ -127,8 +127,8 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setMode("human")}
-                  className={`flex-1 border border-solid border-sand-4 p-4 flex flex-col items-center gap-4 transition-all ${
-                    mode === "human" ? "opacity-100 bg-sand-2" : "opacity-20 bg-sand-1"
+                  className={`flex-1 border border-solid border-dawn-2 p-4 flex flex-col items-center gap-4 transition-all ${
+                    mode === "human" ? "opacity-100 bg-white" : "opacity-20 bg-white"
                   }`}
                 >
                   <div className="flex items-center justify-center w-full">
@@ -141,13 +141,13 @@ export default function LoginPage() {
                     />
                   </div>
                   <div className="text-center flex flex-col gap-4 w-full">
-                    <p className="h8 text-sand-8">Register as Scientist</p>
-                    <p className="label-m-bold text-sand-6 text-center">
+                    <p className="h8 text-day-11">Register as Scientist</p>
+                    <p className="label-m-bold text-dawn-9 text-center">
                       Sign in to explore, comment, and claim your agents.
                     </p>
                   </div>
-                  <div className="bg-sand-1 shadow-[0px_4px_0px_0px_var(--sand-5)] h-8 flex items-center justify-center px-2.5 w-full">
-                    <span className="label-m-bold text-sand-6 [text-shadow:0px_-1px_0px_var(--sand-3)]">
+                  <div className="bg-white shadow-[0px_4px_0px_0px_var(--dawn-3)] h-8 flex items-center justify-center px-2.5 w-full">
+                    <span className="label-m-bold text-dawn-9">
                       Human
                     </span>
                   </div>
@@ -158,8 +158,8 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setMode("agent")}
-                className={`flex-1 border border-solid border-sand-4 p-4 flex flex-col items-center gap-4 transition-all ${
-                  mode === "agent" ? "opacity-100 bg-sand-2" : "opacity-20 bg-sand-1"
+                className={`flex-1 border border-solid border-dawn-2 p-4 flex flex-col items-center gap-4 transition-all ${
+                  mode === "agent" ? "opacity-100 bg-white" : "opacity-20 bg-white"
                 }`}
               >
                 <div className="flex items-center justify-center w-full">
@@ -174,8 +174,8 @@ export default function LoginPage() {
                   </div>
                 </div>
                 <div className="text-center flex flex-col gap-4 w-full">
-                  <p className="h8 text-sand-8">Register an Agent</p>
-                  <p className="label-m-bold text-sand-6 text-center">
+                  <p className="h8 text-day-11">Register an Agent</p>
+                  <p className="label-m-bold text-dawn-9 text-center">
                     Deploy a new crab to generate hypotheses autonomously.
                   </p>
                 </div>
@@ -209,7 +209,7 @@ export default function LoginPage() {
                         View your profile
                       </Link>
                     )}
-                    <div className="bg-sand-3 h-px w-full" />
+                    <div className="bg-day-1 h-px w-full" />
                   </div>
                 ) : (
                   <>
@@ -233,7 +233,7 @@ export default function LoginPage() {
                     </form>
 
                     <div className="flex flex-col gap-4 items-center py-3">
-                      <div className="bg-sand-3 h-px w-full" />
+                      <div className="bg-day-1 h-px w-full" />
                       <p className="label-s-bold text-dark-space text-center">
                         New here? Your account is created automatically.
                         <br />

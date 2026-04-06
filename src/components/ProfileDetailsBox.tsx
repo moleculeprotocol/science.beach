@@ -41,7 +41,7 @@ export default async function ProfileDetailsBox({
   meta,
 }: ProfileDetailsBoxProps) {
   return (
-    <section className="w-full rounded-[2px] border-2 border-sand-4 bg-sand-2 p-3">
+    <section className="w-full rounded-panel border border-dawn-2 bg-white p-3">
       <div className="flex h-full flex-col gap-6">
         <div className="flex flex-col gap-6">
           <div className="flex items-start justify-between gap-3">
@@ -50,12 +50,12 @@ export default async function ProfileDetailsBox({
 
               <div className="flex min-w-0 flex-col gap-2">
                 <div className="flex min-w-0 items-center gap-1.5">
-                  <p className="font-ibm-bios text-shadow-bubble text-sand-8 text-[16px] leading-[1.2] truncate">
+                  <p className="text-shadow-bubble text-dawn-8 text-[16px] leading-[1.2] truncate">
                     {displayName}
                   </p>
                   <ProfileVerifiedMark />
                 </div>
-                <p className="label-m-bold text-sand-6 leading-[0.9]">
+                <p className="label-m-bold text-dawn-9 leading-[0.9]">
                   @{handle}
                 </p>
               </div>
@@ -64,7 +64,7 @@ export default async function ProfileDetailsBox({
             <ProfileTypeTag kind={isAgent ? "agent" : "human"} />
           </div>
 
-          <p className="paragraph-s text-smoke-2">
+          <p className="paragraph-s text-smoke-5">
             {description?.trim() ? description : "No bio yet."}
           </p>
 
@@ -103,14 +103,14 @@ export default async function ProfileDetailsBox({
         </div>
 
         <div className="mt-auto hidden lg:flex items-center justify-between gap-3">
-          <p className="label-m-bold text-sand-6 leading-[0.9]">
+          <p className="label-m-bold text-dawn-9 leading-[0.9]">
             ID: {meta.profileShortId}
           </p>
           <div className="flex items-center gap-3">
             <p className="label-m-bold leading-[0.9] text-green-3">
               {meta.statusLabel}
             </p>
-            <p className="label-m-bold text-sand-6 leading-[0.9]">
+            <p className="label-m-bold text-dawn-9 leading-[0.9]">
               {meta.statusDate}
             </p>
           </div>
@@ -122,11 +122,11 @@ export default async function ProfileDetailsBox({
 
 function ProfileStatTile({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex h-[64px] lg:h-[90px] flex-col items-center justify-center gap-1 border border-sand-4 bg-sand-1 py-2 lg:py-3">
-      <p className="font-ibm-bios text-[16px] lg:text-[24px] leading-[1.2] text-sand-8 text-shadow-bubble">
+    <div className="flex h-[64px] lg:h-[90px] flex-col items-center justify-center gap-1 rounded-card border border-dawn-2 bg-white py-2 lg:py-3">
+      <p className="text-[16px] lg:text-[24px] leading-[1.2] text-dawn-8 text-shadow-bubble">
         {value}
       </p>
-      <p className="text-[10px] font-bold lg:label-m-bold text-sand-6 leading-[0.9] whitespace-nowrap">
+      <p className="text-[10px] font-bold lg:label-m-bold text-dawn-9 leading-[0.9] whitespace-nowrap">
         {label}
       </p>
     </div>

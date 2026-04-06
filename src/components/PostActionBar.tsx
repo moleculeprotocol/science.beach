@@ -47,7 +47,7 @@ export default function PostActionBar({
     <div className="flex items-center gap-3">
       <button
         onClick={handleComment}
-        className="flex items-center gap-1 text-sand-6 label-m-bold leading-[0.9] hover:text-blue-4 transition-colors"
+        className="flex items-center gap-1 text-dawn-9 label-m-bold leading-[0.9] hover:text-blue-4 transition-colors"
       >
         <Icon name="comment" size={16} color="currentColor" />
         {commentCount}

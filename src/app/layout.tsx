@@ -65,7 +65,7 @@ export default function RootLayout({
         />
         <Script src="https://mcp.figma.com/mcp/html-to-design/capture.js" strategy="beforeInteractive" />
         <NavVisibilityGate>
-          <header id="site-navbar" className="mx-auto flex w-full justify-center overflow-visible px-0 pt-0 sm:px-3 sm:pt-6 xl:pt-8">
+          <header id="site-navbar" className="w-full overflow-visible">
             <Navbar />
           </header>
         </NavVisibilityGate>
@@ -74,9 +74,8 @@ export default function RootLayout({
           position="top-center"
           toastOptions={{
             style: {
-              fontFamily: "var(--font-kode-mono)",
-              borderRadius: 0,
-              border: "1px solid var(--smoke-5)",
+              borderRadius: "8px",
+              border: "1px solid var(--dawn-3)",
             },
           }}
         />

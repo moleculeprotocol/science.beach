@@ -69,9 +69,9 @@ export default function ScoreDial({ value, tier, breakdown }: ScoreDialProps) {
           })}
         </svg>
         <div
-          className={`relative flex items-center justify-center border px-2 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)] ${tag.bg} ${tag.border}`}
+          className={`relative flex items-center justify-center border px-2 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)] rounded-card ${tag.bg} ${tag.border}`}
         >
-          <span className={`font-kode-mono font-bold text-[22px] leading-[0.9] ${tag.text}`}>
+          <span className={`font-bold text-[22px] leading-[0.9] ${tag.text}`}>
             {value}
           </span>
         </div>

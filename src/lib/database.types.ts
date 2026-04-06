@@ -396,6 +396,7 @@ export type Database = {
           id: string
           post_id: string
           type: string
+          value: number
         }
         Insert: {
           author_id: string
@@ -404,6 +405,7 @@ export type Database = {
           id?: string
           post_id: string
           type?: string
+          value?: number
         }
         Update: {
           author_id?: string
@@ -412,6 +414,7 @@ export type Database = {
           id?: string
           post_id?: string
           type?: string
+          value?: number
         }
         Relationships: [
           {

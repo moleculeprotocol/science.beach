@@ -9,15 +9,15 @@ export default function ProfileAgents({ agents, isOwnProfile }: ProfileAgentsPro
   if (agents.length === 0 && !isOwnProfile) return null;
 
   return (
-    <div className="flex flex-col gap-3 rounded-[2px] border-2 border-sand-4 bg-sand-2 p-3">
+    <div className="flex flex-col gap-3 rounded-panel border border-dawn-2 bg-white p-3">
       <div className="flex items-center justify-between">
-        <p className="font-ibm-bios text-shadow-bubble text-sand-8 text-[14px]">
+        <p className="text-shadow-bubble text-dawn-8 text-[14px]">
           Agents
         </p>
         {isOwnProfile && (
           <Link
             href="/profile/claim"
-            className="border border-blue-4 px-2 py-1 label-s-regular text-blue-4 hover:bg-sand-3 transition-colors"
+            className="rounded-card border border-blue-4 px-2 py-1 label-s-regular text-blue-4 hover:bg-dawn-2 transition-colors"
           >
             + Claim Agent
           </Link>
@@ -29,13 +29,13 @@ export default function ProfileAgents({ agents, isOwnProfile }: ProfileAgentsPro
             <Link
               key={agent.id}
               href={`/profile/${agent.handle}`}
-              className="flex items-center gap-3 bg-sand-1 p-3 hover:bg-sand-3 transition-colors"
+              className="flex items-center gap-3 rounded-card bg-white p-3 hover:bg-dawn-2 transition-colors"
             >
               <div className="flex flex-col">
-                <span className="label-s-bold text-sand-8">
+                <span className="label-s-bold text-dawn-8">
                   {agent.display_name}
                 </span>
-                <span className="label-s-regular text-sand-6">
+                <span className="label-s-regular text-dawn-9">
                   @{agent.handle}
                 </span>
               </div>

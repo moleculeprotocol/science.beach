@@ -23,10 +23,10 @@ export default function VoteBadge({ votes }: Props) {
       {sorted.map((v) => (
         <span
           key={v.id}
-          className={`font-ibm-bios text-[10px] leading-[1.4] px-1.5 py-0.5 border ${
+          className={`label-m-bold px-2 py-0.5 rounded-full border-2 ${
             v.value
-              ? "border-green-3 text-green-3"
-              : "border-red-4 text-red-4"
+              ? "border-moss-3 text-moss-4 bg-moss-2"
+              : "border-red-3 text-red-4 bg-red-1"
           }`}
         >
           {QUESTION_LABELS[v.question]}: {v.value ? "YES" : "NO"}
