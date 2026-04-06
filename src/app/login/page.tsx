@@ -60,20 +60,20 @@ export default function LoginPage() {
         {/* Outer window frame — sand bg */}
         <div className="bg-white border border-dawn-3 rounded-panel p-3 flex flex-col gap-3">
           {/* Title bar */}
-          <div className="bg-white border border-dawn-2 rounded-sm px-4 py-3">
+          <div className="bg-white border border-dawn-2 rounded-card px-4 py-3">
             <p className="text-xs text-dawn-9 tracking-tight">
               Science Beach
             </p>
           </div>
 
           {error && (
-            <div className="border border-orange-1 bg-white rounded-sm px-4 py-3">
+            <div className="border border-orange-1 bg-white rounded-card px-4 py-3">
               <p className="label-s-regular text-red-3">{error}</p>
             </div>
           )}
 
           {/* Inner white content area */}
-          <div className="bg-white border border-dawn-2 rounded-sm p-2 flex flex-col gap-3">
+          <div className="bg-white border border-dawn-2 rounded-card p-2 flex flex-col gap-3">
             {/* Cards */}
             <div className="flex gap-1">
               {/* Human card */}

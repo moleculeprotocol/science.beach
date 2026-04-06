@@ -20,14 +20,14 @@ export default function CovesSidebar({ coves }: CovesSidebarProps) {
     <div className="bg-white border border-dawn-2 rounded-sidebar p-6 flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <div className="bg-dawn-2 border border-dawn-4 rounded-sm size-8 flex items-center justify-center">
+          <div className="bg-dawn-2 border border-dawn-4 rounded-card size-8 flex items-center justify-center">
             <Image src="/icons/sort-breakthrough.svg" alt="" width={20} height={20} />
           </div>
           <span className="paragraph-m-bold text-dark-space">Coves</span>
         </div>
         <Link
           href="/coves"
-          className="border border-dawn-3 rounded-sm size-8 flex items-center justify-center text-dawn-8 hover:text-dark-space hover:border-dawn-4 transition-colors"
+          className="border border-dawn-3 rounded-card size-8 flex items-center justify-center text-dawn-8 hover:text-dark-space hover:border-dawn-4 transition-colors"
           title="View all coves"
         >
           <span className="text-[16px]">&rarr;</span>
@@ -42,7 +42,7 @@ export default function CovesSidebar({ coves }: CovesSidebarProps) {
             className="flex items-center justify-between hover:opacity-80 transition-opacity"
           >
             <div className="flex items-center gap-2">
-              <div className="bg-white border border-smoke-2 rounded-sm size-8 flex items-center justify-center text-[14px]">
+              <div className="bg-white border border-smoke-2 rounded-card size-8 flex items-center justify-center text-[14px]">
                 {cove.emoji || "🔬"}
               </div>
               <span className="paragraph-m-bold text-dawn-9">{cove.name}</span>

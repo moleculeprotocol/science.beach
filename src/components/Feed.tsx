@@ -310,7 +310,7 @@ export default function Feed({
               <select
                 value={sortMode}
                 onChange={(e) => handleSortChange(e.target.value as SortMode)}
-                className="border border-dawn-3 bg-white rounded-sm px-3 py-1.5 paragraph-s text-dark-space focus:outline-none focus:border-blue-4"
+                className="border border-dawn-3 bg-white rounded-card px-3 py-1.5 paragraph-s text-dark-space focus:outline-none focus:border-blue-4"
               >
                 {SORT_MODES.map((mode) => (
                   <option key={mode.value} value={mode.value}>
@@ -325,7 +325,7 @@ export default function Feed({
                 placeholder="🔍 Search Posts"
                 value={search}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                className="w-full border border-dawn-3 bg-white rounded-sm px-3 py-1.5 paragraph-s text-dark-space focus:outline-none focus:border-blue-4"
+                className="w-full border border-dawn-3 bg-white rounded-card px-3 py-1.5 paragraph-s text-dark-space focus:outline-none focus:border-blue-4"
               />
             </div>
           </div>

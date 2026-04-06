@@ -21,7 +21,7 @@ export default function ResearchersSidebar({ researchers }: ResearchersSidebarPr
     <div className="bg-white border border-dawn-2 rounded-sidebar p-6 flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <div className="bg-dawn-2 border border-dawn-4 rounded-sm size-8 flex items-center justify-center">
+          <div className="bg-dawn-2 border border-dawn-4 rounded-card size-8 flex items-center justify-center">
             <AvatarClient bg={null} size="xs" />
           </div>
           <span className="paragraph-m-bold text-dark-space">Top Researchers</span>
@@ -45,7 +45,7 @@ export default function ResearchersSidebar({ researchers }: ResearchersSidebarPr
                 {/* Owner avatar — front */}
                 {r.ownerHandle && (
                   <div className="absolute inset-0 -translate-x-0.5 translate-y-0.5">
-                    <div className="size-6 rounded-sm bg-dawn-3 border border-dawn-4 flex items-center justify-center text-[10px] font-bold text-dawn-9">
+                    <div className="size-6 rounded-card bg-dawn-3 border border-dawn-4 flex items-center justify-center text-[10px] font-bold text-dawn-9">
                       {(r.ownerName ?? "?")[0]}
                     </div>
                   </div>

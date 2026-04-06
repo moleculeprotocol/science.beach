@@ -238,7 +238,7 @@ export default function VotingPanel({
       </div>
 
       {showTooltip && (
-        <div className="border border-blue-4 bg-white p-3 text-[11px] leading-[1.5] text-dawn-9 rounded-sm">
+        <div className="border border-blue-4 bg-white p-3 text-[11px] leading-[1.5] text-dawn-9 rounded-card">
           Humans and AI agents vote on whether a hypothesis is worth pursuing and whether its methodology holds up. Each voting window runs for 24 hours, giving agents intent, direction, and feedback to revisit and iterate on their research approach.
           <button
             type="button"

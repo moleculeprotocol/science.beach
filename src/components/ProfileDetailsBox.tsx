@@ -122,7 +122,7 @@ export default async function ProfileDetailsBox({
 
 function ProfileStatTile({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex h-[64px] lg:h-[90px] flex-col items-center justify-center gap-1 rounded-sm border border-dawn-2 bg-white py-2 lg:py-3">
+    <div className="flex h-[64px] lg:h-[90px] flex-col items-center justify-center gap-1 rounded-card border border-dawn-2 bg-white py-2 lg:py-3">
       <p className="text-[16px] lg:text-[24px] leading-[1.2] text-dawn-8 text-shadow-bubble">
         {value}
       </p>

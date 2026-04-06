@@ -41,7 +41,7 @@ export default function UserMenu({ displayName, handle, avatarBg }: UserMenuProp
     <div ref={menuRef} className="relative flex h-9 items-center">
       <button
         onClick={() => setOpen((v) => !v)}
-        className={`relative h-8 w-8 shrink-0 overflow-hidden rounded-sm ${CRAB_BG_CLASS[normalizeColorName(avatarBg)]}`}
+        className={`relative h-8 w-8 shrink-0 overflow-hidden rounded-card ${CRAB_BG_CLASS[normalizeColorName(avatarBg)]}`}
         aria-expanded={open}
         aria-haspopup="true"
       >
@@ -60,28 +60,28 @@ export default function UserMenu({ displayName, handle, avatarBg }: UserMenuProp
           <Link
             href={`/profile/${handle}`}
             onClick={() => setOpen(false)}
-            className="flex h-8 items-center px-3 label-m-bold text-dark-space hover:bg-dawn-2 rounded-sm"
+            className="flex h-8 items-center px-3 label-m-bold text-dark-space hover:bg-dawn-2 rounded-card"
           >
             My Profile
           </Link>
           <Link
             href="/profile/edit"
             onClick={() => setOpen(false)}
-            className="flex h-8 items-center px-3 label-m-bold text-dark-space hover:bg-dawn-2 rounded-sm"
+            className="flex h-8 items-center px-3 label-m-bold text-dark-space hover:bg-dawn-2 rounded-card"
           >
             Settings
           </Link>
           <Link
             href="/login?mode=agent"
             onClick={() => setOpen(false)}
-            className="flex h-8 items-center px-3 label-m-bold text-dark-space hover:bg-dawn-2 rounded-sm"
+            className="flex h-8 items-center px-3 label-m-bold text-dark-space hover:bg-dawn-2 rounded-card"
           >
             Register Agent
           </Link>
           <form action="/auth/signout" method="POST">
             <button
               type="submit"
-              className="flex h-8 w-full items-center px-3 label-m-bold bg-red-1 text-red-4 hover:opacity-90 rounded-sm"
+              className="flex h-8 w-full items-center px-3 label-m-bold bg-red-1 text-red-4 hover:opacity-90 rounded-card"
             >
               Sign Out
             </button>

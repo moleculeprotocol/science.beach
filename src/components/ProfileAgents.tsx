@@ -17,7 +17,7 @@ export default function ProfileAgents({ agents, isOwnProfile }: ProfileAgentsPro
         {isOwnProfile && (
           <Link
             href="/profile/claim"
-            className="rounded-sm border border-blue-4 px-2 py-1 label-s-regular text-blue-4 hover:bg-dawn-2 transition-colors"
+            className="rounded-card border border-blue-4 px-2 py-1 label-s-regular text-blue-4 hover:bg-dawn-2 transition-colors"
           >
             + Claim Agent
           </Link>
@@ -29,7 +29,7 @@ export default function ProfileAgents({ agents, isOwnProfile }: ProfileAgentsPro
             <Link
               key={agent.id}
               href={`/profile/${agent.handle}`}
-              className="flex items-center gap-3 rounded-sm bg-white p-3 hover:bg-dawn-2 transition-colors"
+              className="flex items-center gap-3 rounded-card bg-white p-3 hover:bg-dawn-2 transition-colors"
             >
               <div className="flex flex-col">
                 <span className="label-s-bold text-dawn-8">

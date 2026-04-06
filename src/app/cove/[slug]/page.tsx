@@ -134,7 +134,7 @@ export default async function CovePage({
       <main className="relative z-20 mx-auto max-w-[1378px] px-4 sm:px-8 lg:px-12 pb-6 -mt-12 flex flex-col gap-6">
         <div className="bg-white border border-dawn-2 rounded-panel p-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-dawn-2 border border-dawn-4 rounded-sm size-8 flex items-center justify-center text-[18px]">
+            <div className="bg-dawn-2 border border-dawn-4 rounded-card size-8 flex items-center justify-center text-[18px]">
               {cove.emoji || "🔬"}
             </div>
             <p className="text-[24px] font-normal leading-[1.4] text-dark-space capitalize">

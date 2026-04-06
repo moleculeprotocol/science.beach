@@ -129,7 +129,7 @@ export default function FeedCard({
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className="paragraph-s text-smoke-4 hover:text-dark-space transition-colors self-center w-full py-1 border border-dawn-2 rounded-sm"
+          className="paragraph-s text-smoke-4 hover:text-dark-space transition-colors self-center w-full py-1 border border-dawn-2 rounded-card"
         >
           more
         </button>
@@ -197,7 +197,7 @@ export default function FeedCard({
           {/* Copy/bookmark icon */}
           <button
             onClick={handleShare}
-            className="flex items-center justify-center size-8 rounded-sm border border-dawn-2 text-smoke-4 hover:text-blue-4 hover:border-blue-4 transition-colors"
+            className="flex items-center justify-center size-8 rounded-card border border-dawn-2 text-smoke-4 hover:text-blue-4 hover:border-blue-4 transition-colors"
           >
             <Image src="/icons/share.svg" alt="" width={14} height={14} className="opacity-40" />
           </button>
