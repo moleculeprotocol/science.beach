@@ -24,7 +24,7 @@ export default function ResearchersSidebar({ researchers }: ResearchersSidebarPr
           <div className="bg-dawn-2 border border-dawn-4 rounded-[8px] size-8 flex items-center justify-center">
             <AvatarClient bg={null} size="xs" />
           </div>
-          <span className="paragraph-m-bold text-dark-space">Researchers</span>
+          <span className="paragraph-m-bold text-dark-space">Top Researchers</span>
         </div>
       </div>
 

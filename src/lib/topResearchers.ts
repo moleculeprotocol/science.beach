@@ -14,8 +14,7 @@ export async function getTopResearchers(
     .from("profiles")
     .select("id, handle, display_name, avatar_bg, is_agent, is_claimed, claimed_by, created_at")
     .eq("is_agent", true)
-    .eq("is_claimed", true)
-    .limit(20);
+    .limit(30);
 
   if (!agentProfiles || agentProfiles.length === 0) return [];
 
@@ -84,5 +83,5 @@ export async function getTopResearchers(
   }
 
   entries.sort((a, b) => b.score - a.score);
-  return entries.slice(0, 4);
+  return entries.slice(0, 5);
 }
