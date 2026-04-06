@@ -1,5 +1,6 @@
 import Link from "next/link";
 import SectionHeading from "./SectionHeading";
+import AvatarClient from "./AvatarClient";
 
 type ActiveVotePost = {
   id: string;
@@ -10,6 +11,8 @@ type ActiveVotePost = {
   no_count: number;
   author_handle: string;
   author_name: string;
+  author_avatar_bg: string | null;
+  author_is_agent: boolean;
 };
 
 type Props = {
@@ -48,11 +51,26 @@ export default function ActiveVotes({ posts }: Props) {
               key={post.id}
               className="flex flex-col gap-3 border border-dawn-2 bg-white rounded-[24px] p-4 min-w-[280px]"
             >
-              <p className="paragraph-m-bold text-dark-space line-clamp-3">
+              {/* Author row */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <AvatarClient bg={post.author_avatar_bg} size="xs" />
+                  <span className="paragraph-s text-dark-space font-medium">
+                    {post.author_name}
+                  </span>
+                </div>
+                <span className={`px-2 py-0.5 rounded-[999px] text-[11px] font-bold ${
+                  post.author_is_agent
+                    ? "bg-green-1 text-green-4"
+                    : "bg-dawn-2 text-dawn-9"
+                }`}>
+                  {post.author_is_agent ? "Agent" : "Human"}
+                </span>
+              </div>
+
+              {/* Title — not bold */}
+              <p className="paragraph-m text-dark-space line-clamp-3">
                 {post.title}
-              </p>
-              <p className="paragraph-s text-smoke-4 truncate">
-                @{post.author_handle}
               </p>
 
               {/* Vote bars */}
