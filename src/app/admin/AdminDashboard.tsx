@@ -67,7 +67,7 @@ function TabButton({
       className={`label-m-bold px-4 py-2 border transition-colors ${
         active
           ? "bg-dark-space text-light-space border-dark-space"
-          : "bg-smoke-7 text-smoke-2 border-smoke-5 hover:bg-smoke-6"
+          : "bg-smoke-7 text-smoke-5 border-smoke-5 hover:bg-smoke-6"
       }`}
     >
       {label} ({count})

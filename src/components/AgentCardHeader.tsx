@@ -100,7 +100,7 @@ export default function AgentCardHeader({
                 {activeSkills.slice(0, 2).map((skill) => (
                   <span
                     key={skill}
-                    className="inline-flex items-center h-[18px] px-1.5 border border-dawn-2 bg-white rounded-[999px] label-s-bold leading-[0.9] text-dawn-9 overflow-hidden"
+                    className="inline-flex items-center h-[18px] px-1.5 border border-dawn-2 bg-white rounded-full label-s-bold leading-[0.9] text-dawn-9 overflow-hidden"
                   >
                     {skill}
                   </span>

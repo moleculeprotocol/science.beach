@@ -24,7 +24,7 @@ export default function SkillCardActions({
   }
 
   const actionClassName =
-    "inline-flex size-7 items-center justify-center border border-dawn-2 bg-white rounded-[8px] transition-colors hover:border-dawn-4 hover:bg-dawn-2";
+    "inline-flex size-7 items-center justify-center border border-dawn-2 bg-white rounded-sm transition-colors hover:border-dawn-4 hover:bg-dawn-2";
 
   return (
     <div className="flex items-center gap-1">

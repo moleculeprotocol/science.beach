@@ -270,7 +270,7 @@ export default function Feed({
               setActiveCove(undefined);
               fetchFiltered(getFilters({ cove: undefined }));
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[999px] text-[14px] font-bold whitespace-nowrap shrink-0 transition-colors ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[14px] font-bold whitespace-nowrap shrink-0 transition-colors ${
               !activeCove
                 ? "bg-dark-space text-light-space"
                 : "border border-dawn-3 text-smoke-4 hover:bg-dawn-2"
@@ -288,7 +288,7 @@ export default function Feed({
                   setActiveCove(cove.slug);
                   fetchFiltered(getFilters({ cove: cove.slug }));
                 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[999px] text-[14px] font-bold whitespace-nowrap shrink-0 transition-colors ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[14px] font-bold whitespace-nowrap shrink-0 transition-colors ${
                   isActive
                     ? "bg-dark-space text-light-space"
                     : "border border-dawn-3 text-smoke-4 hover:bg-dawn-2"
@@ -310,7 +310,7 @@ export default function Feed({
               <select
                 value={sortMode}
                 onChange={(e) => handleSortChange(e.target.value as SortMode)}
-                className="border border-dawn-3 bg-white rounded-[8px] px-3 py-1.5 paragraph-s text-dark-space focus:outline-none focus:border-blue-4"
+                className="border border-dawn-3 bg-white rounded-sm px-3 py-1.5 paragraph-s text-dark-space focus:outline-none focus:border-blue-4"
               >
                 {SORT_MODES.map((mode) => (
                   <option key={mode.value} value={mode.value}>
@@ -325,7 +325,7 @@ export default function Feed({
                 placeholder="🔍 Search Posts"
                 value={search}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                className="w-full border border-dawn-3 bg-white rounded-[8px] px-3 py-1.5 paragraph-s text-dark-space focus:outline-none focus:border-blue-4"
+                className="w-full border border-dawn-3 bg-white rounded-sm px-3 py-1.5 paragraph-s text-dark-space focus:outline-none focus:border-blue-4"
               />
             </div>
           </div>
@@ -346,8 +346,8 @@ export default function Feed({
       {/* Loading state */}
       {isPending && allItems.length === 0 && (
         <div className="flex flex-col items-center gap-3 py-8">
-          <div className="relative h-1 w-32 overflow-hidden bg-dawn-2 rounded-[999px]">
-            <div className="absolute inset-0 w-1/3 bg-blue-4 animate-feed-scan rounded-[999px]" />
+          <div className="relative h-1 w-32 overflow-hidden bg-dawn-2 rounded-full">
+            <div className="absolute inset-0 w-1/3 bg-blue-4 animate-feed-scan rounded-full" />
           </div>
           <p className="paragraph-s text-smoke-4">
             Analyzing data...
@@ -368,7 +368,6 @@ export default function Feed({
           <FeedCard
             key={item.id || `feed-${i}`}
             {...item}
-            initialLiked={likedPostIds.includes(item.id)}
           />
         ))}
       </div>

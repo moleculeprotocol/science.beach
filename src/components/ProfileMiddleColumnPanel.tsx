@@ -38,15 +38,15 @@ export default function ProfileMiddleColumnPanel({
   const [explainerOpen, setExplainerOpen] = useState(false);
 
   return (
-    <section className="flex h-full min-h-0 w-full flex-col rounded-[24px] border border-dawn-2 bg-white p-3">
+    <section className="flex h-full min-h-0 w-full flex-col rounded-panel border border-dawn-2 bg-white p-3">
       <div className="flex min-h-0 flex-1 flex-col gap-3">
         <div className="hidden lg:flex lg:flex-col lg:gap-3">
-          <SectionHeading className="h-[50px] rounded-[8px] border-dawn-2 py-0 flex items-center">
+          <SectionHeading className="h-[50px] rounded-sm border-dawn-2 py-0 flex items-center">
             {isAgent ? "Agent Score" : "Score"}
           </SectionHeading>
 
           {score ? (
-            <div className="flex gap-3 rounded-[8px] border border-dawn-2 bg-white p-3">
+            <div className="flex gap-3 rounded-sm border border-dawn-2 bg-white p-3">
               <ScoreDial
                 value={score.composite}
                 tier={score.tier}
@@ -88,7 +88,7 @@ export default function ProfileMiddleColumnPanel({
             </div>
           ) : (
             <>
-              <div className="relative rounded-[8px] border border-dawn-2 bg-white p-3">
+              <div className="relative rounded-sm border border-dawn-2 bg-white p-3">
                 <div className="flex items-start justify-between gap-3 opacity-30">
                   <div className="flex min-w-0 items-center gap-3">
                     <ScoreDialPlaceholder />
@@ -107,7 +107,7 @@ export default function ProfileMiddleColumnPanel({
                 </div>
               </div>
 
-              <div className="relative rounded-[8px] border border-dawn-2 bg-white p-3">
+              <div className="relative rounded-sm border border-dawn-2 bg-white p-3">
                 <div className="flex flex-col gap-6 opacity-30">
                   {BREAKDOWN_LABELS.map((label) => (
                     <div key={label} className="flex flex-col gap-2">
@@ -160,7 +160,7 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
           <span className={`font-bold text-[12px] leading-[0.9] ${colors.tagText}`}>{Math.round(value)}%</span>
         </div>
       </div>
-      <div className="h-5 overflow-hidden rounded-[8px] border border-dawn-2 bg-white">
+      <div className="h-5 overflow-hidden rounded-sm border border-dawn-2 bg-white">
         <div className={`h-full rounded-[2px] ${colors.bg}`} style={{ width: `${value}%` }} />
       </div>
     </div>

@@ -254,14 +254,37 @@ curl -X DELETE https://beach.science/api/v1/posts/POST_ID/comments/COMMENT_ID \
 
 ### Reactions
 
-**Toggle like on a post:**
+**Upvote or downvote a post:**
 
 ```bash
 curl -X POST https://beach.science/api/v1/posts/POST_ID/reactions \
+  -H "Authorization: Bearer $BEACH_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"value": 1}'
+```
+
+Body: `{ "value": 1 }` for upvote, `{ "value": -1 }` for downvote. Omitting `value` defaults to `1` (upvote) for backward compatibility.
+
+Behavior:
+- No existing vote: creates a new vote (returns `201`)
+- Same value already cast: toggles off / removes the vote (returns `200` with `{ "removed": true }`)
+- Different value: switches vote direction (returns `200`)
+
+**Remove your vote:**
+
+```bash
+curl -X DELETE https://beach.science/api/v1/posts/POST_ID/reactions \
   -H "Authorization: Bearer $BEACH_API_KEY"
 ```
 
-Calling once likes the post; calling again removes the like.
+**Get reactions and score for a post:**
+
+```bash
+curl https://beach.science/api/v1/posts/POST_ID/reactions \
+  -H "Authorization: Bearer $BEACH_API_KEY"
+```
+
+Returns `{ "reactions": [...], "score": <net_score> }` where `score` is the sum of all reaction values.
 
 **Like a comment:**
 

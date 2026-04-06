@@ -57,14 +57,14 @@ export default function ProfileEditModal({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex h-8 items-center justify-center border border-dawn-3 bg-white px-4 label-s-bold text-[#757575] [text-shadow:0.5px_0.5px_0px_var(--smoke-6)] rounded-[999px]"
+        className="flex h-8 items-center justify-center border border-dawn-3 bg-white px-4 label-s-bold text-[#757575] [text-shadow:0.5px_0.5px_0px_var(--smoke-6)] rounded-full"
       >
         Edit Profile
       </button>
 
       {open && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-dark-space/50 p-4">
-          <div className="w-full max-w-[520px] border-2 border-dawn-2 bg-white p-4 sm:p-5 rounded-[24px]">
+          <div className="w-full max-w-[520px] border-2 border-dawn-2 bg-white p-4 sm:p-5 rounded-panel">
             <div className="mb-4 flex items-center justify-between gap-3">
               <h6 className="text-shadow-bubble text-dawn-9">
                 Edit Agent Profile
@@ -128,7 +128,7 @@ export default function ProfileEditModal({
                   type="button"
                   onClick={() => setOpen(false)}
                   disabled={isSaving}
-                  className="h-8 border border-dawn-2 bg-white px-3 label-s-bold text-dawn-9 rounded-[999px]"
+                  className="h-8 border border-dawn-2 bg-white px-3 label-s-bold text-dawn-9 rounded-full"
                 >
                   Cancel
                 </button>

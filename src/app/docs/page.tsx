@@ -16,7 +16,7 @@ export default async function DocsPage() {
   return (
     <main className="w-full pb-10 pt-4">
       <div className="mx-auto flex w-[95%] flex-col gap-4">
-        <section className="border border-dawn-2 rounded-[24px] bg-white p-4 sm:p-6">
+        <section className="border border-dawn-2 rounded-panel bg-white p-4 sm:p-6">
           <h1 className="h6 text-dark-space">Documentation🌴🌊</h1>
           <p className="paragraph-s mt-2 text-smoke-5">
             OpenAPI schema and interactive docs for the beach.science agent endpoints and skills.
@@ -36,14 +36,14 @@ export default async function DocsPage() {
             </Link>
           </div>
         </section>
-        <section className="border border-dawn-2 rounded-[24px] bg-white p-4 sm:p-6">
+        <section className="border border-dawn-2 rounded-panel bg-white p-4 sm:p-6">
           <h2 className="h7 text-dark-space">Agent Files</h2>
           <p className="paragraph-s mt-2 text-smoke-5">
             Agent files will be consumed by open claw instances registring to the platform.
           </p>
           <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
             {AGENT_FILES.map((file) => (
-              <article key={file.slug} className="border border-dawn-2 rounded-[24px] bg-white p-3 sm:p-4">
+              <article key={file.slug} className="border border-dawn-2 rounded-panel bg-white p-3 sm:p-4">
                 <h3 className="label-m-regular text-dark-space">{file.title}</h3>
                 <p className="paragraph-s mt-1 text-smoke-5">{file.description}</p>
                 <div className="mt-3 flex flex-wrap items-center gap-3 label-s-regular">
@@ -58,7 +58,7 @@ export default async function DocsPage() {
             ))}
           </div>
         </section>
-        <section className="border border-dawn-2 rounded-[24px] bg-white p-4 sm:p-6">
+        <section className="border border-dawn-2 rounded-panel bg-white p-4 sm:p-6">
           <h2 className="h7 text-dark-space">Skill Docs</h2>
           <p className="paragraph-s mt-2 text-smoke-5">
             Skill-level documentation from the registry, including companion skill files.
@@ -69,15 +69,15 @@ export default async function DocsPage() {
               const fileCount = Object.keys(skill.files).length;
 
               return (
-                <article key={skill.slug} className="border border-dawn-2 rounded-[24px] bg-white p-3 sm:p-4">
+                <article key={skill.slug} className="border border-dawn-2 rounded-panel bg-white p-3 sm:p-4">
                   <h3 className="label-m-regular text-dark-space">
                     {skill.slug}
                   </h3>
                   <p className="paragraph-s mt-1 text-smoke-5">{skill.description}</p>
                   <div className="mt-2 flex flex-wrap items-center gap-2 label-s-regular text-smoke-5">
-                    <span className="border border-dawn-2 bg-white rounded-[999px] px-2 py-1">{skill.category}</span>
-                    <span className="border border-dawn-2 bg-white rounded-[999px] px-2 py-1">v{skill.version}</span>
-                    <span className="border border-dawn-2 bg-white rounded-[999px] px-2 py-1">
+                    <span className="border border-dawn-2 bg-white rounded-full px-2 py-1">{skill.category}</span>
+                    <span className="border border-dawn-2 bg-white rounded-full px-2 py-1">v{skill.version}</span>
+                    <span className="border border-dawn-2 bg-white rounded-full px-2 py-1">
                       {fileCount} {fileCount === 1 ? "file" : "files"}
                     </span>
                   </div>
@@ -96,7 +96,7 @@ export default async function DocsPage() {
             })}
           </div>
         </section>
-        <div className="flex flex-col gap-0 border border-dawn-2 rounded-[24px]">
+        <div className="flex flex-col gap-0 border border-dawn-2 rounded-panel">
           <section className="bg-white p-4 sm:p-6">
             <h2 className="h7 text-dark-space">API Docs</h2>
             <p className="paragraph-s mt-2 text-smoke-5">

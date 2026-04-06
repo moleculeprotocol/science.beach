@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useTransition } from "react";
-import { voteOnPost } from "@/app/post/[id]/actions";
+import { useState } from "react";
 import { useUser } from "@/lib/hooks/useUser";
+import { useOptimisticVote } from "@/lib/hooks/useOptimisticVote";
 import Markdown from "./Markdown";
 import InfographicImage from "./InfographicImage";
 import AgentCardHeader from "./AgentCardHeader";
@@ -25,7 +25,6 @@ export type FeedCardProps = {
   hypothesisText: string;
   commentCount: number;
   likeCount: number;
-  initialLiked?: boolean;
   score?: number;
   userVote?: 1 | -1 | 0;
   postType?: string;
@@ -45,12 +44,14 @@ export type FeedCardProps = {
 };
 
 export default function FeedCard({
-  username, handle, avatarBg, timestamp, id, title, hypothesisText, commentCount, likeCount, initialLiked = false, score: initialScore, userVote: initialUserVote = 0, postType, imageUrl, imageStatus, imageCaption, activeSkills, isAgent = false, claimerHandle, coveName, coveSlug, coveEmoji, yesCount = 0, noCount = 0, voteCount = 0,
+  username, handle, avatarBg, timestamp, id, title, hypothesisText, commentCount, likeCount, score: initialScore, userVote: initialUserVote = 0, postType, imageUrl, imageStatus, imageCaption, activeSkills, isAgent = false, claimerHandle, coveName, coveSlug, coveEmoji, yesCount = 0, noCount = 0, voteCount = 0,
 }: FeedCardProps) {
   const { user } = useUser();
-  const [isPending, startTransition] = useTransition();
-  const [currentVote, setCurrentVote] = useState<1 | -1 | 0>(initialUserVote);
-  const [optimisticScore, setOptimisticScore] = useState(initialScore ?? likeCount);
+  const { currentVote, optimisticScore, isPending, handleVote: doVote } = useOptimisticVote({
+    postId: id,
+    initialScore: initialScore ?? likeCount,
+    initialUserVote,
+  });
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -63,17 +64,7 @@ export default function FeedCard({
       window.open("/login?mode=signup", "_blank");
       return;
     }
-    const baseScore = initialScore ?? likeCount;
-    // Compute new vote state
-    if (currentVote === value) {
-      // Toggle off
-      setCurrentVote(0);
-      setOptimisticScore(baseScore);
-    } else {
-      setCurrentVote(value);
-      setOptimisticScore(baseScore - (initialUserVote ?? 0) + value);
-    }
-    startTransition(() => voteOnPost(id, value));
+    doVote(value);
   }
 
   function handleComment() {
@@ -98,7 +89,7 @@ export default function FeedCard({
   const noPct = totalVotes > 0 ? 100 - yesPct : 0;
 
   return (
-    <article className="bg-white border border-dawn-2 rounded-[24px] p-5 flex flex-col gap-3">
+    <article className="bg-white border border-dawn-2 rounded-panel p-5 flex flex-col gap-3">
       {/* Header row */}
       <AgentCardHeader
         username={username}
@@ -114,7 +105,7 @@ export default function FeedCard({
       {coveName && coveSlug && (
         <Link
           href={`/cove/${coveSlug}`}
-          className="inline-flex items-center gap-1.5 self-start px-3 py-1 rounded-[999px] bg-dawn-2 text-[13px] font-bold text-dawn-9 hover:text-blue-4 transition-colors"
+          className="inline-flex items-center gap-1.5 self-start px-3 py-1 rounded-full bg-dawn-2 text-[13px] font-bold text-dawn-9 hover:text-blue-4 transition-colors"
         >
           {coveEmoji && <span>{coveEmoji}</span>}
           {coveName}
@@ -138,7 +129,7 @@ export default function FeedCard({
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className="paragraph-s text-smoke-4 hover:text-dark-space transition-colors self-center w-full py-1 border border-dawn-2 rounded-[8px]"
+          className="paragraph-s text-smoke-4 hover:text-dark-space transition-colors self-center w-full py-1 border border-dawn-2 rounded-sm"
         >
           more
         </button>
@@ -155,7 +146,7 @@ export default function FeedCard({
       )}
 
       {(imageStatus === "pending" || imageStatus === "generating") && (
-        <div className="w-full aspect-video border border-dawn-2 bg-dawn-2 rounded-[12px] flex items-center justify-center gap-2">
+        <div className="w-full aspect-video border border-dawn-2 bg-dawn-2 rounded-section flex items-center justify-center gap-2">
           <span className="paragraph-s text-smoke-4 animate-pulse">
             Generating infographic...
           </span>
@@ -165,10 +156,10 @@ export default function FeedCard({
       {/* Vote outcome pills (if voted) */}
       {voteCount > 0 && (
         <div className="flex items-center gap-2 flex-wrap justify-end">
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[999px] text-[13px] font-bold text-purple-4 bg-purple-1">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[13px] font-bold text-purple-4 bg-purple-1">
             • {yesPct}% Relevant
           </span>
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[999px] text-[13px] font-bold text-blue-4 bg-blue-1">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[13px] font-bold text-blue-4 bg-blue-1">
             • {noPct > 0 ? noPct : yesPct}% Scientifically sound
           </span>
         </div>
@@ -206,7 +197,7 @@ export default function FeedCard({
           {/* Copy/bookmark icon */}
           <button
             onClick={handleShare}
-            className="flex items-center justify-center size-8 rounded-[8px] border border-dawn-2 text-smoke-4 hover:text-blue-4 hover:border-blue-4 transition-colors"
+            className="flex items-center justify-center size-8 rounded-sm border border-dawn-2 text-smoke-4 hover:text-blue-4 hover:border-blue-4 transition-colors"
           >
             <Image src="/icons/share.svg" alt="" width={14} height={14} className="opacity-40" />
           </button>

@@ -74,20 +74,20 @@ export default function CoveSelect({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full border border-dawn-3 bg-white rounded-[8px] px-3 py-2 paragraph-s text-dark-space text-left focus:outline-none focus:border-blue-4"
+        className="w-full border border-dawn-3 bg-white rounded-sm px-3 py-2 paragraph-s text-dark-space text-left focus:outline-none focus:border-blue-4"
       >
         {selected ? selected.name : "Select a cove..."}
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 mt-1 w-full border border-dawn-2 bg-white rounded-[12px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.08)] max-h-60 overflow-y-auto">
+        <div className="absolute z-50 mt-1 w-full border border-dawn-2 bg-white rounded-section shadow-[0px_4px_12px_0px_rgba(0,0,0,0.08)] max-h-60 overflow-y-auto">
           <div className="p-2">
             <input
               type="text"
               placeholder="Search coves..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full border border-dawn-3 bg-white rounded-[8px] px-2 py-1 paragraph-s text-dark-space focus:outline-none focus:border-blue-4"
+              className="w-full border border-dawn-3 bg-white rounded-sm px-2 py-1 paragraph-s text-dark-space focus:outline-none focus:border-blue-4"
               autoFocus
             />
           </div>
@@ -101,7 +101,7 @@ export default function CoveSelect({
                 setSearch("");
                 setIsOpen(false);
               }}
-              className={`w-full px-3 py-2 text-left paragraph-s transition-colors hover:bg-dawn-2 rounded-[8px] ${
+              className={`w-full px-3 py-2 text-left paragraph-s transition-colors hover:bg-dawn-2 rounded-sm ${
                 value === cove.id ? "bg-dawn-2 text-dark-space" : "text-smoke-5"
               }`}
             >
@@ -120,7 +120,7 @@ export default function CoveSelect({
               type="button"
               onClick={handleCreateNew}
               disabled={creating}
-              className="w-full px-3 py-2 text-left paragraph-s text-blue-4 hover:bg-dawn-2 rounded-[8px] border-t border-dawn-2"
+              className="w-full px-3 py-2 text-left paragraph-s text-blue-4 hover:bg-dawn-2 rounded-sm border-t border-dawn-2"
             >
               {creating ? "Creating..." : `+ Create "${search.trim()}"`}
             </button>

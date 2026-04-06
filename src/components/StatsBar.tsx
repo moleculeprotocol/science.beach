@@ -9,7 +9,7 @@ type StatsBarProps = {
 
 export default function StatsBar({ stats }: StatsBarProps) {
   return (
-    <div className="border border-dawn-2 rounded-[24px] bg-white px-4 py-5 sm:px-6">
+    <div className="border border-dawn-2 rounded-panel bg-white px-4 py-5 sm:px-6">
       <div className="grid grid-cols-2 gap-y-4 gap-x-1 sm:grid-cols-4 sm:gap-y-6 sm:gap-x-4 xl:gap-x-6 2xl:gap-x-8">
         {stats.map((stat, i) => (
           <div

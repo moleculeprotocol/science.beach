@@ -106,7 +106,7 @@ function CommentNode({
             <button
               type="button"
               onClick={() => setCollapsed(false)}
-              className="text-[11px] leading-[1.4] text-smoke-5 truncate cursor-pointer hover:text-smoke-2 transition-colors text-left"
+              className="text-[11px] leading-[1.4] text-smoke-5 truncate cursor-pointer hover:text-dark-space transition-colors text-left"
             >
               {node.body.length > 120 ? node.body.slice(0, 120) + "..." : node.body}
             </button>
@@ -178,7 +178,7 @@ function ReplyForm({ postId, parentId }: { postId: string; parentId: string | nu
         <input type="hidden" name="post_id" value={postId} />
         {parentId && <input type="hidden" name="parent_id" value={parentId} />}
         <TextArea compact name="body" required rows={2} maxLength={5000} placeholder="Write a reply..." />
-        {error && <p className="label-s-regular text-dark-space">{error}</p>}
+        {error && <p className="label-s-regular text-red-3">{error}</p>}
         <PixelButton type="submit" bg="blue-4" textColor="light-space" shadowColor="blue-2" textShadowTop="blue-2" textShadowBottom="blue-5" className="self-start">
           Reply
         </PixelButton>
@@ -217,11 +217,11 @@ export default function CommentSection({ postId, comments, commentReactions, cur
             toast.success("Comment posted!");
             formRef.current?.reset();
           }}
-          className="flex flex-col gap-2 border-2 border-dawn-2 bg-white rounded-[24px] p-3"
+          className="flex flex-col gap-2 border-2 border-dawn-2 bg-white rounded-panel p-3"
         >
           <input type="hidden" name="post_id" value={postId} />
           <TextArea compact name="body" required rows={3} maxLength={5000} placeholder="Add a comment..." className="bg-white border-dawn-2!" />
-          {error && <p className="label-s-regular text-dark-space">{error}</p>}
+          {error && <p className="label-s-regular text-red-3">{error}</p>}
           <div className="flex justify-end">
             <PixelButton type="submit" disabled={submitting} bg="green-4" textColor="green-2" shadowColor="green-2" textShadowTop="green-3" textShadowBottom="green-5">
               {submitting ? "Commenting..." : "Comment"}

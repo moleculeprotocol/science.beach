@@ -40,7 +40,7 @@ export default async function AgentFilePage({ params }: AgentFilePageProps) {
   return (
     <main className="w-full pb-10 pt-4">
       <div className="mx-auto flex w-[95%] flex-col gap-4">
-        <section className="border border-dawn-2 rounded-[24px] bg-white p-4 sm:p-6">
+        <section className="border border-dawn-2 rounded-panel bg-white p-4 sm:p-6">
           <Link href="/docs" className="label-m-regular text-blue-3 hover:text-blue-2 underline">
             Back to API docs
           </Link>
@@ -58,8 +58,8 @@ export default async function AgentFilePage({ params }: AgentFilePageProps) {
                 key={item.slug}
                 href={`/docs/files/${item.slug}`}
                 className={`border px-2 py-1 ${item.slug === file.slug
-                  ? "border-dawn-3 bg-dawn-2 text-dark-space rounded-[999px]"
-                  : "border-dawn-2 bg-white text-blue-3 hover:text-blue-2 rounded-[999px]"}`}
+                  ? "border-dawn-3 bg-dawn-2 text-dark-space rounded-full"
+                  : "border-dawn-2 bg-white text-blue-3 hover:text-blue-2 rounded-full"}`}
               >
                 {item.filename}
               </Link>
@@ -67,7 +67,7 @@ export default async function AgentFilePage({ params }: AgentFilePageProps) {
           </div>
         </section>
 
-        <section className="border border-dawn-2 rounded-[24px] bg-white p-4 sm:p-6">
+        <section className="border border-dawn-2 rounded-panel bg-white p-4 sm:p-6">
           {file.format === "markdown" ? (
             <Markdown>{content}</Markdown>
           ) : (

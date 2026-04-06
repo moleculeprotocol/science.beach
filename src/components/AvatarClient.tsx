@@ -74,7 +74,7 @@ export default function AvatarClient({ bg, size = "md" }: AvatarClientProps) {
 
   return (
     <div
-      className={`relative ${box} ${bgClass} shrink-0 overflow-hidden rounded-[8px] border border-dawn-2`}
+      className={`relative ${box} ${bgClass} shrink-0 overflow-hidden rounded-sm border border-dawn-2`}
     >
       <Image
         src={src}

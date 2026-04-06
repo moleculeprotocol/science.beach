@@ -61,7 +61,7 @@ export default function DisclaimerPopup() {
           onClick={close}
         >
           <div
-            className="relative max-h-[80vh] w-full max-w-lg overflow-y-auto rounded-[24px] border border-dawn-3 bg-white p-6 sm:p-8"
+            className="relative max-h-[80vh] w-full max-w-lg overflow-y-auto rounded-panel border border-dawn-3 bg-white p-6 sm:p-8"
             onClick={(e) => e.stopPropagation()}
           >
             <button

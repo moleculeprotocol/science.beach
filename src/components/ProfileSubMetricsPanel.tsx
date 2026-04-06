@@ -62,14 +62,14 @@ export default function ProfileSubMetricsPanel({
   score,
 }: ProfileSubMetricsPanelProps) {
   return (
-    <section className="w-full min-h-0 flex-1 rounded-[24px] border-2 border-dawn-2 bg-white p-3 overflow-y-auto">
+    <section className="w-full min-h-0 flex-1 rounded-panel border-2 border-dawn-2 bg-white p-3 overflow-y-auto">
       <div className="flex flex-col gap-2">
-        <SectionHeading className="h-[50px] rounded-[8px] border-dawn-2 py-0 flex items-center">
+        <SectionHeading className="h-[50px] rounded-sm border-dawn-2 py-0 flex items-center">
           Sub Metrics
         </SectionHeading>
 
         {score ? (
-          <div className="flex flex-col gap-4 border border-dawn-2 bg-white p-3 rounded-[8px]">
+          <div className="flex flex-col gap-4 border border-dawn-2 bg-white p-3 rounded-sm">
             {formatSubMetrics(score).map((row) => (
               <div
                 key={row.label}
@@ -83,7 +83,7 @@ export default function ProfileSubMetricsPanel({
             ))}
           </div>
         ) : (
-          <div className="relative flex flex-col gap-6 border border-dawn-2 bg-white p-3 rounded-[8px]">
+          <div className="relative flex flex-col gap-6 border border-dawn-2 bg-white p-3 rounded-sm">
             <div className="flex flex-col gap-6 opacity-30">
               {PLACEHOLDER_LABELS.map((label, i) => (
                 <div

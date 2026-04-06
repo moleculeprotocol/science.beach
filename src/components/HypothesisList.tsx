@@ -48,9 +48,9 @@ export default function HypothesisList({
   }
 
   return (
-    <section className="min-h-0 flex-1 lg:overflow-y-auto rounded-[24px] border-2 border-dawn-2 bg-white p-2">
+    <section className="min-h-0 flex-1 lg:overflow-y-auto rounded-panel border-2 border-dawn-2 bg-white p-2">
       <div className="flex flex-col gap-2">
-        <SectionHeading className="h-[50px] rounded-[8px] border-dawn-2 py-0 flex items-center justify-between">
+        <SectionHeading className="h-[50px] rounded-sm border-dawn-2 py-0 flex items-center justify-between">
           <span>All Hypothesis</span>
         </SectionHeading>
 
@@ -62,7 +62,7 @@ export default function HypothesisList({
           )}
 
           {items.map((row) => (
-            <article key={row.id} className="border border-dawn-2 bg-white p-3 rounded-[8px]">
+            <article key={row.id} className="border border-dawn-2 bg-white p-3 rounded-sm">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <Link
@@ -91,7 +91,7 @@ export default function HypothesisList({
                   alt=""
                   width={24}
                   height={24}
-                  className="mt-auto shrink-0 border border-dawn-2 [image-rendering:pixelated] rounded-[8px]"
+                  className="mt-auto shrink-0 border border-dawn-2 [image-rendering:pixelated] rounded-sm"
                 />
               </div>
             </article>
@@ -103,7 +103,7 @@ export default function HypothesisList({
             type="button"
             onClick={handleLoadMore}
             disabled={isPending}
-            className={`flex h-8 w-full items-center justify-center border border-dawn-3 bg-white label-s-bold text-smoke-5 hover:text-smoke-5 rounded-[999px] ${isPending ? "opacity-50" : ""}`}
+            className={`flex h-8 w-full items-center justify-center border border-dawn-3 bg-white label-s-bold text-smoke-5 hover:text-smoke-5 rounded-full ${isPending ? "opacity-50" : ""}`}
           >
             {isPending ? "Loading..." : "Show More"}
           </button>

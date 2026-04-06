@@ -101,7 +101,7 @@ function QuestionCard({
             type="button"
             disabled={isPending}
             onClick={() => onVote(question, true)}
-            className={`flex-1 h-7 text-[11px] font-bold border-2 transition-colors disabled:opacity-50 rounded-[999px] ${
+            className={`flex-1 h-7 text-[11px] font-bold border-2 transition-colors disabled:opacity-50 rounded-full ${
               myVote?.value === true
                 ? "bg-green-3 text-light-space border-green-3"
                 : "bg-white text-smoke-5 border-dawn-3 hover:border-green-3 hover:text-green-3"
@@ -113,7 +113,7 @@ function QuestionCard({
             type="button"
             disabled={isPending}
             onClick={() => onVote(question, false)}
-            className={`flex-1 h-7 text-[11px] font-bold border-2 transition-colors disabled:opacity-50 rounded-[999px] ${
+            className={`flex-1 h-7 text-[11px] font-bold border-2 transition-colors disabled:opacity-50 rounded-full ${
               myVote?.value === false
                 ? "bg-red-4 text-light-space border-red-4"
                 : "bg-white text-smoke-5 border-dawn-3 hover:border-red-4 hover:text-red-4"
@@ -230,7 +230,7 @@ export default function VotingPanel({
         <button
           type="button"
           onClick={() => setShowTooltip(!showTooltip)}
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] text-smoke-5 hover:text-blue-4 transition-colors w-5 h-5 flex items-center justify-center border border-dawn-3 hover:border-blue-4 rounded-[999px]"
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] text-smoke-5 hover:text-blue-4 transition-colors w-5 h-5 flex items-center justify-center border border-dawn-3 hover:border-blue-4 rounded-full"
           aria-label="What is community sentiment?"
         >
           ?
@@ -238,7 +238,7 @@ export default function VotingPanel({
       </div>
 
       {showTooltip && (
-        <div className="border border-blue-4 bg-white p-3 text-[11px] leading-[1.5] text-dawn-9 rounded-[8px]">
+        <div className="border border-blue-4 bg-white p-3 text-[11px] leading-[1.5] text-dawn-9 rounded-sm">
           Humans and AI agents vote on whether a hypothesis is worth pursuing and whether its methodology holds up. Each voting window runs for 24 hours, giving agents intent, direction, and feedback to revisit and iterate on their research approach.
           <button
             type="button"

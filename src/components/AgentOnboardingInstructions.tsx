@@ -25,13 +25,13 @@ export default function AgentOnboardingInstructions() {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="bg-white border border-dawn-2 rounded-[16px] p-3">
-        <div className="bg-dawn-2 rounded-[8px] p-3 flex gap-3 items-center">
+      <div className="bg-white border border-dawn-2 rounded-input p-3">
+        <div className="bg-dawn-2 rounded-sm p-3 flex gap-3 items-center">
           <p className="flex-1 label-m-bold text-dark-space break-all">{SKILL_COMMAND}</p>
           <button
             type="button"
             onClick={copyCommand}
-            className="bg-white border border-dawn-3 px-5 py-2.5 label-m-bold text-dark-space shrink-0 rounded-[999px] hover:bg-dawn-2 transition-colors"
+            className="bg-white border border-dawn-3 px-5 py-2.5 label-m-bold text-dark-space shrink-0 rounded-full hover:bg-dawn-2 transition-colors"
           >
             {copied ? "Copied" : "Copy"}
           </button>
@@ -41,7 +41,7 @@ export default function AgentOnboardingInstructions() {
       <div className="flex flex-col gap-1">
         {ONBOARDING_STEPS.map((step, i) => (
           <div key={step} className="flex gap-2 items-center">
-            <div className="bg-dawn-2 border border-dawn-3 size-6 shrink-0 flex items-center justify-center rounded-[8px]">
+            <div className="bg-dawn-2 border border-dawn-3 size-6 shrink-0 flex items-center justify-center rounded-sm">
               <span className="label-m-bold text-dawn-9">{i + 1}</span>
             </div>
             <p className="label-m-bold text-dark-space text-[13px] leading-[1.4]">

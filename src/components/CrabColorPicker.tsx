@@ -55,7 +55,7 @@ export default function CrabColorPicker({
               key={colorName}
               type="button"
               onClick={() => setSelected(colorName)}
-              className={`flex flex-col items-center gap-1 border-2 p-1.5 rounded-[8px] transition-colors ${
+              className={`flex flex-col items-center gap-1 border-2 p-1.5 rounded-sm transition-colors ${
                 isSelected
                   ? "border-blue-4 bg-white"
                   : "border-dawn-2 bg-white hover:border-dawn-4"

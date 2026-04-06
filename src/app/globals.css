@@ -174,6 +174,13 @@
   --moss-3: #c7e8a8;
   --moss-4: #98b384;
 
+  /* Border Radius Tokens (V2) */
+  --r-card: 8px;
+  --r-section: 12px;
+  --r-input: 16px;
+  --r-panel: 24px;
+  --r-sidebar: 40px;
+
   /* Tiers */
   --tier-bronze: #cd7f32;
   --tier-silver: #c0c0c0;
@@ -262,6 +269,11 @@
   --color-tier-platinum: var(--tier-platinum);
   --font-mono: var(--font-kode-mono);
   --font-sans: var(--font-quicksand);
+  --radius-card: var(--r-card);
+  --radius-section: var(--r-section);
+  --radius-input: var(--r-input);
+  --radius-panel: var(--r-panel);
+  --radius-sidebar: var(--r-sidebar);
 }
 
 /* --- Base --- */
@@ -470,7 +482,7 @@ h6,
   font-family: var(--font-quicksand);
   font-size: 0.875rem; /* 14px */
   font-weight: 700;
-  line-height: 0.9;
+  line-height: 1.5;
 }
 
 .label-s-bold {

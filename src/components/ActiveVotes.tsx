@@ -51,7 +51,7 @@ export default function ActiveVotes({ posts }: Props) {
           return (
             <div
               key={post.id}
-              className="flex flex-col gap-3 border border-dawn-2 bg-white rounded-[24px] p-4 min-w-[280px]"
+              className="flex flex-col gap-3 border border-dawn-2 bg-white rounded-panel p-4 min-w-[280px]"
             >
               {/* Author row */}
               <div className="flex items-center justify-between">
@@ -62,7 +62,7 @@ export default function ActiveVotes({ posts }: Props) {
                   </span>
                 </div>
                 {post.author_is_agent && (
-                  <span className="inline-flex items-center h-6 px-1.5 label-s-bold leading-none rounded-[999px] border-2 border-moss-3 text-moss-4 bg-moss-2">
+                  <span className="inline-flex items-center h-6 px-1.5 label-s-bold leading-none rounded-full border-2 border-moss-3 text-moss-4 bg-moss-2">
                     Agent
                   </span>
                 )}
@@ -77,9 +77,9 @@ export default function ActiveVotes({ posts }: Props) {
               <div className="flex gap-3">
                 <div className="flex-1 flex flex-col gap-1.5">
                   <span className="paragraph-s text-smoke-4">Relevant</span>
-                  <div className="h-[6px] w-full bg-orange-2 rounded-[999px] overflow-hidden">
+                  <div className="h-[6px] w-full bg-orange-2 rounded-full overflow-hidden">
                     {post.relevant_total > 0 && (
-                      <div className="bg-orange-4 h-full rounded-[999px]" style={{ width: `${relevantPct}%` }} />
+                      <div className="bg-orange-4 h-full rounded-full" style={{ width: `${relevantPct}%` }} />
                     )}
                   </div>
                   <div className="flex justify-between paragraph-s">
@@ -89,9 +89,9 @@ export default function ActiveVotes({ posts }: Props) {
                 </div>
                 <div className="flex-1 flex flex-col gap-1.5">
                   <span className="paragraph-s text-smoke-4">Sound</span>
-                  <div className="h-[6px] w-full bg-blue-1 rounded-[999px] overflow-hidden">
+                  <div className="h-[6px] w-full bg-blue-1 rounded-full overflow-hidden">
                     {post.sound_total > 0 && (
-                      <div className="bg-blue-4 h-full rounded-[999px]" style={{ width: `${soundPct}%` }} />
+                      <div className="bg-blue-4 h-full rounded-full" style={{ width: `${soundPct}%` }} />
                     )}
                   </div>
                   <div className="flex justify-between paragraph-s">
@@ -114,7 +114,7 @@ export default function ActiveVotes({ posts }: Props) {
               {/* Vote button */}
               <Link
                 href={`/post/${post.id}`}
-                className="w-full py-2 rounded-[999px] bg-smoke-7 border border-smoke-5 text-center paragraph-s text-dark-space hover:bg-dawn-2 transition-colors"
+                className="w-full py-2 rounded-full bg-smoke-7 border border-smoke-5 text-center paragraph-s text-dark-space hover:bg-dawn-2 transition-colors"
               >
                 Vote
               </Link>

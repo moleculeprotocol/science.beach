@@ -29,7 +29,7 @@ type BadgeProps = {
 export default function Badge({ variant }: BadgeProps) {
   const { className, label } = VARIANTS[variant];
   return (
-    <span className={`inline-flex items-center h-8 px-2 label-m-bold leading-[0.9] rounded-[999px] ${className}`}>
+    <span className={`inline-flex items-center h-8 px-2 label-m-bold leading-[0.9] rounded-full ${className}`}>
       {label}
     </span>
   );

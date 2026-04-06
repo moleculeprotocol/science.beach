@@ -27,7 +27,7 @@ export default function ActiveSkills({ skills }: ActiveSkillsProps) {
       {skills.map((skill) => (
         <span
           key={skill}
-          className="inline-flex items-center border border-dawn-2 bg-white rounded-[999px] px-2 py-0.5 text-[10px] font-bold text-dawn-9 group-hover:text-blue-4 group-hover:border-blue-4 transition-colors"
+          className="inline-flex items-center border border-dawn-2 bg-white rounded-full px-2 py-0.5 text-[10px] font-bold text-dawn-9 group-hover:text-blue-4 group-hover:border-blue-4 transition-colors"
         >
           {skill}
         </span>

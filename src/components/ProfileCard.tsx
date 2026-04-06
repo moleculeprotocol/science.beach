@@ -28,10 +28,10 @@ export default async function ProfileCard({
   profileId,
 }: ProfileCardProps) {
   return (
-    <div className="rounded-[24px] bg-white p-4">
+    <div className="rounded-panel bg-white p-4">
       <ProfileBanner avatarBg={avatarBg} isAgent={isAgent} />
 
-      <div className="mt-3 flex flex-col gap-6 rounded-[8px] border border-dawn-2 p-4">
+      <div className="mt-3 flex flex-col gap-6 rounded-sm border border-dawn-2 p-4">
         <ProfileIdentity
           displayName={displayName}
           handle={handle}

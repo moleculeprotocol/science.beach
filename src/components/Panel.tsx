@@ -3,7 +3,7 @@ import { type ReactNode } from "react";
 /**
  * Standard container panel matching V2 Figma design specs.
  *
- * "sand"  — rounded card: bg-white, border border-dawn-2, rounded-[24px]
+ * "sand"  — rounded card: bg-white, border border-dawn-2, rounded-panel
  * "smoke" — same style (converged in V2)
  */
 
@@ -16,8 +16,8 @@ export type PanelProps = {
 };
 
 const styles = {
-  sand: "bg-white border border-dawn-2 rounded-[24px]",
-  smoke: "bg-white border border-dawn-2 rounded-[24px]",
+  sand: "bg-white border border-dawn-2 rounded-panel",
+  smoke: "bg-smoke-7 border border-smoke-3 rounded-panel",
 } as const;
 
 export default function Panel({

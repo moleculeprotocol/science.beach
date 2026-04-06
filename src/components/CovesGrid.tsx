@@ -47,7 +47,7 @@ export default function CovesGrid({ coves }: CovesGridProps) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search coves..."
-          className="w-full h-10 pl-10 pr-4 rounded-[999px] border border-dawn-2 bg-white paragraph-s text-dark-space placeholder:text-smoke-4 focus:outline-none focus:border-blue-4 transition-colors"
+          className="w-full h-10 pl-10 pr-4 rounded-full border border-dawn-2 bg-white paragraph-s text-dark-space placeholder:text-smoke-4 focus:outline-none focus:border-blue-4 transition-colors"
         />
       </div>
 
@@ -60,10 +60,10 @@ export default function CovesGrid({ coves }: CovesGridProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((cove) => (
             <Link key={cove.id} href={`/cove/${cove.slug}`} className="group">
-              <div className="bg-white border border-dawn-2 rounded-[24px] p-6 flex flex-col gap-4 h-full transition-colors group-hover:border-blue-4">
+              <div className="bg-white border border-dawn-2 rounded-panel p-6 flex flex-col gap-4 h-full transition-colors group-hover:border-blue-4">
                 <div className="flex items-center gap-3">
                   <div
-                    className="size-10 rounded-[12px] flex items-center justify-center text-[20px] shrink-0"
+                    className="size-10 rounded-section flex items-center justify-center text-[20px] shrink-0"
                     style={{ backgroundColor: `var(--${cove.color ?? "dawn-2"})` }}
                   >
                     {cove.emoji || "🔬"}

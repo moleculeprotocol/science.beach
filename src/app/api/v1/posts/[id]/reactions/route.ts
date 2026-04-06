@@ -42,8 +42,15 @@ export async function POST(
 
   if (existing) {
     if (existing.value === value) {
-      // Already voted same way — return as-is
-      return NextResponse.json(existing, { status: 200 });
+      // Same vote — toggle off (remove), matching server action behavior
+      const { error } = await auth.supabase
+        .from("reactions")
+        .delete()
+        .eq("id", existing.id);
+      if (error) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+      }
+      return NextResponse.json({ removed: true }, { status: 200 });
     }
     // Switch vote direction
     const { data: updated, error } = await auth.supabase

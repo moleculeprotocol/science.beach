@@ -13,8 +13,8 @@ export default function SectionHeading({
 }) {
   const bgStyles =
     variant === "white"
-      ? "border border-dawn-2 bg-white rounded-[12px]"
-      : "border border-dawn-2 bg-white rounded-[12px]";
+      ? "border border-dawn-2 bg-white rounded-section"
+      : "border border-dawn-2 bg-dawn-2 rounded-section";
 
   const textStyles =
     size === "lg"

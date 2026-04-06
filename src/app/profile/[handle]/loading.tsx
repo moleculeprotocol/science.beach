@@ -1,5 +1,5 @@
 function SkeletonLine({ className = "" }: { className?: string }) {
-  return <div className={`h-3 rounded-[12px] bg-dawn-3 ${className}`} />;
+  return <div className={`h-3 rounded-section bg-dawn-3 ${className}`} />;
 }
 
 function SkeletonSkillCard() {
@@ -21,9 +21,9 @@ function SkeletonSkillCard() {
 
 function SkeletonSubMetricsPanel() {
   return (
-    <section className="size-full rounded-[12px] border border-dawn-2 bg-white p-2">
+    <section className="size-full rounded-section border border-dawn-2 bg-white p-2">
       <div className="flex h-full flex-col gap-2">
-        <div className="h-[50px] rounded-[12px] border border-dawn-2 bg-white p-2">
+        <div className="h-[50px] rounded-section border border-dawn-2 bg-white p-2">
           <SkeletonLine className="h-full w-28" />
         </div>
         <div className="flex flex-col gap-4 border border-dawn-2 bg-white p-3">
@@ -63,11 +63,11 @@ export default function ProfileLoading() {
           <div className="flex min-w-0 flex-col gap-2">
             <section className="grid items-start gap-2 lg:grid-cols-[430px_minmax(0,1fr)] xl:grid-cols-[446px_minmax(0,1fr)]">
               <div className="flex min-w-0 flex-col gap-2">
-                <section className="w-full min-h-[545px] rounded-[12px] border border-dawn-2 bg-white p-4">
+                <section className="w-full min-h-[545px] rounded-section border border-dawn-2 bg-white p-4">
                   <div className="flex h-full flex-col gap-6">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex min-w-0 items-center gap-3">
-                        <div className="size-16 shrink-0 rounded-[12px] border border-dawn-2 bg-dawn-3" />
+                        <div className="size-16 shrink-0 rounded-section border border-dawn-2 bg-dawn-3" />
                         <div className="flex min-w-0 flex-col gap-2">
                           <SkeletonLine className="h-5 w-36" />
                           <SkeletonLine className="h-4 w-28" />
@@ -105,9 +105,9 @@ export default function ProfileLoading() {
                 <SkeletonSubMetricsPanel />
               </div>
 
-              <section className="size-full rounded-[12px] border border-dawn-2 bg-white p-3">
+              <section className="size-full rounded-section border border-dawn-2 bg-white p-3">
                 <div className="flex flex-col gap-3">
-                  <div className="flex h-[50px] items-center rounded-[12px] border border-dawn-2 bg-white p-2">
+                  <div className="flex h-[50px] items-center rounded-section border border-dawn-2 bg-white p-2">
                     <SkeletonLine className="h-4 w-40" />
                   </div>
 
@@ -125,15 +125,15 @@ export default function ProfileLoading() {
                           <SkeletonLine className="h-4 w-12" />
                         </div>
                         <div className="h-3 border border-dawn-2 bg-white p-px">
-                          <div className="h-full w-2/3 rounded-[12px] bg-dawn-3" />
+                          <div className="h-full w-2/3 rounded-section bg-dawn-3" />
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  <section className="rounded-[12px] border border-dawn-2 bg-white p-2">
+                  <section className="rounded-section border border-dawn-2 bg-white p-2">
                     <div className="flex flex-col gap-2">
-                      <div className="flex h-[50px] items-center justify-between rounded-[12px] border border-dawn-2 bg-white p-2">
+                      <div className="flex h-[50px] items-center justify-between rounded-section border border-dawn-2 bg-white p-2">
                         <SkeletonLine className="h-4 w-32" />
                         <SkeletonLine className="h-4 w-16" />
                       </div>
@@ -150,7 +150,7 @@ export default function ProfileLoading() {
           </div>
 
           <aside className="flex min-h-[1320px] flex-col gap-3 border border-dawn-2 bg-white p-3">
-            <div className="flex h-[50px] items-center justify-between rounded-[12px] border border-dawn-2 bg-white p-2">
+            <div className="flex h-[50px] items-center justify-between rounded-section border border-dawn-2 bg-white p-2">
               <SkeletonLine className="h-4 w-28" />
               <SkeletonLine className="h-3 w-20" />
             </div>

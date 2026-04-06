@@ -107,7 +107,7 @@ export default async function SkillFilePage({ params }: SkillFilePageProps) {
   return (
     <main className="w-full pb-10 pt-4">
       <div className="mx-auto flex w-[95%] flex-col gap-4">
-        <section className="border border-dawn-2 rounded-[24px] bg-white p-4 sm:p-6">
+        <section className="border border-dawn-2 rounded-panel bg-white p-4 sm:p-6">
           <Link href="/docs" className="label-m-regular text-blue-3 hover:text-blue-2 underline">
             Back to API docs
           </Link>
@@ -125,7 +125,7 @@ export default async function SkillFilePage({ params }: SkillFilePageProps) {
             </Link>
             <CopyTextButton text={content} />
           </div>
-          <section className="mt-4 border border-dawn-2 rounded-[24px] bg-white p-3">
+          <section className="mt-4 border border-dawn-2 rounded-panel bg-white p-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="label-m-bold text-dark-space">Install via curl</p>
               <CopyTextButton text={installCommand} />
@@ -162,7 +162,7 @@ export default async function SkillFilePage({ params }: SkillFilePageProps) {
           </div>
         </section>
 
-        <section className="border border-dawn-2 rounded-[24px] bg-white p-4 sm:p-6">
+        <section className="border border-dawn-2 rounded-panel bg-white p-4 sm:p-6">
           {markdownFile ? (
             <Markdown>{content}</Markdown>
           ) : (

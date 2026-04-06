@@ -125,7 +125,7 @@ export default function PixelButton({
   if (pill) {
     return (
       <button
-        className={`flex h-8 items-center justify-center px-5 text-sm font-bold leading-[0.9] rounded-[999px] disabled:opacity-50 disabled:pointer-events-none hover:opacity-90 transition-opacity ${BG_CLASS_MAP[bg]} ${TEXT_CLASS_MAP[textColor]} ${className}`}
+        className={`flex h-8 items-center justify-center px-5 text-sm font-bold leading-[0.9] rounded-full disabled:opacity-50 disabled:pointer-events-none hover:opacity-90 transition-opacity ${BG_CLASS_MAP[bg]} ${TEXT_CLASS_MAP[textColor]} ${className}`}
         {...props}
       >
         {children}

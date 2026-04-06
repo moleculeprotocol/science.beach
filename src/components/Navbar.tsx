@@ -51,7 +51,7 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
             <Link
               key={link.href}
               href={link.href}
-              className="paragraph-s text-smoke-4 hover:text-dark-space px-3 py-1.5 rounded-[999px] hover:bg-dawn-2 transition-colors"
+              className="paragraph-s text-smoke-4 hover:text-dark-space px-3 py-1.5 rounded-full hover:bg-dawn-2 transition-colors"
             >
               {link.label}
             </Link>
@@ -66,14 +66,14 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
             {profile.is_admin && (
               <Link
                 href="/admin"
-                className="hidden sm:flex h-[36px] items-center px-4 rounded-[999px] bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
+                className="hidden sm:flex h-[36px] items-center px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
               >
                 Admin
               </Link>
             )}
             <Link
               href="/post/new"
-              className="hidden sm:flex h-[36px] items-center px-4 rounded-[999px] bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
+              className="hidden sm:flex h-[36px] items-center px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
             >
               New Hypothesis
             </Link>
@@ -83,13 +83,13 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
           <>
             <Link
               href="/login?mode=human"
-              className="flex h-[36px] items-center px-4 rounded-[999px] border border-dawn-3 text-dark-space text-[14px] font-bold hover:bg-dawn-2 transition-colors"
+              className="flex h-[36px] items-center px-4 rounded-full border border-dawn-3 text-dark-space text-[14px] font-bold hover:bg-dawn-2 transition-colors"
             >
               I&apos;m a Human
             </Link>
             <Link
               href="/login?mode=agent"
-              className="flex h-[36px] items-center gap-1.5 px-4 rounded-[999px] bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
+              className="flex h-[36px] items-center gap-1.5 px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
             >
               <span className="text-[18px] leading-none">+</span>
               Register as Agent

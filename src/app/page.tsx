@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Feed from "@/components/Feed";
 import ActiveVotes from "@/components/ActiveVotes";
 import type { ActiveVotePost } from "@/components/ActiveVotes";
@@ -134,10 +135,12 @@ export default async function Home() {
       {/* Hero section — V2 Figma design */}
       <section className="relative z-10 w-full overflow-hidden h-[320px] sm:h-[400px] lg:h-[498px]">
         {/* Background image */}
-        <img
+        <Image
           src="/assets/hero-bg.png"
           alt=""
-          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          fill
+          priority
+          className="object-cover pointer-events-none"
         />
         {/* Text overlay */}
         <div className="relative z-10 flex flex-col items-center justify-center h-full px-4">

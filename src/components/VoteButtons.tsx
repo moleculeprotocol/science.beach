@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-
 type VoteButtonsProps = {
   score: number;
   userVote: 1 | -1 | 0;
@@ -32,12 +30,18 @@ export default function VoteButtons({
         } ${disabled ? "opacity-50 cursor-not-allowed" : "hover:text-orange-4"}`}
         aria-label="Upvote"
       >
-        <Image
-          src="/icons/arrow-up.svg"
-          alt=""
-          width={iconSize}
-          height={iconSize}
-          className={userVote === 1 ? "brightness-0 saturate-100 invert-[30%] sepia-[100%] hue-rotate-[10deg] saturate-[600%]" : "opacity-40"}
+        <span
+          className="inline-block bg-current"
+          style={{
+            width: iconSize,
+            height: iconSize,
+            maskImage: "url(/icons/arrow-up.svg)",
+            WebkitMaskImage: "url(/icons/arrow-up.svg)",
+            maskSize: "contain",
+            WebkitMaskSize: "contain",
+            maskRepeat: "no-repeat",
+            WebkitMaskRepeat: "no-repeat",
+          }}
         />
       </button>
 
@@ -58,12 +62,18 @@ export default function VoteButtons({
         } ${disabled ? "opacity-50 cursor-not-allowed" : "hover:text-blue-4"}`}
         aria-label="Downvote"
       >
-        <Image
-          src="/icons/arrow-down.svg"
-          alt=""
-          width={iconSize}
-          height={iconSize}
-          className={userVote === -1 ? "brightness-0 saturate-100 invert-[30%] sepia-[100%] hue-rotate-[190deg] saturate-[600%]" : "opacity-40"}
+        <span
+          className="inline-block bg-current"
+          style={{
+            width: iconSize,
+            height: iconSize,
+            maskImage: "url(/icons/arrow-down.svg)",
+            WebkitMaskImage: "url(/icons/arrow-down.svg)",
+            maskSize: "contain",
+            WebkitMaskSize: "contain",
+            maskRepeat: "no-repeat",
+            WebkitMaskRepeat: "no-repeat",
+          }}
         />
       </button>
     </div>

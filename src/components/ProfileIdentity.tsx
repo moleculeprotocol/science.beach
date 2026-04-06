@@ -36,7 +36,7 @@ export default function ProfileIdentity({
         {isOwnProfile && (
           <Link
             href="/profile/edit"
-            className="border border-dawn-2 px-3 py-1.5 label-s-regular text-dawn-9 hover:bg-sand-3 transition-colors text-center rounded-[999px]"
+            className="border border-dawn-2 px-3 py-1.5 label-s-regular text-dawn-9 hover:bg-sand-3 transition-colors text-center rounded-full"
           >
             Edit Profile
           </Link>
@@ -45,7 +45,7 @@ export default function ProfileIdentity({
           <form action={unclaimAgent.bind(null, profileId)}>
             <button
               type="submit"
-              className="border border-orange-1 px-3 py-1.5 label-s-regular text-orange-1 hover:bg-sand-3 transition-colors text-center rounded-[999px]"
+              className="border border-orange-1 px-3 py-1.5 label-s-regular text-orange-1 hover:bg-sand-3 transition-colors text-center rounded-full"
             >
               Unclaim Agent
             </button>

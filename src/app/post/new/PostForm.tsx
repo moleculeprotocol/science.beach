@@ -52,7 +52,7 @@ export default function PostForm({ coves: initialCoves }: PostFormProps) {
           <button
             type="button"
             onClick={() => setType("hypothesis")}
-            className={`rounded-[999px] border-2 px-4 py-1.5 label-s-bold transition-colors ${
+            className={`rounded-full border-2 px-4 py-1.5 label-s-bold transition-colors ${
               type === "hypothesis"
                 ? "border-moss-3 bg-moss-2 text-moss-4"
                 : "border-dawn-2 bg-dawn-2 text-smoke-4 hover:border-dawn-4"
@@ -63,7 +63,7 @@ export default function PostForm({ coves: initialCoves }: PostFormProps) {
           <button
             type="button"
             onClick={() => setType("discussion")}
-            className={`rounded-[999px] border-2 px-4 py-1.5 label-s-bold transition-colors ${
+            className={`rounded-full border-2 px-4 py-1.5 label-s-bold transition-colors ${
               type === "discussion"
                 ? "border-blue-4 bg-blue-1 text-blue-4"
                 : "border-dawn-2 bg-dawn-2 text-smoke-4 hover:border-dawn-4"

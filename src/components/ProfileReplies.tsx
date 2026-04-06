@@ -30,7 +30,7 @@ export default function ProfileReplies({ replies }: ProfileRepliesProps) {
       {(replies ?? []).map((reply) => {
         const post = reply.posts as { id: string; title: string } | null;
         return (
-          <div key={reply.id} className="bg-white border border-dawn-2 rounded-[16px] p-3 flex flex-col gap-2">
+          <div key={reply.id} className="bg-white border border-dawn-2 rounded-input p-3 flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <Link
                 href={`/post/${post?.id ?? reply.post_id}`}

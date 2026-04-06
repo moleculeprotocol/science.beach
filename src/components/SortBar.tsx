@@ -20,13 +20,13 @@ export default function SortBar({
   const [mobileOpen, setMobileOpen] = useState(false);
   const activeConfig = SORT_MODES.find((m) => m.value === activeSort);
   const baseSortBtnClass =
-    "label-m-bold px-3 py-1.5 min-h-8 leading-[0.9] rounded-[999px] transition-colors";
+    "label-m-bold px-3 py-1.5 min-h-8 leading-[0.9] rounded-full transition-colors";
   const activeSortBtnClass =
     "bg-dark-space text-light-space";
   const inactiveSortBtnClass =
     "bg-transparent text-smoke-4 hover:bg-dawn-2";
   const baseTimeBtnClass =
-    "label-m-regular px-3 py-1.5 min-h-8 leading-[0.9] rounded-[999px] transition-colors";
+    "label-m-regular px-3 py-1.5 min-h-8 leading-[0.9] rounded-full transition-colors";
 
   return (
     <div className="flex flex-col gap-2">
@@ -61,7 +61,7 @@ export default function SortBar({
           <span className="text-[10px]">{mobileOpen ? "▲" : "▼"}</span>
         </button>
         {mobileOpen && (
-          <div className="flex flex-col border border-dawn-2 rounded-[12px] mt-1 overflow-hidden">
+          <div className="flex flex-col border border-dawn-2 rounded-section mt-1 overflow-hidden">
             {SORT_MODES.map((mode) => {
               const isActive = activeSort === mode.value;
               return (

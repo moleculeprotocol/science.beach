@@ -78,8 +78,8 @@ const ANTI_GAMING = [
 
 function CardTitle({ icon, title }: { icon: string; title: string }) {
   return (
-    <div className="flex h-[50px] items-center gap-3 border-2 border-dawn-2 bg-sand-3 px-1.5 py-3 rounded-[8px]">
-      <div className="flex size-[38px] shrink-0 items-center justify-center border-2 border-dawn-2 bg-white rounded-[8px]">
+    <div className="flex h-[50px] items-center gap-3 border-2 border-dawn-2 bg-sand-3 px-1.5 py-3 rounded-sm">
+      <div className="flex size-[38px] shrink-0 items-center justify-center border-2 border-dawn-2 bg-white rounded-sm">
         <Image src={icon} alt="" width={24} height={24} unoptimized />
       </div>
       <p className="text-[12px] leading-[1.4] tracking-[-0.48px] text-dawn-9 text-shadow-section-heading">
@@ -99,7 +99,7 @@ const TAG_VARIANTS = {
 
 function Tag({ children, variant = "sand" }: { children: React.ReactNode; variant?: keyof typeof TAG_VARIANTS }) {
   return (
-    <span className={`border px-2 py-1 text-[10px] leading-[1.4] rounded-[999px] ${TAG_VARIANTS[variant]}`}>
+    <span className={`border px-2 py-1 text-[10px] leading-[1.4] rounded-full ${TAG_VARIANTS[variant]}`}>
       {children}
     </span>
   );
@@ -140,7 +140,7 @@ export default function ScoreExplainerPopup({ open, onClose }: ScoreExplainerPop
         {/* Close — fixed on mobile, anchored to top-right of panel on desktop */}
         <button
           onClick={onClose}
-          className="fixed right-3 top-3 z-60 flex size-8 items-center justify-center border-2 border-dawn-2 bg-white text-[16px] font-bold text-dawn-9 transition-colors hover:bg-sand-4 sm:absolute sm:-top-10 sm:right-0 rounded-[999px]"
+          className="fixed right-3 top-3 z-60 flex size-8 items-center justify-center border-2 border-dawn-2 bg-white text-[16px] font-bold text-dawn-9 transition-colors hover:bg-sand-4 sm:absolute sm:-top-10 sm:right-0 rounded-full"
         >
           &times;
         </button>
@@ -148,15 +148,15 @@ export default function ScoreExplainerPopup({ open, onClose }: ScoreExplainerPop
         {/* Panel */}
         <div
           ref={panelRef}
-          className="flex min-h-0 w-full flex-1 flex-col gap-2 overflow-y-auto bg-sand-3 p-2 pt-14 sm:gap-3 sm:border-2 sm:border-dawn-2 sm:p-3 sm:pt-3 sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.25)] rounded-[24px]"
+          className="flex min-h-0 w-full flex-1 flex-col gap-2 overflow-y-auto bg-sand-3 p-2 pt-14 sm:gap-3 sm:border-2 sm:border-dawn-2 sm:p-3 sm:pt-3 sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.25)] rounded-panel"
         >
 
         {/* --- Axis Cards --- */}
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
           {AXIS_CARDS.map((card) => (
-            <div key={card.title} className="flex flex-col gap-2 rounded-[24px] border-2 border-dawn-2 bg-white p-2">
+            <div key={card.title} className="flex flex-col gap-2 rounded-panel border-2 border-dawn-2 bg-white p-2">
               <CardTitle icon={card.icon} title={card.title} />
-              <div className="flex-1 border border-dawn-2 bg-white p-3 rounded-[8px]">
+              <div className="flex-1 border border-dawn-2 bg-white p-3 rounded-sm">
                 <p className="text-[13px] font-bold leading-[1.4] text-dawn-9">
                   {card.description}
                 </p>
@@ -166,9 +166,9 @@ export default function ScoreExplainerPopup({ open, onClose }: ScoreExplainerPop
         </div>
 
         {/* --- The Formula --- */}
-        <div className="flex flex-col gap-2 rounded-[24px] border-2 border-dawn-2 bg-white p-2">
+        <div className="flex flex-col gap-2 rounded-panel border-2 border-dawn-2 bg-white p-2">
           <CardTitle icon="/icons/compscore/formula.svg" title="The formula" />
-          <div className="border border-dawn-2 bg-white p-3 rounded-[8px]">
+          <div className="border border-dawn-2 bg-white p-3 rounded-sm">
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <p className="text-[18px] font-bold leading-none text-sand-8 sm:text-[22px]">
@@ -189,9 +189,9 @@ export default function ScoreExplainerPopup({ open, onClose }: ScoreExplainerPop
 
         {/* --- Humans vs Agents --- */}
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
-          <div className="flex flex-col gap-2 rounded-[24px] border-2 border-dawn-2 bg-white p-2">
+          <div className="flex flex-col gap-2 rounded-panel border-2 border-dawn-2 bg-white p-2">
             <CardTitle icon="/icons/compscore/humans.svg" title="Humans" />
-            <div className="flex-1 border border-dawn-2 bg-white p-3 rounded-[8px]">
+            <div className="flex-1 border border-dawn-2 bg-white p-3 rounded-sm">
               <ul className="flex flex-col gap-2">
                 {HUMAN_POINTS.map((point) => (
                   <li key={point} className="text-[13px] font-bold leading-[1.4] text-dawn-9">
@@ -202,9 +202,9 @@ export default function ScoreExplainerPopup({ open, onClose }: ScoreExplainerPop
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 rounded-[24px] border-2 border-dawn-2 bg-white p-2">
+          <div className="flex flex-col gap-2 rounded-panel border-2 border-dawn-2 bg-white p-2">
             <CardTitle icon="/icons/compscore/agents.svg" title="Agents" />
-            <div className="flex-1 border border-dawn-2 bg-white p-3 rounded-[8px]">
+            <div className="flex-1 border border-dawn-2 bg-white p-3 rounded-sm">
               <ul className="flex flex-col gap-2">
                 {AGENT_POINTS.map((point) => (
                   <li key={point} className="text-[13px] font-bold leading-[1.4] text-dawn-9">
@@ -217,16 +217,16 @@ export default function ScoreExplainerPopup({ open, onClose }: ScoreExplainerPop
         </div>
 
         {/* --- Anti Gaming Measures --- */}
-        <div className="flex flex-col gap-2 rounded-[24px] border-2 border-dawn-2 bg-white p-2">
-          <div className="flex h-[50px] items-center border-2 border-dawn-2 bg-sand-3 px-4 py-3 rounded-[8px]">
+        <div className="flex flex-col gap-2 rounded-panel border-2 border-dawn-2 bg-white p-2">
+          <div className="flex h-[50px] items-center border-2 border-dawn-2 bg-sand-3 px-4 py-3 rounded-sm">
             <p className="text-[12px] leading-[1.4] tracking-[-0.48px] text-dawn-9 text-shadow-section-heading">
               Anti Gaming Measures
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-3 border border-dawn-2 bg-white p-3 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-4 rounded-[8px]">
+          <div className="grid grid-cols-1 gap-3 border border-dawn-2 bg-white p-3 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-4 rounded-sm">
           {ANTI_GAMING.map((item) => (
             <div key={item.title} className="flex items-center gap-3">
-              <div className="flex size-[38px] shrink-0 items-center justify-center border-2 border-dawn-2 bg-white rounded-[8px]">
+              <div className="flex size-[38px] shrink-0 items-center justify-center border-2 border-dawn-2 bg-white rounded-sm">
                 <Image src={item.icon} alt="" width={24} height={24} unoptimized />
               </div>
               <div className="flex flex-col">

@@ -32,7 +32,7 @@ export default function CovesOverview({ coves }: CovesOverviewProps) {
         <Link key={cove.id} href={`/cove/${cove.slug}`} className="block">
           <Panel className="h-full transition-colors hover:bg-day-1">
             <div
-              className="h-1 w-full mb-2 rounded-[999px]"
+              className="h-1 w-full mb-2 rounded-full"
               style={{ backgroundColor: `var(--${cove.color ?? "blue-4"})` }}
             />
             <h6 className="h7 text-dark-space">
