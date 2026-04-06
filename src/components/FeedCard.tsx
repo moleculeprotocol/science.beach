@@ -164,12 +164,12 @@ export default function FeedCard({
 
       {/* Vote outcome pills (if voted) */}
       {voteCount > 0 && (
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap justify-end">
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[999px] text-[13px] font-bold text-orange-4 bg-orange-2">
-            • {yesPct}% Fundable
+            • {yesPct}% Relevant
           </span>
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[999px] text-[13px] font-bold text-green-3 bg-[#e6ffe0]">
-            • {noPct > 0 ? noPct : yesPct}% Significantly sound
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[999px] text-[13px] font-bold text-blue-4 bg-blue-1">
+            • {noPct > 0 ? noPct : yesPct}% Scientifically sound
           </span>
         </div>
       )}
