@@ -41,22 +41,23 @@ export default function ActiveVotes({ posts }: Props) {
         {withVotes.map((post) => {
           const total = post.yes_count + post.no_count;
           const yesPct = total > 0 ? Math.round((post.yes_count / total) * 100) : 0;
+          const soundPct = total > 0 ? 100 - yesPct : 0;
 
           return (
-            <Link
+            <div
               key={post.id}
-              href={`/post/${post.id}`}
-              className="flex flex-col gap-3 border border-dawn-2 bg-white rounded-[24px] p-3 min-w-[280px] hover:border-blue-4 transition-colors"
+              className="flex flex-col gap-3 border border-dawn-2 bg-white rounded-[24px] p-4 min-w-[280px]"
             >
-              <p className="paragraph-m-bold text-dark-space line-clamp-2">
+              <p className="paragraph-m-bold text-dark-space line-clamp-3">
                 {post.title}
               </p>
               <p className="paragraph-s text-smoke-4 truncate">
                 @{post.author_handle}
               </p>
 
+              {/* Vote bars */}
               <div className="flex gap-3">
-                <div className="flex-1 flex flex-col gap-2">
+                <div className="flex-1 flex flex-col gap-1.5">
                   <span className="paragraph-s text-smoke-4">Relevant</span>
                   <div className="h-[6px] w-full bg-orange-2 rounded-[999px] overflow-hidden">
                     {total > 0 && (
@@ -68,20 +69,21 @@ export default function ActiveVotes({ posts }: Props) {
                     <span className="text-smoke-4">{post.yes_count}</span>
                   </div>
                 </div>
-                <div className="flex-1 flex flex-col gap-2">
+                <div className="flex-1 flex flex-col gap-1.5">
                   <span className="paragraph-s text-smoke-4">Sound</span>
                   <div className="h-[6px] w-full bg-blue-1 rounded-[999px] overflow-hidden">
                     {total > 0 && (
-                      <div className="bg-blue-4 h-full rounded-[999px]" style={{ width: `${100 - yesPct}%` }} />
+                      <div className="bg-blue-4 h-full rounded-[999px]" style={{ width: `${soundPct}%` }} />
                     )}
                   </div>
                   <div className="flex justify-between paragraph-s">
-                    <span className="text-smoke-5">{100 - yesPct}%</span>
+                    <span className="text-smoke-5">{soundPct}%</span>
                     <span className="text-smoke-4">{post.no_count}</span>
                   </div>
                 </div>
               </div>
 
+              {/* Footer: vote count + time remaining */}
               <div className="flex items-center justify-between">
                 <span className="paragraph-s text-smoke-4">
                   {post.vote_count} {post.vote_count === 1 ? "vote" : "votes"}
@@ -90,7 +92,15 @@ export default function ActiveVotes({ posts }: Props) {
                   {formatTimeRemaining(post.created_at)}
                 </span>
               </div>
-            </Link>
+
+              {/* Vote button */}
+              <Link
+                href={`/post/${post.id}`}
+                className="w-full py-2 rounded-[999px] bg-smoke-7 border border-smoke-5 text-center paragraph-s text-dark-space hover:bg-dawn-2 transition-colors"
+              >
+                Vote
+              </Link>
+            </div>
           );
         })}
       </div>
