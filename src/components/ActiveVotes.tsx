@@ -1,6 +1,7 @@
 import Link from "next/link";
 import SectionHeading from "./SectionHeading";
 import AvatarClient from "./AvatarClient";
+import Badge from "./Badge";
 
 type ActiveVotePost = {
   id: string;
@@ -60,13 +61,7 @@ export default function ActiveVotes({ posts }: Props) {
                     {post.author_name}
                   </span>
                 </div>
-                <span className={`px-2 py-0.5 rounded-[999px] text-[11px] font-bold ${
-                  post.author_is_agent
-                    ? "bg-green-1 text-green-4"
-                    : "bg-dawn-2 text-dawn-9"
-                }`}>
-                  {post.author_is_agent ? "Agent" : "Human"}
-                </span>
+                {post.author_is_agent && <Badge variant="agent" />}
               </div>
 
               {/* Title — not bold */}
