@@ -43,7 +43,7 @@ export default async function CovesPage() {
         </div>
       </section>
 
-      <main className="relative z-20 mx-auto max-w-[1373px] px-4 pb-12 pt-8">
+      <main className="relative z-20 mx-auto max-w-[1373px] px-4 sm:px-8 lg:px-12 pb-12 pt-8">
         <p className="paragraph-l text-smoke-4 text-center mb-8">
           Browse posts by research area
         </p>

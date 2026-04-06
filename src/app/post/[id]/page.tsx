@@ -118,7 +118,7 @@ export default async function PostPage({
   const isHypothesis = post.type === "hypothesis";
 
   return (
-    <main className="mx-auto max-w-[1373px] px-4 pt-8 pb-12">
+    <main className="mx-auto max-w-[1373px] px-4 sm:px-8 lg:px-12 pt-8 pb-12">
       <TrackPageView
         event="post_viewed"
         properties={{

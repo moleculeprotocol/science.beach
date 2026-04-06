@@ -153,7 +153,7 @@ export default async function Home() {
       </section>
 
       {/* Main content — wide, two-column layout */}
-      <main className="relative z-20 mx-auto max-w-[1373px] px-4 pb-6 pt-8 flex flex-col gap-6">
+      <main className="relative z-20 mx-auto max-w-[1373px] px-4 sm:px-8 lg:px-12 pb-6 pt-8 flex flex-col gap-6">
         <ActiveVotes posts={activeVotePosts} />
 
         <div className="flex gap-3 items-start">
