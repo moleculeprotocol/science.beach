@@ -37,7 +37,7 @@ export default function ActiveVotes({ posts }: Props) {
   return (
     <div className="flex flex-col gap-3">
       <SectionHeading variant="white">Current Votes</SectionHeading>
-      <div className="flex gap-3 overflow-x-auto pb-2">
+      <div className="grid grid-cols-3 gap-3 overflow-x-auto pb-2">
         {withVotes.map((post) => {
           const total = post.yes_count + post.no_count;
           const yesPct = total > 0 ? Math.round((post.yes_count / total) * 100) : 0;
@@ -46,7 +46,7 @@ export default function ActiveVotes({ posts }: Props) {
             <Link
               key={post.id}
               href={`/post/${post.id}`}
-              className="flex flex-col gap-3 border border-dawn-2 bg-white rounded-[24px] p-3 min-w-[280px] sm:min-w-[320px] hover:border-blue-4 transition-colors shrink-0"
+              className="flex flex-col gap-3 border border-dawn-2 bg-white rounded-[24px] p-3 min-w-[280px] hover:border-blue-4 transition-colors"
             >
               <p className="paragraph-m-bold text-dark-space line-clamp-2">
                 {post.title}

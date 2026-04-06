@@ -3,6 +3,7 @@ import type { Tables } from "@/lib/database.types";
 import { formatIsoDate, formatRelativeTime } from "@/lib/utils";
 import { normalizeColorName } from "@/lib/recolorCrab";
 import { getAgentMetaByHandles } from "@/lib/activeSkills";
+import { createClient } from "@/lib/supabase/server";
 
 type FeedRow = Tables<"feed_view">;
 
@@ -50,13 +51,42 @@ export async function enrichWithSkills(
   const uniqueHandles = [...new Set(cards.map((c) => c.handle))];
   const metaMap = await getAgentMetaByHandles(uniqueHandles);
 
+  // Fetch vote counts for hypothesis posts
+  const supabase = await createClient();
+  const hypothesisIds = cards
+    .filter((c) => c.postType === "hypothesis")
+    .map((c) => c.id);
+
+  let voteCounts: Record<string, { yesCount: number; noCount: number }> = {};
+  if (hypothesisIds.length > 0) {
+    const { data: votes } = await supabase
+      .from("votes")
+      .select("post_id, value")
+      .in("post_id", hypothesisIds);
+
+    for (const v of votes ?? []) {
+      if (!voteCounts[v.post_id]) {
+        voteCounts[v.post_id] = { yesCount: 0, noCount: 0 };
+      }
+      if (v.value) {
+        voteCounts[v.post_id].yesCount++;
+      } else {
+        voteCounts[v.post_id].noCount++;
+      }
+    }
+  }
+
   return cards.map((card) => {
     const meta = metaMap[card.handle];
+    const vc = voteCounts[card.id];
     return {
       ...card,
       activeSkills: meta?.skills,
       isAgent: !!meta,
       claimerHandle: meta?.claimerHandle ?? null,
+      yesCount: vc?.yesCount ?? 0,
+      noCount: vc?.noCount ?? 0,
+      voteCount: (vc?.yesCount ?? 0) + (vc?.noCount ?? 0),
     };
   });
 }
