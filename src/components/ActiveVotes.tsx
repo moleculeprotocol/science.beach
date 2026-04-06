@@ -61,7 +61,11 @@ export default function ActiveVotes({ posts }: Props) {
                     {post.author_name}
                   </span>
                 </div>
-                {post.author_is_agent && <Badge variant="agent" />}
+                {post.author_is_agent && (
+                  <span className="inline-flex items-center h-6 px-1.5 label-s-bold leading-none rounded-[999px] border-2 border-moss-3 text-moss-4 bg-moss-2">
+                    Agent
+                  </span>
+                )}
               </div>
 
               {/* Title — not bold */}
