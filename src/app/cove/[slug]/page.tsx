@@ -8,6 +8,7 @@ import { getAllCoves } from "@/lib/coves";
 import Feed from "@/components/Feed";
 import CovesSidebar from "@/components/CovesSidebar";
 import ResearchersSidebar from "@/components/ResearchersSidebar";
+import { getTopResearchers } from "@/lib/topResearchers";
 
 export async function generateMetadata({
   params,
@@ -116,11 +117,7 @@ export default async function CovePage({
   }));
 
   // Fetch top researchers for sidebar
-  const { data: topResearchers } = await supabase
-    .from("profiles")
-    .select("id, handle, display_name, avatar_bg, is_agent")
-    .order("created_at", { ascending: true })
-    .limit(4);
+  const topResearchers = await getTopResearchers(supabase);
 
   return (
     <div className="relative overflow-hidden">
@@ -162,7 +159,7 @@ export default async function CovePage({
 
           <aside className="hidden lg:flex flex-col gap-3 w-[400px] shrink-0 sticky top-4">
             <CovesSidebar coves={sidebarCoves} />
-            <ResearchersSidebar researchers={topResearchers ?? []} />
+            <ResearchersSidebar researchers={topResearchers} />
           </aside>
         </div>
       </main>

@@ -3,11 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useTransition } from "react";
-import { toggleReaction } from "@/app/post/[id]/actions";
+import { voteOnPost } from "@/app/post/[id]/actions";
 import { useUser } from "@/lib/hooks/useUser";
 import Markdown from "./Markdown";
 import InfographicImage from "./InfographicImage";
 import AgentCardHeader from "./AgentCardHeader";
+import VoteButtons from "./VoteButtons";
 
 import { trackPostClicked, trackPostShared } from "@/lib/tracking-client";
 import type { CrabColorName } from "./crabColors";
@@ -25,6 +26,8 @@ export type FeedCardProps = {
   commentCount: number;
   likeCount: number;
   initialLiked?: boolean;
+  score?: number;
+  userVote?: 1 | -1 | 0;
   postType?: string;
   imageUrl?: string | null;
   imageStatus?: string;
@@ -42,12 +45,12 @@ export type FeedCardProps = {
 };
 
 export default function FeedCard({
-  username, handle, avatarBg, timestamp, id, title, hypothesisText, commentCount, likeCount, initialLiked = false, postType, imageUrl, imageStatus, imageCaption, activeSkills, isAgent = false, claimerHandle, coveName, coveSlug, coveEmoji, yesCount = 0, noCount = 0, voteCount = 0,
+  username, handle, avatarBg, timestamp, id, title, hypothesisText, commentCount, likeCount, initialLiked = false, score: initialScore, userVote: initialUserVote = 0, postType, imageUrl, imageStatus, imageCaption, activeSkills, isAgent = false, claimerHandle, coveName, coveSlug, coveEmoji, yesCount = 0, noCount = 0, voteCount = 0,
 }: FeedCardProps) {
   const { user } = useUser();
   const [isPending, startTransition] = useTransition();
-  const [liked, setLiked] = useState(initialLiked);
-  const [optimisticCount, setOptimisticCount] = useState(likeCount);
+  const [currentVote, setCurrentVote] = useState<1 | -1 | 0>(initialUserVote);
+  const [optimisticScore, setOptimisticScore] = useState(initialScore ?? likeCount);
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -55,16 +58,22 @@ export default function FeedCard({
     trackPostClicked({ post_id: id, post_type: postType, author_handle: handle, source: "feed_card" });
   }
 
-  function handleLike() {
+  function handleVote(value: 1 | -1) {
     if (!user) {
       window.open("/login?mode=signup", "_blank");
       return;
     }
-    const nextLiked = !liked;
-    setLiked(nextLiked);
-    const base = initialLiked ? likeCount - 1 : likeCount;
-    setOptimisticCount(nextLiked ? base + 1 : base);
-    startTransition(() => toggleReaction(id));
+    const baseScore = initialScore ?? likeCount;
+    // Compute new vote state
+    if (currentVote === value) {
+      // Toggle off
+      setCurrentVote(0);
+      setOptimisticScore(baseScore);
+    } else {
+      setCurrentVote(value);
+      setOptimisticScore(baseScore - (initialUserVote ?? 0) + value);
+    }
+    startTransition(() => voteOnPost(id, value));
   }
 
   function handleComment() {
@@ -168,16 +177,13 @@ export default function FeedCard({
       {/* Action bar — no border separator, matches Figma */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          {/* Heart / Likes */}
-          <button
-            type="button"
+          {/* Upvote / Downvote */}
+          <VoteButtons
+            score={optimisticScore}
+            userVote={currentVote}
             disabled={isPending}
-            onClick={handleLike}
-            className={`flex items-center gap-1.5 paragraph-s transition-colors ${liked ? "text-red-4" : "text-smoke-4"} ${isPending ? "opacity-50" : "hover:text-red-4"}`}
-          >
-            <Image src="/icons/heart.svg" alt="" width={16} height={16} className={liked ? "brightness-0 saturate-100 invert-[22%] sepia-[93%] hue-rotate-[340deg]" : "opacity-40"} />
-            {optimisticCount > 0 && optimisticCount}
-          </button>
+            onVote={handleVote}
+          />
 
           {/* Comments */}
           <button

@@ -3,9 +3,10 @@ import ActiveVotes from "@/components/ActiveVotes";
 import type { ActiveVotePost } from "@/components/ActiveVotes";
 import CovesSidebar from "@/components/CovesSidebar";
 import ResearchersSidebar from "@/components/ResearchersSidebar";
+import { getTopResearchers } from "@/lib/topResearchers";
 import DisclaimerPopup from "@/components/DisclaimerPopup";
 import { buildFeedCacheKey } from "@/lib/feed-cache";
-import { mapFeedRowsToCards, enrichWithSkills } from "@/lib/feed";
+import { mapFeedRowsToCards, enrichWithSkills, type UserVoteMap } from "@/lib/feed";
 import { SORT_MODES } from "@/lib/sort-modes";
 import { getAllCoves } from "@/lib/coves";
 import { createClient } from "@/lib/supabase/server";
@@ -15,6 +16,21 @@ export default async function Home() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Fetch user votes early so we can pass them into feed card mapping
+  let likedPostIds: string[] = [];
+  let userVotes: UserVoteMap = {};
+  if (user) {
+    const { data: reactions } = await supabase
+      .from("reactions")
+      .select("post_id, value")
+      .eq("author_id", user.id)
+      .is("comment_id", null);
+    likedPostIds = (reactions ?? []).filter((r) => r.value === 1).map((r) => r.post_id);
+    for (const r of reactions ?? []) {
+      userVotes[r.post_id] = r.value as 1 | -1;
+    }
+  }
 
   const PAGE_SIZE = 7;
   const sortModes = SORT_MODES.map((mode) => mode.value);
@@ -28,7 +44,7 @@ export default async function Home() {
         page_offset: 0,
         page_limit: PAGE_SIZE + 1,
       });
-      const mapped = await enrichWithSkills(mapFeedRowsToCards(data));
+      const mapped = await enrichWithSkills(mapFeedRowsToCards(data, userVotes));
       return {
         key: buildFeedCacheKey({
           sort: sortMode,
@@ -61,16 +77,6 @@ export default async function Home() {
   };
   const items = defaultPage.items;
   const hasMore = defaultPage.hasMore;
-
-  let likedPostIds: string[] = [];
-  if (user) {
-    const { data: likes } = await supabase
-      .from("reactions")
-      .select("post_id")
-      .eq("author_id", user.id)
-      .eq("type", "like");
-    likedPostIds = (likes ?? []).map((r) => r.post_id);
-  }
 
   // Fetch top 3 hypothesis posts with active voting (created < 24h ago)
   const votingCutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
@@ -114,12 +120,8 @@ export default async function Home() {
     postCount: c.post_count ?? 0,
   }));
 
-  // Fetch top researchers for sidebar
-  const { data: topResearchers } = await supabase
-    .from("profiles")
-    .select("id, handle, display_name, avatar_bg, is_agent")
-    .order("created_at", { ascending: true })
-    .limit(4);
+  // Fetch top researchers — claimed agents ranked by quality score
+  const researcherEntries = await getTopResearchers(supabase);
 
   return (
     <div className="relative overflow-hidden">
@@ -165,7 +167,7 @@ export default async function Home() {
           {/* Sidebar — hidden on smaller screens */}
           <aside className="hidden lg:flex flex-col gap-3 w-[400px] shrink-0 sticky top-4">
             <CovesSidebar coves={sidebarCoves} />
-            <ResearchersSidebar researchers={topResearchers ?? []} />
+            <ResearchersSidebar researchers={researcherEntries} />
           </aside>
         </div>
       </main>
