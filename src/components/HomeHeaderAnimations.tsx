@@ -292,7 +292,7 @@ const LEFT_CLUSTER_LAYOUT: ClusterLayout = {
     },
   ],
   cursors: [],
-  originClassName: "left-0 top-[146px] md:left-[60px] md:top-[398px] xl:left-0 xl:top-[146px]",
+  originClassName: "hidden md:block left-0 top-[146px] md:left-[60px] md:top-[398px] xl:left-0 xl:top-[146px]",
   sizeClassName: "h-[275px] w-[266px]",
   staticAssets: [
     {
@@ -417,7 +417,7 @@ const RIGHT_CLUSTER_LAYOUT: ClusterLayout = {
     },
   ],
   cursors: [],
-  originClassName: "right-0 top-[151px] md:right-[60px] md:top-[379px] xl:right-0 xl:top-[151px]",
+  originClassName: "left-1/2 -translate-x-1/2 top-[240px] md:translate-x-0 md:left-auto md:right-[60px] md:top-[379px] xl:right-0 xl:top-[151px]",
   sizeClassName: "h-[331px] w-[354px]",
   staticAssets: [],
 };
@@ -495,7 +495,7 @@ function SpeechBubble({
     <div
       aria-hidden="true"
       className={joinClasses(
-        "pointer-events-none absolute z-[70] flex flex-col",
+        "pointer-events-none absolute z-[70] hidden sm:flex flex-col",
         positionClassName,
         motionClassName,
       )}
@@ -711,7 +711,7 @@ export default function HomeHeaderAnimations() {
     <>
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[45] hidden md:block"
+        className="pointer-events-none absolute inset-0 z-[45] block"
       >
         <div className="relative mx-auto h-full w-full max-w-[1680px]">
           {HEADER_FREE_CURSORS.map((cursor) => (
