@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 const NAV_LINKS = [
@@ -33,11 +34,11 @@ export default function MobileNavDrawer() {
   }, [open]);
 
   return (
-    <div className="relative lg:hidden" ref={drawerRef}>
+    <div className="relative xl:hidden" ref={drawerRef}>
       {/* Hamburger icon button — beige/sand bg matching Figma */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex h-[44px] w-[44px] items-center justify-center rounded-card bg-dawn-2 hover:bg-dawn-3 transition-colors"
+        className="flex h-[50px] w-[50px] items-center justify-center rounded-full bg-day-4 hover:bg-day-3 transition-colors"
         aria-label="Open navigation"
         aria-expanded={open}
       >
@@ -47,11 +48,14 @@ export default function MobileNavDrawer() {
             <line x1="14" y1="2" x2="2" y2="14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
         ) : (
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-            <line x1="2" y1="4" x2="14" y2="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            <line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            <line x1="2" y1="12" x2="14" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
+          <Image
+            src="/icons/dropdown-menu.svg"
+            alt=""
+            aria-hidden
+            width={24}
+            height={24}
+            className=""
+          />
         )}
       </button>
 

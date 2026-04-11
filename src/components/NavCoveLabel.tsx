@@ -10,7 +10,7 @@ export default function NavCoveLabel() {
   const short = coveName.split(" & ")[0].split(" and ")[0];
 
   return (
-    <span className="hidden sm:block lg:hidden paragraph-s text-smoke-3 truncate max-w-[140px]">
+    <span className="block xl:hidden paragraph-s text-smoke-3 truncate max-w-[140px]">
       {short}
     </span>
   );

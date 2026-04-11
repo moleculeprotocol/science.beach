@@ -5,15 +5,13 @@ import MobileNavDrawer from "./MobileNavDrawer";
 import NavCoveLabel from "./NavCoveLabel";
 import { createClient } from "@/lib/supabase/server";
 
-export type NavbarProps = { width?: "feed" | "full" };
-
 const NAV_LINKS = [
   { href: "/", label: "Feed" },
   { href: "/coves", label: "Coves" },
   { href: "/docs", label: "API Docs" },
 ];
 
-export default async function Navbar({ width = "feed" }: NavbarProps) {
+export default async function Navbar() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -43,13 +41,13 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
             style={{ imageRendering: "pixelated" }}
             priority
           />
-          <span className="text-[16px] font-bold leading-[1.4] text-dark-space">
+          <span className="hidden sm:block text-[16px] font-bold leading-[1.4] text-dark-space">
             Science Beach
           </span>
         </Link>
 
         {/* Desktop nav links — hidden on tablet/mobile */}
-        <div className="hidden lg:flex items-center gap-1 ml-12">
+        <div className="hidden xl:flex items-center gap-1 ml-12">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
@@ -75,7 +73,7 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
             {profile.is_admin && (
               <Link
                 href="/admin"
-                className="hidden lg:flex h-[36px] items-center px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
+                className="hidden xl:flex h-[36px] items-center px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
               >
                 Admin
               </Link>
@@ -83,7 +81,7 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
             {/* Tablet/mobile: "+" circle */}
             <Link
               href="/post/new"
-              className="flex lg:hidden h-[44px] w-[44px] items-center justify-center rounded-full bg-dark-space text-light-space text-[22px] font-bold hover:opacity-90 transition-opacity"
+              className="flex xl:hidden h-[50px] w-[50px] items-center justify-center rounded-full bg-dark-space text-light-space text-[22px] font-bold hover:opacity-90 transition-opacity"
               aria-label="New Hypothesis"
             >
               +
@@ -91,7 +89,7 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
             {/* Desktop: full label */}
             <Link
               href="/post/new"
-              className="hidden lg:flex h-[36px] items-center px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
+              className="hidden xl:flex h-[36px] items-center px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
             >
               New Hypothesis
             </Link>
@@ -102,7 +100,7 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
             {/* Desktop: "I'm a Human" */}
             <Link
               href="/login?mode=human"
-              className="hidden lg:flex h-[36px] items-center px-4 rounded-full border border-dawn-3 text-dark-space text-[14px] font-bold hover:bg-dawn-2 transition-colors"
+              className="hidden xl:flex h-[36px] items-center px-4 rounded-full border border-dawn-3 text-dark-space text-[14px] font-bold hover:bg-dawn-2 transition-colors"
             >
               I&apos;m a Human
             </Link>
@@ -110,7 +108,7 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
             <Link
               href="/login?mode=agent"
               data-register-agent-cta="mobile"
-              className="flex lg:hidden h-[44px] w-[44px] items-center justify-center rounded-full bg-dark-space text-light-space text-[22px] font-bold hover:opacity-90 transition-opacity"
+              className="flex xl:hidden h-[50px] w-[50px] items-center justify-center rounded-full bg-dark-space text-light-space text-[22px] font-bold hover:opacity-90 transition-opacity"
               aria-label="Register as Agent"
             >
               +
@@ -119,7 +117,7 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
             <Link
               href="/login?mode=agent"
               data-register-agent-cta="desktop"
-              className="hidden lg:flex h-[36px] items-center gap-1.5 px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
+              className="hidden xl:flex h-[36px] items-center gap-1.5 px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
             >
               <span className="text-[18px] leading-none">+</span>
               Register as Agent
