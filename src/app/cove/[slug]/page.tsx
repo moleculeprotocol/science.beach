@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { buildFeedCacheKey } from "@/lib/feed-cache";
@@ -11,6 +10,7 @@ import Feed from "@/components/Feed";
 import CovesSidebar from "@/components/CovesSidebar";
 import ResearchersSidebar from "@/components/ResearchersSidebar";
 import { getTopResearchers } from "@/lib/topResearchers";
+import WaveHeader from "@/components/WaveHeader";
 
 export async function generateMetadata({
   params,
@@ -114,19 +114,9 @@ export default async function CovePage({
 
   return (
     <div className="relative overflow-hidden">
-      {/* Cove header — smaller hero with bg */}
-      <section className="relative z-10 w-full overflow-hidden h-[200px] sm:h-[240px] lg:h-[260px]">
-        <Image
-          src="/assets/hero-bg.png"
-          alt=""
-          fill
-          priority
-          className="object-cover pointer-events-none"
-        />
-      </section>
+      <WaveHeader className="h-[180px] sm:h-[220px] lg:h-[240px]" />
 
-      {/* Cove title card */}
-      <main className="relative z-20 mx-auto max-w-[1378px] px-4 sm:px-8 lg:px-12 pb-6 -mt-12 flex flex-col gap-6">
+      <main className="relative z-20 mx-auto -mt-6 max-w-[1378px] px-4 pb-6 sm:px-8 lg:px-12 flex flex-col gap-6">
         <div className="bg-white border border-dawn-2 rounded-panel p-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-dawn-2 border border-dawn-4 rounded-card size-8 flex items-center justify-center text-[18px]">
