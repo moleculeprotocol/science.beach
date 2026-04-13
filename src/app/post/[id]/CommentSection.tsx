@@ -73,7 +73,7 @@ function CommentNode({
   const hasLiked = myReactions.some((r) => r.author_id === currentUserId && r.type === "like");
 
   return (
-    <div className={depth > 0 ? "ml-2 border-l border-smoke-5 pl-2 sm:ml-4 sm:pl-3" : ""}>
+    <div className={depth > 0 ? "ml-2 border-l border-dawn-3 pl-2 sm:ml-4 sm:pl-3" : ""}>
       <div className="flex gap-2 py-2">
         {/* Collapse toggle line */}
         <button
@@ -90,10 +90,10 @@ function CommentNode({
 
         <div className="flex flex-col gap-1.5 flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-kode-mono text-[11px] leading-[1.4] text-dark-space font-bold">{node.profiles.display_name}</span>
-            <span className="font-kode-mono text-[11px] leading-[1.4] text-smoke-5">{formatRelativeTime(node.created_at)}</span>
+            <span className="text-[11px] leading-[1.4] text-dark-space font-bold">{node.profiles.display_name}</span>
+            <span className="text-[11px] leading-[1.4] text-smoke-5">{formatRelativeTime(node.created_at)}</span>
             {collapsed && replyCount > 0 && (
-              <span className="font-kode-mono text-[11px] leading-[1.4] text-smoke-5">
+              <span className="text-[11px] leading-[1.4] text-smoke-5">
                 [{replyCount} {replyCount === 1 ? "reply" : "replies"}]
               </span>
             )}
@@ -106,7 +106,7 @@ function CommentNode({
             <button
               type="button"
               onClick={() => setCollapsed(false)}
-              className="font-kode-mono text-[11px] leading-[1.4] text-smoke-5 truncate cursor-pointer hover:text-smoke-2 transition-colors text-left"
+              className="text-[11px] leading-[1.4] text-smoke-5 truncate cursor-pointer hover:text-dark-space transition-colors text-left"
             >
               {node.body.length > 120 ? node.body.slice(0, 120) + "..." : node.body}
             </button>
@@ -114,7 +114,7 @@ function CommentNode({
 
           {!collapsed && (
             <>
-              <div className="font-kode-mono text-[13px] leading-[1.5] text-sand-6 **:text-[13px]! **:leading-[1.5]! **:font-[inherit]! **:text-sand-6!">
+              <div className="text-[13px] leading-[1.5] text-dawn-9 **:text-[13px]! **:leading-[1.5]! **:font-[inherit]! **:text-dawn-9!">
                 <Markdown>{node.body}</Markdown>
               </div>
               <div className="flex items-center gap-3">
@@ -127,14 +127,14 @@ function CommentNode({
                 />
                 {currentUserId && <ReplyForm postId={postId} parentId={node.id} />}
                 {canDelete && (
-                  <button onClick={() => deleteComment(node.id, postId)} className="font-kode-mono text-[11px] leading-[1.4] text-smoke-5 hover:text-orange-1 transition-colors">
+                  <button onClick={() => deleteComment(node.id, postId)} className="text-[11px] leading-[1.4] text-smoke-5 hover:text-dark-space transition-colors">
                     delete
                   </button>
                 )}
                 <button
                   type="button"
                   onClick={() => setCollapsed(true)}
-                  className="font-kode-mono text-[11px] leading-[1.4] text-smoke-5 hover:text-blue-4 transition-colors cursor-pointer"
+                  className="text-[11px] leading-[1.4] text-smoke-5 hover:text-blue-4 transition-colors cursor-pointer"
                 >
                   collapse
                 </button>
@@ -158,7 +158,7 @@ function ReplyForm({ postId, parentId }: { postId: string; parentId: string | nu
 
   return (
     <details ref={detailsRef} className="group">
-      <summary className="font-kode-mono text-[11px] leading-[1.4] text-smoke-5 hover:text-blue-4 transition-colors cursor-pointer">reply</summary>
+      <summary className="text-[11px] leading-[1.4] text-smoke-5 hover:text-blue-4 transition-colors cursor-pointer">reply</summary>
       <form
         ref={formRef}
         action={async (formData) => {
@@ -178,7 +178,7 @@ function ReplyForm({ postId, parentId }: { postId: string; parentId: string | nu
         <input type="hidden" name="post_id" value={postId} />
         {parentId && <input type="hidden" name="parent_id" value={parentId} />}
         <TextArea compact name="body" required rows={2} maxLength={5000} placeholder="Write a reply..." />
-        {error && <p className="label-s-regular text-orange-1">{error}</p>}
+        {error && <p className="label-s-regular text-red-3">{error}</p>}
         <PixelButton type="submit" bg="blue-4" textColor="light-space" shadowColor="blue-2" textShadowTop="blue-2" textShadowBottom="blue-5" className="self-start">
           Reply
         </PixelButton>
@@ -217,11 +217,11 @@ export default function CommentSection({ postId, comments, commentReactions, cur
             toast.success("Comment posted!");
             formRef.current?.reset();
           }}
-          className="flex flex-col gap-2 border-2 border-sand-3 bg-sand-1 rounded-[2px] p-3"
+          className="flex flex-col gap-2 border-2 border-dawn-2 bg-white rounded-panel p-3"
         >
           <input type="hidden" name="post_id" value={postId} />
-          <TextArea compact name="body" required rows={3} maxLength={5000} placeholder="Add a comment..." className="bg-smoke-7 border-sand-4!" />
-          {error && <p className="label-s-regular text-orange-1">{error}</p>}
+          <TextArea compact name="body" required rows={3} maxLength={5000} placeholder="Add a comment..." className="bg-white border-dawn-2!" />
+          {error && <p className="label-s-regular text-red-3">{error}</p>}
           <div className="flex justify-end">
             <PixelButton type="submit" disabled={submitting} bg="green-4" textColor="green-2" shadowColor="green-2" textShadowTop="green-3" textShadowBottom="green-5">
               {submitting ? "Commenting..." : "Comment"}

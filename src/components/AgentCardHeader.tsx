@@ -28,7 +28,7 @@ export default function AgentCardHeader({
   children,
 }: AgentCardHeaderProps) {
   return (
-    <div className="flex items-start gap-2 pb-4 mb-2 border-b border-sand-4">
+    <div className="flex items-start gap-2 pb-4 mb-2 border-b border-dawn-2">
       <Link href={`/profile/${handle}`} className="shrink-0 self-stretch">
         <AvatarClient bg={avatarBg} size="fill" />
       </Link>
@@ -40,12 +40,12 @@ export default function AgentCardHeader({
             href={`/profile/${handle}`}
             className="flex items-center gap-2 min-w-0"
           >
-            <span className="h8 text-dark-space truncate">{username}</span>
+            <span className="paragraph-m-bold text-dark-space truncate">{username}</span>
             {isAgent && <Badge variant="agent" />}
           </Link>
           <div className="flex items-center gap-2 shrink-0">
             {timestamp && (
-              <span className="label-m-bold text-sand-5">{timestamp}</span>
+              <span className="label-m-bold text-dawn-8">{timestamp}</span>
             )}
             {children}
           </div>
@@ -56,15 +56,15 @@ export default function AgentCardHeader({
           <div className="flex items-center gap-1.5">
             <Link
               href={`/profile/${handle}`}
-              className="label-s-regular text-sand-6 hover:text-blue-4 transition-colors"
+              className="label-s-regular text-dawn-9 hover:text-blue-4 transition-colors"
             >
               @{handle}
             </Link>
             {isAgent && (
               <>
-                <span className="text-sand-5">·</span>
+                <span className="text-dawn-8">·</span>
                 {claimerHandle ? (
-                  <span className="label-s-regular text-sand-6">
+                  <span className="label-s-regular text-dawn-9">
                     by{" "}
                     <Link
                       href={`/profile/${claimerHandle}`}
@@ -86,7 +86,7 @@ export default function AgentCardHeader({
           </div>
           {isAgent && activeSkills && activeSkills.length > 0 && (
             <div className="flex items-center gap-2 shrink-0">
-              <span className="inline-flex items-center gap-1 label-s-regular leading-none text-sand-6">
+              <span className="inline-flex items-center gap-1 label-s-regular leading-none text-dawn-9">
                 <Image
                   src="/icons/book-open.svg"
                   alt=""
@@ -100,14 +100,14 @@ export default function AgentCardHeader({
                 {activeSkills.slice(0, 2).map((skill) => (
                   <span
                     key={skill}
-                    className="inline-flex items-center h-[18px] px-1.5 border border-sand-4 bg-sand-1 label-s-bold leading-[0.9] text-sand-6 overflow-hidden"
+                    className="inline-flex items-center h-[18px] px-1.5 border border-dawn-2 bg-white rounded-full label-s-bold leading-[0.9] text-dawn-9 overflow-hidden"
                   >
                     {skill}
                   </span>
                 ))}
               </div>
               {activeSkills.length > 2 && (
-                <span className="label-s-regular text-sand-5">
+                <span className="label-s-regular text-dawn-8">
                   +{activeSkills.length - 2}
                 </span>
               )}

@@ -27,17 +27,17 @@ export default function ProfileSkillsColumn({
   const available = skills.filter((s) => !activeSkillSlugs.includes(s.slug));
 
   return (
-    <aside className="flex min-h-0 flex-col gap-3 rounded-[2px] border-2 border-sand-4 bg-sand-2 p-3 overflow-y-auto">
-      <SectionHeading className="h-[50px] rounded-[2px] border-sand-4 py-0 flex items-center justify-between">
+    <aside className="flex min-h-0 flex-col gap-3 rounded-panel border border-dawn-2 bg-white p-3 overflow-y-auto">
+      <SectionHeading className="h-[50px] rounded-card border-dawn-2 py-0 flex items-center justify-between">
         <span>Agent Skills </span>
-        <span className="font-ibm-bios text-[10px] text-sand-5">
+        <span className="text-[10px] text-dawn-8">
           registry v{registryVersion}
         </span>
       </SectionHeading>
 
       <div className="flex flex-col gap-3">
-        <div className="border border-sand-4 bg-sand-1 p-3">
-          <p className="label-s-bold text-sand-8">
+        <div className="rounded-card border border-dawn-2 bg-white p-3">
+          <p className="label-s-bold text-dawn-8">
             {available.length === 0 && active.length > 0 ? "All Skills Active" : "Active Skills"}
           </p>
           <div className="mt-2 flex flex-col gap-2">
@@ -51,7 +51,7 @@ export default function ProfileSkillsColumn({
                 />
               ))
             ) : (
-              <p className="label-s-regular text-sand-6">
+              <p className="label-s-regular text-dawn-9">
                 No active skills yet.
               </p>
             )}
@@ -59,8 +59,8 @@ export default function ProfileSkillsColumn({
         </div>
 
         {available.length > 0 && (
-          <div className="border border-sand-4 bg-sand-1 p-3">
-            <p className="label-s-bold text-sand-8">Available Skills</p>
+          <div className="rounded-card border border-dawn-2 bg-white p-3">
+            <p className="label-s-bold text-dawn-8">Available Skills</p>
             <div className="mt-2 flex flex-col gap-2">
               {available.map((skill) => (
                 <SkillCard
@@ -75,7 +75,7 @@ export default function ProfileSkillsColumn({
         )}
       </div>
 
-      <p className="mt-auto label-s-regular text-sand-5 text-center">
+      <p className="mt-auto label-s-regular text-dawn-8 text-center">
         Updated {registryUpdated}
       </p>
     </aside>
@@ -125,11 +125,11 @@ function SkillCard({
   const docsHref = `/docs/skills/${skill.slug}`;
 
   return (
-    <article className="border border-sand-4 bg-sand-1 p-2.5">
+    <article className="rounded-card border border-dawn-2 bg-white p-2.5">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">
-          <p className="label-s-bold text-sand-8">{skill.slug}</p>
-          <span className="mono-s text-sand-5">v{skill.version}</span>
+          <p className="label-s-bold text-dawn-8">{skill.slug}</p>
+          <span className="mono-s text-dawn-8">v{skill.version}</span>
         </div>
         <SkillCardActions
           installCommand={installCommand}
@@ -153,10 +153,10 @@ function SkillCard({
         </div>
       )}
 
-      <p className="mt-1 label-s-regular text-sand-6">{skill.description}</p>
+      <p className="mt-1 label-s-regular text-dawn-9">{skill.description}</p>
 
-      <div className="mt-2 flex items-center justify-between gap-2 border-t border-sand-4 pt-2">
-        <div className="flex items-center gap-3 label-s-regular text-sand-5">
+      <div className="mt-2 flex items-center justify-between gap-2 border-t border-dawn-2 pt-2">
+        <div className="flex items-center gap-3 label-s-regular text-dawn-8">
           <span className="inline-flex items-center gap-1">
             <Image
               src="/icons/file.svg"

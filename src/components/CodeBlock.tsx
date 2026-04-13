@@ -23,7 +23,7 @@ export default function CodeBlock({
 
   if (multiline) {
     return (
-      <pre className="mono-s text-smoke-2 whitespace-pre-wrap text-xs">
+      <pre className="mono-s text-smoke-5 whitespace-pre-wrap text-xs">
         {children}
       </pre>
     );
@@ -37,7 +37,7 @@ export default function CodeBlock({
       {copyable && (
         <button
           onClick={copy}
-          className="border border-smoke-5 px-3 py-2 label-s-bold text-smoke-2 hover:bg-smoke-6 transition-colors shrink-0"
+          className="border border-smoke-5 px-3 py-2 label-s-bold text-smoke-5 hover:bg-smoke-6 transition-colors shrink-0"
         >
           {copied ? "Copied" : "Copy"}
         </button>

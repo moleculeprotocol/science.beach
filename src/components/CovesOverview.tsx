@@ -30,9 +30,9 @@ export default function CovesOverview({ coves }: CovesOverviewProps) {
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       {coves.map((cove) => (
         <Link key={cove.id} href={`/cove/${cove.slug}`} className="block">
-          <Panel className="h-full transition-colors hover:bg-sand-1">
+          <Panel className="h-full transition-colors hover:bg-day-1">
             <div
-              className="h-1 w-full mb-2"
+              className="h-1 w-full mb-2 rounded-full"
               style={{ backgroundColor: `var(--${cove.color ?? "blue-4"})` }}
             />
             <h6 className="h7 text-dark-space">
@@ -40,7 +40,7 @@ export default function CovesOverview({ coves }: CovesOverviewProps) {
               {cove.name}
             </h6>
             {cove.description && (
-              <p className="paragraph-s text-smoke-2 line-clamp-2 mt-1">
+              <p className="paragraph-s text-smoke-5 line-clamp-2 mt-1">
                 {cove.description}
               </p>
             )}

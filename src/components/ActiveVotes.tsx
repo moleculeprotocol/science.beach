@@ -1,15 +1,21 @@
 import Link from "next/link";
-import SectionHeading from "./SectionHeading";
+import Image from "next/image";
+import AvatarClient from "./AvatarClient";
+import Badge from "./Badge";
 
 type ActiveVotePost = {
   id: string;
   title: string;
   created_at: string;
   vote_count: number;
-  yes_count: number;
-  no_count: number;
+  relevant_yes: number;
+  relevant_total: number;
+  sound_yes: number;
+  sound_total: number;
   author_handle: string;
   author_name: string;
+  author_avatar_bg: string | null;
+  author_is_agent: boolean;
 };
 
 type Props = {
@@ -35,46 +41,94 @@ export default function ActiveVotes({ posts }: Props) {
   if (withVotes.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-2">
-      <SectionHeading variant="white">Active Votes</SectionHeading>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+    <div className="bg-white border border-dawn-2 rounded-panel p-4 flex flex-col gap-4 overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-1.5">
+          <AvatarClient bg={null} size="xs" />
+          <span className="paragraph-m-bold text-dark-space">Current Votes</span>
+        </div>
+        <div className="border border-dawn-3 rounded-card size-8 flex items-center justify-center">
+          <Image src="/icons/info-box.svg" alt="" width={20} height={20} className="opacity-40" />
+        </div>
+      </div>
+
+      {/* Horizontally scrollable cards row */}
+      <div className="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4">
         {withVotes.map((post) => {
-          const total = post.yes_count + post.no_count;
-          const yesPct = total > 0 ? Math.round((post.yes_count / total) * 100) : 0;
+          const relevantPct = post.relevant_total > 0 ? Math.round((post.relevant_yes / post.relevant_total) * 100) : 0;
+          const soundPct = post.sound_total > 0 ? Math.round((post.sound_yes / post.sound_total) * 100) : 0;
 
           return (
-            <Link
+            <div
               key={post.id}
-              href={`/post/${post.id}`}
-              className="flex flex-col gap-1.5 border border-smoke-5 bg-smoke-7 p-2.5 hover:border-blue-4 transition-colors"
+              className="flex flex-col gap-4 border border-dawn-2 bg-white rounded-panel p-3 w-[300px] sm:w-[360px] shrink-0"
             >
-              <p className="font-kode-mono text-[11px] leading-[1.3] text-dark-space font-bold line-clamp-2">
-                {post.title}
-              </p>
-              <p className="font-ibm-bios text-[9px] text-smoke-5 truncate">
-                @{post.author_handle}
-              </p>
-
-              <div className="h-1.5 w-full flex overflow-hidden">
-                {total > 0 ? (
-                  <>
-                    <div className="bg-green-2 h-full" style={{ width: `${yesPct}%` }} />
-                    <div className="bg-red-4 h-full flex-1" />
-                  </>
-                ) : (
-                  <div className="bg-smoke-5/20 h-full w-full" />
+              {/* Author row */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <AvatarClient bg={post.author_avatar_bg} size="xs" />
+                  <span className="paragraph-m-bold text-dark-space">
+                    {post.author_name}
+                  </span>
+                </div>
+                {post.author_is_agent && (
+                  <Badge variant="agent" />
                 )}
               </div>
 
-              <div className="flex items-center justify-between">
-                <span className="font-ibm-bios text-[9px] text-smoke-5">
+              {/* Title */}
+              <p className="paragraph-l text-dark-space line-clamp-3 flex-1">
+                {post.title}
+              </p>
+
+              {/* Vote bars + buttons */}
+              <div className="flex gap-3">
+                <div className="flex-1 flex flex-col gap-2">
+                  <span className="paragraph-s text-smoke-4">Relevant</span>
+                  <div className="h-[6px] w-full bg-orange-2 rounded-full overflow-hidden">
+                    {post.relevant_total > 0 && (
+                      <div className="bg-orange-4 h-full rounded-full" style={{ width: `${relevantPct}%` }} />
+                    )}
+                  </div>
+                  <div className="flex justify-between paragraph-s">
+                    <span className="text-smoke-5">{relevantPct}%</span>
+                    <span className="text-smoke-4">{post.relevant_total}</span>
+                  </div>
+                  <Link
+                    href={`/post/${post.id}`}
+                    className="w-full py-1.5 rounded-full bg-orange-2 text-center label-m-bold text-orange-4 hover:bg-orange-3 transition-colors"
+                  >
+                    Vote
+                  </Link>
+                </div>
+                <div className="flex-1 flex flex-col gap-2">
+                  <span className="paragraph-s text-smoke-4">Sound</span>
+                  <div className="h-[6px] w-full bg-blue-1 rounded-full overflow-hidden">
+                    {post.sound_total > 0 && (
+                      <div className="bg-blue-4 h-full rounded-full" style={{ width: `${soundPct}%` }} />
+                    )}
+                  </div>
+                  <div className="flex justify-between paragraph-s">
+                    <span className="text-smoke-5">{soundPct}%</span>
+                    <span className="text-smoke-4">{post.sound_total}</span>
+                  </div>
+                  <Link
+                    href={`/post/${post.id}`}
+                    className="w-full py-1.5 rounded-full bg-blue-1 text-center label-m-bold text-blue-4 hover:bg-blue-2 transition-colors"
+                  >
+                    Vote
+                  </Link>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between paragraph-s">
+                <span className="text-smoke-4">
                   {post.vote_count} {post.vote_count === 1 ? "vote" : "votes"}
                 </span>
-                <span className="font-ibm-bios text-[9px] text-blue-4">
-                  {formatTimeRemaining(post.created_at)}
-                </span>
+                <span className="text-blue-4">{formatTimeRemaining(post.created_at)}</span>
               </div>
-            </Link>
+            </div>
           );
         })}
       </div>

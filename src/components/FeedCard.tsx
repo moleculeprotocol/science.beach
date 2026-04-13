@@ -1,17 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
-import { toggleReaction } from "@/app/post/[id]/actions";
+import Image from "next/image";
+import { useState } from "react";
 import { useUser } from "@/lib/hooks/useUser";
-import Icon from "./Icon";
+import { useOptimisticVote } from "@/lib/hooks/useOptimisticVote";
 import Markdown from "./Markdown";
-import ShareButton from "./ShareButton";
 import InfographicImage from "./InfographicImage";
 import AgentCardHeader from "./AgentCardHeader";
-import LikeButton from "./LikeButton";
+import VoteButtons from "./VoteButtons";
 
-import { trackPostClicked } from "@/lib/tracking-client";
+import { trackPostClicked, trackPostShared } from "@/lib/tracking-client";
 import type { CrabColorName } from "./crabColors";
 
 export type FeedCardProps = {
@@ -26,7 +25,8 @@ export type FeedCardProps = {
   hypothesisText: string;
   commentCount: number;
   likeCount: number;
-  initialLiked?: boolean;
+  score?: number;
+  userVote?: 1 | -1 | 0;
   postType?: string;
   imageUrl?: string | null;
   imageStatus?: string;
@@ -38,30 +38,33 @@ export type FeedCardProps = {
   coveSlug?: string | null;
   coveColor?: string | null;
   coveEmoji?: string | null;
+  yesCount?: number;
+  noCount?: number;
+  voteCount?: number;
 };
 
 export default function FeedCard({
-  username, handle, avatarBg, timestamp, id, title, hypothesisText, commentCount, likeCount, initialLiked = false, postType, imageUrl, imageStatus, imageCaption, activeSkills, isAgent = false, claimerHandle, coveName, coveSlug, coveEmoji,
+  username, handle, avatarBg, timestamp, id, title, hypothesisText, commentCount, likeCount, score: initialScore, userVote: initialUserVote = 0, postType, imageUrl, imageStatus, imageCaption, activeSkills, isAgent = false, claimerHandle, coveName, coveSlug, coveEmoji, yesCount = 0, noCount = 0, voteCount = 0,
 }: FeedCardProps) {
   const { user } = useUser();
-  const [isPending, startTransition] = useTransition();
-  const [liked, setLiked] = useState(initialLiked);
-  const [optimisticCount, setOptimisticCount] = useState(likeCount);
+  const { currentVote, optimisticScore, isPending, handleVote: doVote } = useOptimisticVote({
+    postId: id,
+    initialScore: initialScore ?? likeCount,
+    initialUserVote,
+  });
+  const [expanded, setExpanded] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   function handlePostClick() {
     trackPostClicked({ post_id: id, post_type: postType, author_handle: handle, source: "feed_card" });
   }
 
-  function handleLike() {
+  function handleVote(value: 1 | -1) {
     if (!user) {
       window.open("/login?mode=signup", "_blank");
       return;
     }
-    const nextLiked = !liked;
-    setLiked(nextLiked);
-    const base = initialLiked ? likeCount - 1 : likeCount;
-    setOptimisticCount(nextLiked ? base + 1 : base);
-    startTransition(() => toggleReaction(id));
+    doVote(value);
   }
 
   function handleComment() {
@@ -72,8 +75,22 @@ export default function FeedCard({
     window.location.href = `/post/${id}`;
   }
 
+  async function handleShare() {
+    const url = `${window.location.origin}/post/${id}`;
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    trackPostShared({ post_id: id, path: `/post/${id}` });
+  }
+
+  // Vote outcome percentages
+  const totalVotes = yesCount + noCount;
+  const yesPct = totalVotes > 0 ? Math.round((yesCount / totalVotes) * 100) : 0;
+  const noPct = totalVotes > 0 ? 100 - yesPct : 0;
+
   return (
-    <article className="bg-sand-1 p-4 flex flex-col gap-3">
+    <article className="bg-white border border-dawn-2 rounded-panel p-5 flex flex-col gap-3">
+      {/* Header row */}
       <AgentCardHeader
         username={username}
         handle={handle}
@@ -84,23 +101,41 @@ export default function FeedCard({
         activeSkills={activeSkills}
       />
 
+      {/* Cove badge — prominent, own row */}
       {coveName && coveSlug && (
         <Link
           href={`/cove/${coveSlug}`}
-          className="label-s-regular text-smoke-5 hover:text-blue-4 transition-colors self-start"
+          className="inline-flex items-center gap-1.5 self-start px-3 py-1 rounded-full bg-dawn-2 text-[13px] font-bold text-dawn-9 hover:text-blue-4 transition-colors"
         >
-          {coveEmoji && <span className="mr-1">{coveEmoji}</span>}{coveName}
+          {coveEmoji && <span>{coveEmoji}</span>}
+          {coveName}
         </Link>
       )}
 
+      {/* Title */}
       <Link href={`/post/${id}`} onClick={handlePostClick}>
-        <h6 className="h7 text-dark-space hover:text-blue-4 transition-colors">{title}</h6>
+        <p className="text-[18px] font-normal leading-[1.52] text-dark-space hover:text-blue-4 transition-colors">
+          {title}
+        </p>
       </Link>
 
-      <div className="paragraph-s text-smoke-2 line-clamp-6">
+      {/* Body */}
+      <div className={`paragraph-s text-smoke-5 ${expanded ? "" : "line-clamp-4"}`}>
         <Markdown>{hypothesisText}</Markdown>
       </div>
 
+      {/* More/less toggle */}
+      {!expanded && hypothesisText.length > 300 && (
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="paragraph-s text-smoke-4 hover:text-dark-space transition-colors self-center w-full py-1 border border-dawn-2 rounded-card"
+        >
+          more
+        </button>
+      )}
+
+      {/* Infographic */}
       {imageStatus === "ready" && imageUrl && (
         <InfographicImage
           src={imageUrl}
@@ -111,34 +146,62 @@ export default function FeedCard({
       )}
 
       {(imageStatus === "pending" || imageStatus === "generating") && (
-        <div className="w-full aspect-video border-2 border-sand-4 bg-sand-2 flex items-center justify-center gap-2">
-          <span className="label-s-regular text-smoke-5 animate-pulse">
+        <div className="w-full aspect-video border border-dawn-2 bg-dawn-2 rounded-section flex items-center justify-center gap-2">
+          <span className="paragraph-s text-smoke-4 animate-pulse">
             Generating infographic...
           </span>
         </div>
       )}
 
-      <div className="flex">
-        <Link href={`/post/${id}`} onClick={handlePostClick} className="label-s-regular text-smoke-5 hover:text-blue-4 transition-colors flex items-center gap-1">
-          &rarr; Read more
-        </Link>
-      </div>
+      {/* Vote outcome pills (if voted) */}
+      {voteCount > 0 && (
+        <div className="flex items-center gap-2 flex-wrap justify-end">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[13px] font-bold text-purple-4 bg-purple-1">
+            • {yesPct}% Relevant
+          </span>
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[13px] font-bold text-blue-4 bg-blue-1">
+            • {noPct > 0 ? noPct : yesPct}% Scientifically sound
+          </span>
+        </div>
+      )}
 
-      <div className="flex items-center gap-4 pt-1">
-        <button
-          onClick={handleComment}
-          className="flex items-center gap-1.5 text-smoke-5 label-s-regular hover:text-blue-4 transition-colors"
-        >
-          <Icon name="comment" color="currentColor" />
-          {commentCount}
-        </button>
-        <LikeButton
-          liked={liked}
-          count={optimisticCount}
-          disabled={isPending}
-          onClick={handleLike}
-        />
-        <ShareButton path={`/post/${id}`} />
+      {/* Action bar — no border separator, matches Figma */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          {/* Upvote / Downvote */}
+          <VoteButtons
+            score={optimisticScore}
+            userVote={currentVote}
+            disabled={isPending}
+            onVote={handleVote}
+          />
+
+          {/* Comments */}
+          <button
+            onClick={handleComment}
+            className="flex items-center gap-1.5 text-smoke-4 paragraph-s hover:text-blue-4 transition-colors"
+          >
+            <Image src="/icons/comment.svg" alt="" width={16} height={16} className="opacity-40" />
+            {commentCount > 0 && commentCount}
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Share */}
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-1.5 paragraph-s text-smoke-4 hover:text-blue-4 transition-colors"
+          >
+            {copied ? "Copied" : "Share"}
+          </button>
+          {/* Copy/bookmark icon */}
+          <button
+            onClick={handleShare}
+            className="flex items-center justify-center size-8 rounded-card border border-dawn-2 text-smoke-4 hover:text-blue-4 hover:border-blue-4 transition-colors"
+          >
+            <Image src="/icons/share.svg" alt="" width={14} height={14} className="opacity-40" />
+          </button>
+        </div>
       </div>
     </article>
   );

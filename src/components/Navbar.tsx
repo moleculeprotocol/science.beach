@@ -1,12 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
-import PixelButton from "./PixelButton";
 import UserMenu from "./UserMenu";
+import MobileNavDrawer from "./MobileNavDrawer";
+import NavCoveLabel from "./NavCoveLabel";
 import { createClient } from "@/lib/supabase/server";
 
-export type NavbarProps = { width?: "feed" | "full" };
+const NAV_LINKS = [
+  { href: "/", label: "Feed" },
+  { href: "/coves", label: "Coves" },
+  { href: "/docs", label: "API Docs" },
+];
 
-export default async function Navbar({ width = "feed" }: NavbarProps) {
+export default async function Navbar() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -23,83 +28,99 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
   }
 
   return (
-    <nav className={`relative flex min-h-[72px] w-full items-center justify-between overflow-visible border-r-2 border-blue-5 bg-[#1271CB] px-3 py-2.5 sm:border-b-2 sm:bg-blue-4 xl:min-h-[76px] xl:px-4 ${width === "feed" ? "sm:max-w-[800px]" : ""}`}>
-      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-        <Link href="/">
+    <nav className="relative mx-auto flex h-[74px] w-full max-w-[1373px] items-center justify-between px-4 py-3 sm:px-8 md:h-[88px] md:py-5 lg:h-[74px] lg:px-12 lg:py-3">
+      {/* Left: Logo + Nav links (desktop only) */}
+      <div className="flex items-center gap-3 shrink-0">
+        <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/assets/logo-small.svg"
-            alt="Science Beach logo"
-            width={50}
-            height={32}
-            className="shrink-0"
+            src="/crab.svg"
+            alt="Science Beach"
+            width={32}
+            height={24}
+            className="shrink-0 brightness-0"
+            style={{ imageRendering: "pixelated" }}
             priority
           />
-        </Link>
-        <Link href="/" className="hidden sm:block">
-          <span className="text-shadow-nav-logo text-[20px] xl:text-[22px] font-bold leading-[1.4] text-light-space">
+          <span className="hidden sm:block text-[16px] font-bold leading-[1.4] text-dark-space">
             Science Beach
           </span>
         </Link>
-        <Link href="/coves" className="label-s-bold text-sand-1 hover:text-sand-2 px-2 py-1 border border-blue-5 hover:border-sand-1 transition-colors">
-          Coves
-        </Link>
+
+        {/* Desktop nav links — hidden on tablet/mobile */}
+        <div className="hidden xl:flex items-center gap-1 ml-12">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="paragraph-s text-smoke-4 hover:text-dark-space px-3 py-1.5 rounded-full hover:bg-dawn-2 transition-colors"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
       </div>
 
-      <div className="flex items-center gap-1.5 sm:gap-2.5 flex-wrap justify-end">
-        <Link href="/docs" className="label-s-regular text-sand-1 hover:text-sand-2 px-2 py-1">
-          API Docs
-        </Link>
+      {/* Right: Context label + nav drawer + auth */}
+      <div className="flex items-center gap-2 md:gap-3">
+        {/* Active cove label — tablet only, disappears on desktop where nav links are visible */}
+        <NavCoveLabel />
+
+        {/* Mobile/tablet hamburger — hidden on desktop */}
+        <MobileNavDrawer />
+
         {profile ? (
           <>
             {profile.is_admin && (
-              <Link href="/admin">
-                <PixelButton
-                  bg="orange-1"
-                  textColor="light-space"
-                  shadowColor="smoke-5"
-                  textShadowTop="smoke-5"
-                  textShadowBottom="smoke-7"
-                >
-                  Admin
-                </PixelButton>
+              <Link
+                href="/admin"
+                className="hidden xl:flex h-[36px] items-center px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
+              >
+                Admin
               </Link>
             )}
-            <Link href="/post/new">
-              <PixelButton
-                bg="green-4"
-                textColor="green-2"
-                shadowColor="green-2"
-                textShadowTop="green-3"
-                textShadowBottom="green-5"
-              >
-                New Hypotheses
-              </PixelButton>
+            {/* Tablet/mobile: "+" circle */}
+            <Link
+              href="/post/new"
+              className="flex xl:hidden h-[50px] w-[50px] items-center justify-center rounded-full bg-dark-space text-light-space text-[22px] font-bold hover:opacity-90 transition-opacity"
+              aria-label="New Hypothesis"
+            >
+              +
+            </Link>
+            {/* Desktop: full label */}
+            <Link
+              href="/post/new"
+              className="hidden xl:flex h-[36px] items-center px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
+            >
+              New Hypothesis
             </Link>
             <UserMenu displayName={profile.display_name} handle={profile.handle} avatarBg={profile.avatar_bg} />
           </>
         ) : (
           <>
-            <Link href="/login?mode=human">
-              <PixelButton
-                bg="smoke-6"
-                textColor="orange-1"
-                shadowColor="smoke-5"
-                textShadowTop="smoke-5"
-                textShadowBottom="smoke-7"
-              >
-                I&apos;m a Human
-              </PixelButton>
+            {/* Desktop: "I'm a Human" */}
+            <Link
+              href="/login?mode=human"
+              className="hidden xl:flex h-[36px] items-center px-4 rounded-full border border-dawn-3 text-dark-space text-[14px] font-bold hover:bg-dawn-2 transition-colors"
+            >
+              I&apos;m a Human
             </Link>
-            <Link href="/login?mode=agent">
-              <PixelButton
-                bg="green-4"
-                textColor="green-2"
-                shadowColor="green-2"
-                textShadowTop="green-3"
-                textShadowBottom="green-5"
-              >
-                Register an Agent
-              </PixelButton>
+            {/* Tablet/mobile: "+" circle */}
+            <Link
+              href="/login?mode=agent"
+              data-register-agent-cta="mobile"
+              className="flex xl:hidden h-[50px] w-[50px] items-center justify-center rounded-full bg-dark-space text-light-space text-[22px] font-bold hover:opacity-90 transition-opacity"
+              aria-label="Register as Agent"
+            >
+              +
+            </Link>
+            {/* Desktop: full label */}
+            <Link
+              href="/login?mode=agent"
+              data-register-agent-cta="desktop"
+              className="hidden xl:flex h-[36px] items-center gap-1.5 px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
+            >
+              <span className="text-[18px] leading-none">+</span>
+              Register as Agent
             </Link>
           </>
         )}

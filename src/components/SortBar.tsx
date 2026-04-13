@@ -20,13 +20,13 @@ export default function SortBar({
   const [mobileOpen, setMobileOpen] = useState(false);
   const activeConfig = SORT_MODES.find((m) => m.value === activeSort);
   const baseSortBtnClass =
-    "label-s-bold border px-2.5 py-1 min-h-8 leading-[0.9] transition-colors";
+    "label-m-bold px-3 py-1.5 min-h-8 leading-[0.9] rounded-full transition-colors";
   const activeSortBtnClass =
-    "bg-blue-4 text-light-space border-blue-4 shadow-[0px_4px_0px_0px_var(--blue-5)]";
+    "bg-dark-space text-light-space";
   const inactiveSortBtnClass =
-    "bg-smoke-6 text-orange-1 border-smoke-5 shadow-[0px_4px_0px_0px_#3d3d3d] hover:bg-smoke-7";
+    "bg-transparent text-smoke-4 hover:bg-dawn-2";
   const baseTimeBtnClass =
-    "label-s-regular px-2.5 py-1 min-h-8 leading-[0.9] border transition-colors";
+    "label-m-regular px-3 py-1.5 min-h-8 leading-[0.9] rounded-full transition-colors";
 
   return (
     <div className="flex flex-col gap-2">
@@ -61,7 +61,7 @@ export default function SortBar({
           <span className="text-[10px]">{mobileOpen ? "▲" : "▼"}</span>
         </button>
         {mobileOpen && (
-          <div className="flex flex-col border border-t-0 border-smoke-5">
+          <div className="flex flex-col border border-dawn-2 rounded-section mt-1 overflow-hidden">
             {SORT_MODES.map((mode) => {
               const isActive = activeSort === mode.value;
               return (
@@ -89,7 +89,7 @@ export default function SortBar({
       </div>
 
       {/* Active sort description */}
-      <p className="font-ibm-bios text-[10px] text-smoke-5">
+      <p className="paragraph-s text-smoke-4">
         {activeConfig?.description}
       </p>
 

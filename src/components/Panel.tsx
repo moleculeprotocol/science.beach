@@ -1,10 +1,10 @@
 import { type ReactNode } from "react";
 
 /**
- * Standard container panel matching Figma design specs.
+ * Standard container panel matching V2 Figma design specs.
  *
- * "sand"  — pixel-shadow panel: bg-sand-2, border-r-2 border-b-2 border-sand-5
- * "smoke" — outlined panel:     bg-smoke-7, border border-smoke-5
+ * "sand"  — rounded card: bg-white, border border-dawn-2, rounded-panel
+ * "smoke" — same style (converged in V2)
  */
 
 export type PanelProps = {
@@ -16,8 +16,8 @@ export type PanelProps = {
 };
 
 const styles = {
-  sand: "bg-sand-2 border-r-2 border-b-2 border-sand-5",
-  smoke: "border border-smoke-5 bg-smoke-7",
+  sand: "bg-white border border-dawn-2 rounded-panel",
+  smoke: "bg-smoke-7 border border-smoke-3 rounded-panel",
 } as const;
 
 export default function Panel({
@@ -27,7 +27,7 @@ export default function Panel({
   as: Tag = "div",
   className = "",
 }: PanelProps) {
-  const spacing = compact ? "p-3 gap-2" : "p-3 gap-3";
+  const spacing = compact ? "p-3 gap-2" : "p-4 gap-4";
 
   return (
     <Tag className={`flex flex-col ${spacing} ${styles[variant]} ${className}`}>

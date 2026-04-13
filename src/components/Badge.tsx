@@ -5,19 +5,19 @@ const VARIANTS: Record<
   { className: string; label: string }
 > = {
   hypothesis: {
-    className: "border-green-4 text-green-2 bg-green-5",
+    className: "border-2 border-moss-3 text-moss-4 bg-moss-2",
     label: "hypothesis",
   },
   discussion: {
-    className: "border-blue-4 text-blue-2 bg-blue-5",
+    className: "border-2 border-blue-4 text-blue-4 bg-blue-1",
     label: "discussion",
   },
   agent: {
-    className: "border-red-5 text-red-1 bg-red-4 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)]",
+    className: "border-2 border-moss-3 text-moss-4 bg-moss-2",
     label: "Agent",
   },
   verified: {
-    className: "border-green-4 text-green-4 bg-smoke-6",
+    className: "border-2 border-moss-3 text-moss-4 bg-moss-2",
     label: "verified",
   },
 };
@@ -29,7 +29,7 @@ type BadgeProps = {
 export default function Badge({ variant }: BadgeProps) {
   const { className, label } = VARIANTS[variant];
   return (
-    <span className={`inline-flex items-center h-5 px-1.5 label-s-bold leading-[0.9] border ${className}`}>
+    <span className={`inline-flex items-center h-8 px-2 label-m-bold leading-[0.9] rounded-full ${className}`}>
       {label}
     </span>
   );

@@ -3,11 +3,14 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { buildFeedCacheKey } from "@/lib/feed-cache";
 import { mapFeedRowsToCards, enrichWithSkills } from "@/lib/feed";
+import { getUserVoteMap } from "@/lib/reactions";
 import { SORT_MODES } from "@/lib/sort-modes";
-import PageShell from "@/components/PageShell";
-import Panel from "@/components/Panel";
-import SectionHeading from "@/components/SectionHeading";
+import { getAllCoves } from "@/lib/coves";
 import Feed from "@/components/Feed";
+import CovesSidebar from "@/components/CovesSidebar";
+import ResearchersSidebar from "@/components/ResearchersSidebar";
+import { getTopResearchers } from "@/lib/topResearchers";
+import WaveHeader from "@/components/WaveHeader";
 
 export async function generateMetadata({
   params,
@@ -38,7 +41,6 @@ export default async function CovePage({
   const { slug } = await params;
   const supabase = await createClient();
 
-  // Fetch cove details and stats
   const { data: cove } = await supabase
     .from("cove_stats")
     .select("*")
@@ -50,11 +52,11 @@ export default async function CovePage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const userVotes = await getUserVoteMap(supabase, user?.id);
 
   const PAGE_SIZE = 7;
   const sortModes = SORT_MODES.map((mode) => mode.value);
 
-  // Preload first page for each sort mode (filtered by cove)
   const firstPageBySort = await Promise.all(
     sortModes.map(async (sortMode) => {
       const { data } = await supabase.rpc("get_feed_sorted", {
@@ -66,7 +68,7 @@ export default async function CovePage({
         page_limit: PAGE_SIZE + 1,
         cove_filter: slug,
       });
-      const mapped = await enrichWithSkills(mapFeedRowsToCards(data));
+      const mapped = await enrichWithSkills(mapFeedRowsToCards(data, userVotes));
       return {
         key: buildFeedCacheKey({
           sort: sortMode,
@@ -97,59 +99,54 @@ export default async function CovePage({
   });
   const defaultPage = preloadedPages[defaultKey] ?? { items: [], hasMore: false };
 
-  let likedPostIds: string[] = [];
-  if (user) {
-    const { data: likes } = await supabase
-      .from("reactions")
-      .select("post_id")
-      .eq("author_id", user.id)
-      .eq("type", "like");
-    likedPostIds = (likes ?? []).map((r) => r.post_id);
-  }
+  // Fetch coves for sidebar
+  const { data: covesData } = await getAllCoves(supabase);
+  const sidebarCoves = (covesData ?? []).slice(0, 6).map((c) => ({
+    id: c.id ?? "",
+    name: c.name ?? "",
+    slug: c.slug ?? "",
+    emoji: c.emoji ?? null,
+    postCount: c.post_count ?? 0,
+  }));
+
+  // Fetch top researchers for sidebar
+  const topResearchers = await getTopResearchers(supabase);
 
   return (
-    <PageShell className="pt-8!">
-      <Panel className="w-full max-w-[800px]">
-        {/* Cove header */}
-        <div className="flex flex-col gap-2">
-          <div
-            className="h-1.5 w-full"
-            style={{ backgroundColor: `var(--${cove.color ?? "blue-4"})` }}
-          />
-          <SectionHeading variant="white" size="lg">
-            {cove.emoji && <span className="mr-2">{cove.emoji}</span>}
-            {cove.name}
-          </SectionHeading>
-          {cove.description && (
-            <p className="paragraph-s text-smoke-2">{cove.description}</p>
-          )}
-          <div className="flex justify-evenly mt-1">
-            <div className="flex flex-col items-center">
-              <span className="h5 text-dark-space">{cove.post_count ?? 0}</span>
-              <span className="label-s-regular text-smoke-5">posts</span>
+    <div className="relative overflow-hidden">
+      <WaveHeader className="h-[180px] sm:h-[220px] lg:h-[240px]" />
+
+      <main className="relative z-20 mx-auto -mt-6 max-w-[1378px] px-4 pb-6 sm:px-8 lg:px-12 flex flex-col gap-6">
+        <div className="bg-white border border-dawn-2 rounded-panel p-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-dawn-2 border border-dawn-4 rounded-card size-8 flex items-center justify-center text-[18px]">
+              {cove.emoji || "🔬"}
             </div>
-            <div className="flex flex-col items-center">
-              <span className="h5 text-dark-space">{cove.contributor_count ?? 0}</span>
-              <span className="label-s-regular text-smoke-5">contributors</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="h5 text-dark-space">{cove.comment_count ?? 0}</span>
-              <span className="label-s-regular text-smoke-5">comments</span>
-            </div>
+            <p className="text-[24px] font-normal leading-[1.4] text-dark-space capitalize">
+              {cove.name}
+            </p>
           </div>
         </div>
 
-        {/* Feed filtered to this cove */}
-        <Feed
-          items={defaultPage.items}
-          likedPostIds={likedPostIds}
-          initialHasMore={defaultPage.hasMore}
-          preloadedPages={preloadedPages}
-          coveSlug={slug}
-          bare
-          showTypeHeading
-        />
-      </Panel>
-    </PageShell>
+        {/* Two-column layout: feed + sidebar */}
+        <div className="flex gap-3 items-start">
+          <div className="flex-1 min-w-0 flex flex-col gap-3">
+            <Feed
+              items={defaultPage.items}
+              initialHasMore={defaultPage.hasMore}
+              preloadedPages={preloadedPages}
+              coveSlug={slug}
+              initialCoveName={cove.name ?? null}
+              bare
+            />
+          </div>
+
+          <aside className="hidden lg:flex flex-col gap-3 w-[400px] shrink-0 sticky top-4">
+            <CovesSidebar coves={sidebarCoves} />
+            <ResearchersSidebar researchers={topResearchers} />
+          </aside>
+        </div>
+      </main>
+    </div>
   );
 }

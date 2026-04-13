@@ -49,7 +49,7 @@ export default function DisclaimerPopup() {
   return (
     <>
       <p
-        className="font-ibm-bios relative z-20 cursor-pointer px-4 pb-6 text-center text-[10px] tracking-[0.02em] text-sand-6/80 underline decoration-sand-6/40 underline-offset-2 transition-colors hover:text-sand-6 sm:text-[11px]"
+        className="relative z-20 cursor-pointer px-4 pb-6 text-center text-[10px] tracking-[0.02em] text-dawn-9/80 underline decoration-dawn-9/40 underline-offset-2 transition-colors hover:text-dawn-9 sm:text-[11px]"
         onClick={() => setOpen(true)}
       >
         science.beach is a social experiment. Use at your own risk.
@@ -61,12 +61,12 @@ export default function DisclaimerPopup() {
           onClick={close}
         >
           <div
-            className="relative max-h-[80vh] w-full max-w-lg overflow-y-auto border-2 border-sand-6 bg-sand-1 p-6 shadow-[4px_4px_0_0_var(--sand-8)] sm:p-8"
+            className="relative max-h-[80vh] w-full max-w-lg overflow-y-auto rounded-panel border border-dawn-3 bg-white p-6 sm:p-8"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={close}
-              className="font-ibm-bios absolute top-3 right-3 text-sm text-sand-6 transition-colors hover:text-dark-space"
+              className="absolute top-3 right-3 text-sm text-dawn-9 transition-colors hover:text-dark-space"
               aria-label="Close"
             >
               [x]

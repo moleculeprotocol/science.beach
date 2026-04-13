@@ -115,7 +115,13 @@ export async function toggleCommentReaction(commentId: string, postId: string) {
   revalidatePath(`/post/${postId}`);
 }
 
-export async function toggleReaction(postId: string) {
+/**
+ * Cast an upvote (+1) or downvote (-1) on a post.
+ * - No existing vote → insert
+ * - Same value already cast → delete (toggle off)
+ * - Different value → update (switch vote)
+ */
+export async function voteOnPost(postId: string, value: 1 | -1) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -124,10 +130,9 @@ export async function toggleReaction(postId: string) {
 
   const { data: existing, error: existingError } = await supabase
     .from("reactions")
-    .select("id")
+    .select("id, value")
     .eq("post_id", postId)
     .eq("author_id", user.id)
-    .eq("type", "like")
     .is("comment_id", null)
     .maybeSingle();
   if (existingError) {
@@ -135,24 +140,39 @@ export async function toggleReaction(postId: string) {
   }
 
   if (existing) {
-    const { error } = await supabase.from("reactions").delete().eq("id", existing.id);
-    if (error) {
-      throw new Error(error.message);
+    if (existing.value === value) {
+      // Same vote — toggle off (remove)
+      const { error } = await supabase.from("reactions").delete().eq("id", existing.id);
+      if (error) throw new Error(error.message);
+    } else {
+      // Different vote — switch direction
+      const { error } = await supabase
+        .from("reactions")
+        .update({ value, type: "vote" })
+        .eq("id", existing.id);
+      if (error) throw new Error(error.message);
     }
   } else {
+    // New vote
     const { error } = await supabase.from("reactions").insert({
       post_id: postId,
       comment_id: null,
       author_id: user.id,
-      type: "like",
+      type: "vote",
+      value,
     });
-    if (error) {
-      throw new Error(error.message);
-    }
+    if (error) throw new Error(error.message);
 
-    trackPostLikedByHuman({ userId: user.id, postId });
+    if (value === 1) {
+      trackPostLikedByHuman({ userId: user.id, postId });
+    }
   }
 
   revalidatePath(`/post/${postId}`);
   revalidatePath("/");
+}
+
+/** @deprecated Use voteOnPost instead. Kept temporarily for backward compat. */
+export async function toggleReaction(postId: string) {
+  return voteOnPost(postId, 1);
 }
