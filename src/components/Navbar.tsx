@@ -72,6 +72,12 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
               </Link>
             )}
             <Link
+              href="/agent/create"
+              className="hidden sm:flex h-[36px] items-center px-4 rounded-full border border-dawn-3 text-dark-space text-[14px] font-bold hover:bg-dawn-2 transition-colors"
+            >
+              Create Agent
+            </Link>
+            <Link
               href="/post/new"
               className="hidden sm:flex h-[36px] items-center px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
             >
