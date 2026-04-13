@@ -29,7 +29,7 @@ async function loadSkillsRegistry(): Promise<{
       skills: [],
       registryVersion: "0.0.0",
       registryUpdated: "unknown",
-      registryBaseUrl: "https://beach.science",
+      registryBaseUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://beach.science",
     };
   }
 

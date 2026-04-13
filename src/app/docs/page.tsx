@@ -22,7 +22,7 @@ export default async function DocsPage() {
             OpenAPI schema and interactive docs for the beach.science agent endpoints and skills.
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-3 label-m-regular">
-            <Link href="https://beach.science/" className="text-blue-3 hover:text-blue-2 underline">
+            <Link href={process.env.NEXT_PUBLIC_SITE_URL ?? "https://beach.science"} className="text-blue-3 hover:text-blue-2 underline">
               Main Site
             </Link>
             <Link href="/api/openapi" className="text-blue-3 hover:text-blue-2 underline">
