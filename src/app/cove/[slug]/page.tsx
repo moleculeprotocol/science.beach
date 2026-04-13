@@ -3,12 +3,14 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { buildFeedCacheKey } from "@/lib/feed-cache";
 import { mapFeedRowsToCards, enrichWithSkills } from "@/lib/feed";
+import { getUserVoteMap } from "@/lib/reactions";
 import { SORT_MODES } from "@/lib/sort-modes";
 import { getAllCoves } from "@/lib/coves";
 import Feed from "@/components/Feed";
 import CovesSidebar from "@/components/CovesSidebar";
 import ResearchersSidebar from "@/components/ResearchersSidebar";
 import { getTopResearchers } from "@/lib/topResearchers";
+import WaveHeader from "@/components/WaveHeader";
 
 export async function generateMetadata({
   params,
@@ -50,6 +52,7 @@ export default async function CovePage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const userVotes = await getUserVoteMap(supabase, user?.id);
 
   const PAGE_SIZE = 7;
   const sortModes = SORT_MODES.map((mode) => mode.value);
@@ -65,7 +68,7 @@ export default async function CovePage({
         page_limit: PAGE_SIZE + 1,
         cove_filter: slug,
       });
-      const mapped = await enrichWithSkills(mapFeedRowsToCards(data));
+      const mapped = await enrichWithSkills(mapFeedRowsToCards(data, userVotes));
       return {
         key: buildFeedCacheKey({
           sort: sortMode,
@@ -96,16 +99,6 @@ export default async function CovePage({
   });
   const defaultPage = preloadedPages[defaultKey] ?? { items: [], hasMore: false };
 
-  let likedPostIds: string[] = [];
-  if (user) {
-    const { data: likes } = await supabase
-      .from("reactions")
-      .select("post_id")
-      .eq("author_id", user.id)
-      .eq("type", "like");
-    likedPostIds = (likes ?? []).map((r) => r.post_id);
-  }
-
   // Fetch coves for sidebar
   const { data: covesData } = await getAllCoves(supabase);
   const sidebarCoves = (covesData ?? []).slice(0, 6).map((c) => ({
@@ -121,17 +114,9 @@ export default async function CovePage({
 
   return (
     <div className="relative overflow-hidden">
-      {/* Cove header — smaller hero with bg */}
-      <section className="relative z-10 w-full overflow-hidden h-[200px] sm:h-[240px] lg:h-[260px]">
-        <img
-          src="/assets/hero-bg.png"
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-        />
-      </section>
+      <WaveHeader className="h-[180px] sm:h-[220px] lg:h-[240px]" />
 
-      {/* Cove title card */}
-      <main className="relative z-20 mx-auto max-w-[1378px] px-4 sm:px-8 lg:px-12 pb-6 -mt-12 flex flex-col gap-6">
+      <main className="relative z-20 mx-auto -mt-6 max-w-[1378px] px-4 pb-6 sm:px-8 lg:px-12 flex flex-col gap-6">
         <div className="bg-white border border-dawn-2 rounded-panel p-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-dawn-2 border border-dawn-4 rounded-card size-8 flex items-center justify-center text-[18px]">
@@ -148,12 +133,11 @@ export default async function CovePage({
           <div className="flex-1 min-w-0 flex flex-col gap-3">
             <Feed
               items={defaultPage.items}
-              likedPostIds={likedPostIds}
               initialHasMore={defaultPage.hasMore}
               preloadedPages={preloadedPages}
               coveSlug={slug}
+              initialCoveName={cove.name ?? null}
               bare
-              showTypeHeading
             />
           </div>
 

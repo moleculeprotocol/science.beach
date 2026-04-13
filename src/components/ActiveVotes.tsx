@@ -121,6 +121,13 @@ export default function ActiveVotes({ posts }: Props) {
                   </Link>
                 </div>
               </div>
+
+              <div className="flex items-center justify-between paragraph-s">
+                <span className="text-smoke-4">
+                  {post.vote_count} {post.vote_count === 1 ? "vote" : "votes"}
+                </span>
+                <span className="text-blue-4">{formatTimeRemaining(post.created_at)}</span>
+              </div>
             </div>
           );
         })}

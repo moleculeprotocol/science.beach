@@ -3,6 +3,7 @@
 import type { FeedCardProps } from "@/components/FeedCard";
 import type { FeedCacheFilters } from "@/lib/feed-cache";
 import { mapFeedRowsToCards, enrichWithSkills } from "@/lib/feed";
+import { getUserVoteMap } from "@/lib/reactions";
 import { createClient } from "@/lib/supabase/server";
 
 const PAGE_SIZE = 7;
@@ -21,6 +22,9 @@ async function queryFeed(
 ): Promise<FeedCardProps[]> {
   const supabase = await createClient();
   const limit = rangeEnd - rangeStart + 1;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { data, error } = await supabase.rpc("get_feed_sorted", {
     sort_mode: filters?.sort ?? "breakthrough",
@@ -37,7 +41,8 @@ async function queryFeed(
     return [];
   }
 
-  const cards = mapFeedRowsToCards(data);
+  const userVotes = await getUserVoteMap(supabase, user?.id);
+  const cards = mapFeedRowsToCards(data, userVotes);
   return enrichWithSkills(cards);
 }
 

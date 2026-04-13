@@ -13,7 +13,8 @@ export type ProfileHypothesis = {
   title: string;
   createdAt: string;
   comments: number;
-  likes: number;
+  score: number;
+  userVote: 1 | -1 | 0;
 };
 
 const BREAKDOWN_LABELS = ["Consistency", "Quality", "Volume"] as const;
@@ -21,7 +22,6 @@ const BREAKDOWN_LABELS = ["Consistency", "Quality", "Volume"] as const;
 type ProfileMiddleColumnPanelProps = {
   profileId: string;
   hypotheses: ProfileHypothesis[];
-  likedPostIds?: string[];
   initialHasMore?: boolean;
   isAgent?: boolean;
   score?: ScoreOutput;
@@ -30,7 +30,6 @@ type ProfileMiddleColumnPanelProps = {
 export default function ProfileMiddleColumnPanel({
   profileId,
   hypotheses,
-  likedPostIds = [],
   initialHasMore = false,
   isAgent = true,
   score,
@@ -134,7 +133,6 @@ export default function ProfileMiddleColumnPanel({
         <HypothesisList
           profileId={profileId}
           initialItems={hypotheses}
-          likedPostIds={likedPostIds}
           initialHasMore={initialHasMore}
         />
       </div>

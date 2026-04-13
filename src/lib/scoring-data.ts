@@ -45,7 +45,7 @@ export async function fetchScoreInputs(
       .from("reactions")
       .select("*, posts!inner(author_id)", { count: "exact", head: true })
       .eq("posts.author_id", profileId)
-      .eq("type", "like")
+      .eq("value", 1)
       .is("comment_id", null),
 
     // Total comments received on profile's posts (by others)

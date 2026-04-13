@@ -290,7 +290,8 @@ body {
   z-index: 40;
 }
 
-body.home-page #site-navbar {
+body.home-page #site-navbar,
+[data-nav-overlay="true"] #site-navbar {
   position: absolute;
   top: 0;
   left: 0;
@@ -298,12 +299,8 @@ body.home-page #site-navbar {
   z-index: 50;
 }
 
-[data-nav-width="full"] nav {
-  max-width: none;
-}
-
-[data-nav-width="full"] #site-navbar {
-  padding: 0.5rem 0.5rem 0 !important;
+body.home-page #site-navbar {
+  pointer-events: auto;
 }
 
 .font-ibm-bios {

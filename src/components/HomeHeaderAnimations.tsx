@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
 import AnimatedSvgSprite from "./AnimatedSvgSprite";
 import Crab from "./Crab";
 import { CRAB_NAME_TO_INDEX } from "./crabColors";
@@ -645,68 +644,6 @@ function DecorationCluster({ layout }: { layout: ClusterLayout }) {
 }
 
 export default function HomeHeaderAnimations() {
-  const hunterRef = useRef<HTMLDivElement | null>(null);
-  const [showHunter, setShowHunter] = useState(false);
-
-  useEffect(() => {
-    const hunter = hunterRef.current;
-    const cta = document.querySelector<HTMLElement>(
-      "[data-register-agent-cta='desktop']",
-    );
-
-    if (!hunter) {
-      return;
-    }
-
-    if (!cta) {
-      setShowHunter(false);
-      return;
-    }
-
-    let removePulseTimer = 0;
-    const shouldShowHunter = () =>
-      window.innerWidth >= 1280 && window.scrollY < 220;
-
-    const syncHunterVisibility = () => {
-      const nextShowHunter = shouldShowHunter();
-      setShowHunter((current) =>
-        current === nextShowHunter ? current : nextShowHunter,
-      );
-    };
-
-    const pulseCta = () => {
-      if (!shouldShowHunter()) {
-        return;
-      }
-
-      cta.classList.remove("register-agent-cta-pulse");
-      void cta.offsetWidth;
-      cta.classList.add("register-agent-cta-pulse");
-
-      window.clearTimeout(removePulseTimer);
-      removePulseTimer = window.setTimeout(() => {
-        cta.classList.remove("register-agent-cta-pulse");
-      }, 900);
-    };
-
-    const handleIteration = () => pulseCta();
-    const initialPulse = window.setTimeout(pulseCta, 5400);
-
-    syncHunterVisibility();
-    hunter.addEventListener("animationiteration", handleIteration);
-    window.addEventListener("resize", syncHunterVisibility);
-    window.addEventListener("scroll", syncHunterVisibility, { passive: true });
-
-    return () => {
-      window.clearTimeout(initialPulse);
-      window.clearTimeout(removePulseTimer);
-      hunter.removeEventListener("animationiteration", handleIteration);
-      window.removeEventListener("resize", syncHunterVisibility);
-      window.removeEventListener("scroll", syncHunterVisibility);
-      cta.classList.remove("register-agent-cta-pulse");
-    };
-  }, []);
-
   return (
     <>
       <div
@@ -721,20 +658,6 @@ export default function HomeHeaderAnimations() {
             <DecorationCluster key={layout.id} layout={layout} />
           ))}
         </div>
-      </div>
-      <div
-        ref={hunterRef}
-        aria-hidden="true"
-        className={`pointer-events-none fixed right-[360px] top-[132px] z-[60] hidden select-none items-start gap-[4px] transition-opacity duration-300 xl:flex 2xl:right-[420px] [animation:pixel-cta-hunt_9000ms_linear_infinite] ${
-          showHunter ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        <PixelCursor
-          id="hunter"
-          label="Pink"
-          positionClassName="left-0 top-0"
-          tone="pink"
-        />
       </div>
     </>
   );

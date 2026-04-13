@@ -70,6 +70,7 @@ export default async function OGImage({
         {/* Background image */}
         <img
           src={bgDataUri}
+          alt=""
           width={1200}
           height={630}
           style={{
@@ -100,7 +101,7 @@ export default async function OGImage({
               color: "#ffffff",
             }}
           >
-            <img src={logoDataUri} width={45} height={32} style={{ imageRendering: "pixelated" }} />
+            <img src={logoDataUri} alt="" width={45} height={32} style={{ imageRendering: "pixelated" }} />
             Science.Beach
           </div>
         </div>
@@ -119,6 +120,7 @@ export default async function OGImage({
           {avatarUrl ? (
             <img
               src={avatarUrl}
+              alt=""
               width={180}
               height={180}
               style={{

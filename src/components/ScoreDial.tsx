@@ -31,7 +31,13 @@ export default function ScoreDial({ value, tier, breakdown }: ScoreDialProps) {
   const total = segments.reduce((a, b) => a + b, 0);
 
   const gapSize = 2; // px gap between segments
-  let offset = -circumference / 4; // start at top
+  const segmentOffsets = segments.reduce<number[]>((offsets, segment, index) => {
+    const previousOffset = index === 0
+      ? -circumference / 4
+      : offsets[index - 1] + (segments[index - 1] / total) * circumference;
+    offsets.push(previousOffset);
+    return offsets;
+  }, []);
 
   const tag = TIER_TAG_STYLES[tier];
 
@@ -50,8 +56,7 @@ export default function ScoreDial({ value, tier, breakdown }: ScoreDialProps) {
             const rawDash = (seg / total) * circumference;
             const dashLength = Math.max(0, rawDash - gapSize);
             const gap = circumference - dashLength;
-            const currentOffset = offset + gapSize / 2;
-            offset += rawDash;
+            const currentOffset = segmentOffsets[i] + gapSize / 2;
             return (
               <circle
                 key={i}

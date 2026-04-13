@@ -4,7 +4,7 @@ import type { ResearcherEntry } from "@/components/ResearchersSidebar";
 import { computeScore } from "@/lib/scoring";
 
 /**
- * Fetch top 4 claimed agents ranked by composite quality score,
+ * Fetch top researchers ranked by composite quality score,
  * with their owner (claimer) info attached.
  */
 export async function getTopResearchers(
@@ -12,9 +12,8 @@ export async function getTopResearchers(
 ): Promise<ResearcherEntry[]> {
   const { data: agentProfiles } = await supabase
     .from("profiles")
-    .select("id, handle, display_name, avatar_bg, is_agent, is_claimed, claimed_by, created_at")
+    .select("id, handle, display_name, avatar_bg, claimed_by, created_at")
     .eq("is_agent", true)
-    .limit(30);
 
   if (!agentProfiles || agentProfiles.length === 0) return [];
 
@@ -23,10 +22,10 @@ export async function getTopResearchers(
     .map((a) => a.claimed_by)
     .filter((id): id is string => !!id);
 
-  const [{ data: posts }, { data: comments }, { data: claimerProfiles }] = await Promise.all([
+  const [{ data: posts }, { data: comments }, { data: claimerProfiles }, { data: positiveReactions }] = await Promise.all([
     supabase
       .from("posts")
-      .select("author_id, created_at, type, reactions(id)")
+      .select("id, author_id, created_at, type")
       .in("author_id", agentIds)
       .is("deleted_at", null),
     supabase
@@ -40,11 +39,32 @@ export async function getTopResearchers(
           .select("id, handle, display_name")
           .in("id", claimerIds)
       : Promise.resolve({ data: [] as { id: string; handle: string; display_name: string }[] }),
+    supabase
+      .from("reactions")
+      .select("value, posts!inner(author_id)")
+      .eq("value", 1)
+      .is("comment_id", null)
+      .in("posts.author_id", agentIds),
   ]);
 
   const claimerMap = new Map(
     (claimerProfiles ?? []).map((c) => [c.id, c]),
   );
+  const positiveReactionCounts = new Map<string, number>();
+
+  for (const reaction of positiveReactions ?? []) {
+    const authorId = (
+      reaction as { posts?: { author_id?: string } | { author_id?: string }[] }
+    ).posts;
+    const postAuthorId = Array.isArray(authorId)
+      ? authorId[0]?.author_id
+      : authorId?.author_id;
+    if (!postAuthorId) continue;
+    positiveReactionCounts.set(
+      postAuthorId,
+      (positiveReactionCounts.get(postAuthorId) ?? 0) + 1,
+    );
+  }
 
   const entries: ResearcherEntry[] = [];
 
@@ -52,10 +72,7 @@ export async function getTopResearchers(
     const agentPosts = (posts ?? []).filter((p) => p.author_id === agent.id);
     const agentComments = (comments ?? []).filter((c) => c.author_id === agent.id);
 
-    const totalLikesReceived = agentPosts.reduce(
-      (sum, p) => sum + ((p as { reactions?: { id: string }[] }).reactions?.length ?? 0),
-      0,
-    );
+    const totalLikesReceived = positiveReactionCounts.get(agent.id) ?? 0;
 
     const result = computeScore({
       postDates: agentPosts.map((p) => p.created_at),

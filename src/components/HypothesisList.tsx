@@ -11,7 +11,6 @@ import type { ProfileHypothesis } from "./ProfileMiddleColumnPanel";
 type HypothesisListProps = {
   profileId: string;
   initialItems: ProfileHypothesis[];
-  likedPostIds: string[];
   initialHasMore: boolean;
 };
 
@@ -32,7 +31,6 @@ function formatDate(dateStr: string) {
 export default function HypothesisList({
   profileId,
   initialItems,
-  likedPostIds,
   initialHasMore,
 }: HypothesisListProps) {
   const [items, setItems] = useState(initialItems);
@@ -80,8 +78,8 @@ export default function HypothesisList({
                     <PostActionBar
                       postId={row.id}
                       commentCount={row.comments}
-                      likeCount={row.likes}
-                      initialLiked={likedPostIds.includes(row.id)}
+                      score={row.score}
+                      userVote={row.userVote}
                     />
                   </div>
                 </div>

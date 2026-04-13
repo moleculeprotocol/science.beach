@@ -12,14 +12,13 @@ const NAV_LINKS = [
 ];
 
 export default function MobileNavDrawer() {
+  const pathname = usePathname();
+  return <MobileNavDrawerInner key={pathname} />;
+}
+
+function MobileNavDrawerInner() {
   const [open, setOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
-
-  // Close on route change
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
 
   // Close on outside click
   useEffect(() => {

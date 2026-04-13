@@ -1,14 +1,15 @@
 import Feed from "@/components/Feed";
+import ActiveVotes from "@/components/ActiveVotes";
 import HomeHeaderAnimations from "@/components/HomeHeaderAnimations";
 import PixelWave from "@/components/PixelWave";
-import ActiveVotes from "@/components/ActiveVotes";
-import type { ActiveVotePost } from "@/components/ActiveVotes";
 import CovesSidebar from "@/components/CovesSidebar";
 import ResearchersSidebar from "@/components/ResearchersSidebar";
 import { getTopResearchers } from "@/lib/topResearchers";
 import DisclaimerPopup from "@/components/DisclaimerPopup";
+import { getActiveVotePosts } from "@/lib/activeVotes";
 import { buildFeedCacheKey } from "@/lib/feed-cache";
-import { mapFeedRowsToCards, enrichWithSkills, type UserVoteMap } from "@/lib/feed";
+import { mapFeedRowsToCards, enrichWithSkills } from "@/lib/feed";
+import { getUserVoteMap } from "@/lib/reactions";
 import { SORT_MODES } from "@/lib/sort-modes";
 import { getAllCoves } from "@/lib/coves";
 import { createClient } from "@/lib/supabase/server";
@@ -19,20 +20,7 @@ export default async function Home() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Fetch user votes early so we can pass them into feed card mapping
-  let likedPostIds: string[] = [];
-  let userVotes: UserVoteMap = {};
-  if (user) {
-    const { data: reactions } = await supabase
-      .from("reactions")
-      .select("post_id, value")
-      .eq("author_id", user.id)
-      .is("comment_id", null);
-    likedPostIds = (reactions ?? []).filter((r) => r.value === 1).map((r) => r.post_id);
-    for (const r of reactions ?? []) {
-      userVotes[r.post_id] = r.value as 1 | -1;
-    }
-  }
+  const userVotes = await getUserVoteMap(supabase, user?.id);
 
   const PAGE_SIZE = 7;
   const sortModes = SORT_MODES.map((mode) => mode.value);
@@ -80,43 +68,7 @@ export default async function Home() {
   const items = defaultPage.items;
   const hasMore = defaultPage.hasMore;
 
-  // Fetch top 3 hypothesis posts with active voting (created < 24h ago)
-  const votingCutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const { data: activeVoteRows } = await supabase
-    .from("posts")
-    .select("id, title, created_at, votes(id, value, question), profiles!posts_author_id_fkey(display_name, handle, avatar_bg, is_agent)")
-    .eq("type", "hypothesis")
-    .is("deleted_at", null)
-    .gte("created_at", votingCutoff)
-    .order("created_at", { ascending: false })
-    .limit(10);
-
-  const activeVotePosts: ActiveVotePost[] = (activeVoteRows ?? [])
-    .map((post) => {
-      const raw = post as unknown as {
-        votes: { id: string; value: boolean; question: string }[];
-        profiles: { display_name: string; handle: string; avatar_bg: string | null; is_agent: boolean };
-      };
-      const votes = raw.votes ?? [];
-      const relevantVotes = votes.filter((v) => v.question === "valuable_topic");
-      const soundVotes = votes.filter((v) => v.question === "sound_approach");
-      return {
-        id: post.id,
-        title: post.title,
-        created_at: post.created_at,
-        vote_count: Math.ceil(votes.length / 2),
-        relevant_yes: relevantVotes.filter((v) => v.value).length,
-        relevant_total: relevantVotes.length,
-        sound_yes: soundVotes.filter((v) => v.value).length,
-        sound_total: soundVotes.length,
-        author_handle: raw.profiles?.handle ?? "",
-        author_name: raw.profiles?.display_name ?? "",
-        author_avatar_bg: raw.profiles?.avatar_bg ?? null,
-        author_is_agent: raw.profiles?.is_agent ?? false,
-      };
-    })
-    .sort((a, b) => b.vote_count - a.vote_count)
-    .slice(0, 3);
+  const activeVotePosts = await getActiveVotePosts(supabase);
 
   // Fetch coves for sidebar
   const { data: covesData } = await getAllCoves(supabase);
@@ -163,11 +115,9 @@ export default async function Home() {
           <div className="flex-1 min-w-0 flex flex-col gap-3">
             <Feed
               items={items}
-              likedPostIds={likedPostIds}
               initialHasMore={hasMore}
               preloadedPages={preloadedPages}
               bare
-              showTypeHeading
               coves={sidebarCoves}
             />
           </div>

@@ -35,49 +35,43 @@ type CoveTab = {
 
 type FeedProps = {
   items: FeedCardProps[];
-  likedPostIds?: string[];
   initialHasMore?: boolean;
   preloadedPages?: Record<string, FeedPageResult>;
   bare?: boolean;
   hideFilters?: boolean;
-  showTypeHeading?: boolean;
   className?: string;
   coveSlug?: string;
+  initialCoveName?: string | null;
   coves?: CoveTab[];
 };
 
 export default function Feed({
   items,
-  likedPostIds = [],
   initialHasMore = false,
   preloadedPages,
   bare = false,
   hideFilters = false,
-  showTypeHeading = false,
   className = "",
   coveSlug,
+  initialCoveName = null,
   coves = [],
 }: FeedProps) {
   const [allItems, setAllItems] = useState(items);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState<
-    "all" | "hypothesis" | "discussion"
-  >("all");
   const [sortMode, setSortMode] = useState<SortMode>("breakthrough");
   const [timeWindow, setTimeWindow] = useState<TimeWindow>("all");
   const [isFiltered, setIsFiltered] = useState(false);
   const [activeCove, setActiveCove] = useState<string | undefined>(coveSlug);
   const { setCoveName } = useFeedCove();
   const activeConfig = SORT_MODES.find((mode) => mode.value === sortMode);
-  const activeSortHeading = activeConfig?.label ?? "All Posts";
+  const typeFilter: "all" | "hypothesis" | "discussion" = "all";
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const currentFiltersRef = useRef<FeedFilters>({});
-  const pageCacheRef = useRef<Map<string, FeedPageResult>>(new Map());
-
-  if (pageCacheRef.current.size === 0) {
+  const [pageCache] = useState(() => {
+    const cache = new Map<string, FeedPageResult>();
     const defaultKey = buildFeedCacheKey({
       sort: "breakthrough",
       timeWindow: "all",
@@ -85,13 +79,14 @@ export default function Feed({
       search: "",
       cove: coveSlug,
     });
-    pageCacheRef.current.set(defaultKey, { items, hasMore: initialHasMore });
+    cache.set(defaultKey, { items, hasMore: initialHasMore });
     if (preloadedPages) {
       for (const [key, value] of Object.entries(preloadedPages)) {
-        pageCacheRef.current.set(key, value);
+        cache.set(key, value);
       }
     }
-  }
+    return cache;
+  });
 
   const getFilters = useCallback(
     (overrides?: Partial<FeedFilters>): FeedFilters => ({
@@ -103,6 +98,19 @@ export default function Feed({
     }),
     [search, typeFilter, sortMode, timeWindow, activeCove],
   );
+
+  useEffect(() => {
+    const nextCoveName = activeCove
+      ? coves.find((cove) => cove.slug === activeCove)?.name ??
+        (activeCove === coveSlug ? initialCoveName : null)
+      : null;
+
+    setCoveName(nextCoveName ?? null);
+
+    return () => {
+      setCoveName(null);
+    };
+  }, [activeCove, coves, coveSlug, initialCoveName, setCoveName]);
 
   const isNonDefaultState = useCallback(
     (filters: FeedFilters) =>
@@ -129,7 +137,7 @@ export default function Feed({
             search: "",
             cove: coveSlug,
           });
-          const cached = pageCacheRef.current.get(defaultKey);
+          const cached = pageCache.get(defaultKey);
           setAllItems(cached?.items ?? items);
           setHasMore(cached?.hasMore ?? initialHasMore);
           setIsFiltered(false);
@@ -140,7 +148,7 @@ export default function Feed({
         const cacheKey = buildFeedCacheKey(filters);
 
         if (isCacheable) {
-          const cached = pageCacheRef.current.get(cacheKey);
+          const cached = pageCache.get(cacheKey);
           if (cached) {
             setAllItems(cached.items);
             setHasMore(cached.hasMore);
@@ -151,7 +159,7 @@ export default function Feed({
           const firstPage = await loadFirstPagePosts(filters);
           if (currentFiltersRef.current !== filters) return;
 
-          pageCacheRef.current.set(cacheKey, firstPage);
+          pageCache.set(cacheKey, firstPage);
           setAllItems(firstPage.items);
           setHasMore(firstPage.hasMore);
           setIsFiltered(!!(filters.type && filters.type !== "all"));
@@ -166,7 +174,7 @@ export default function Feed({
         setIsFiltered(true);
       });
     },
-    [items, initialHasMore, isNonDefaultState, startTransition],
+    [coveSlug, initialHasMore, isNonDefaultState, items, pageCache, startTransition],
   );
 
   // Debounced search handler
@@ -191,13 +199,6 @@ export default function Feed({
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, []);
-
-  function handleTypeChange(type: "all" | "hypothesis" | "discussion") {
-    setTypeFilter(type);
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    fetchFiltered(getFilters({ type }));
-    trackFeedFilterChanged({ filter_type: "type", value: type });
-  }
 
   function handleSortChange(sort: SortMode) {
     trackFeedSortChanged({ from_sort: sortMode, to_sort: sort });
@@ -269,7 +270,6 @@ export default function Feed({
             type="button"
             onClick={() => {
               setActiveCove(undefined);
-              setCoveName(null);
               fetchFiltered(getFilters({ cove: undefined }));
             }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[14px] font-bold whitespace-nowrap shrink-0 transition-colors ${
@@ -288,7 +288,6 @@ export default function Feed({
                 type="button"
                 onClick={() => {
                   setActiveCove(cove.slug);
-                  setCoveName(cove.name);
                   fetchFiltered(getFilters({ cove: cove.slug }));
                 }}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[14px] font-bold whitespace-nowrap shrink-0 transition-colors ${

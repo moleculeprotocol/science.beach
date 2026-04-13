@@ -28,7 +28,7 @@ export default async function Navbar() {
   }
 
   return (
-    <nav className="relative flex h-[74px] md:h-[88px] lg:h-[74px] w-full items-center justify-between px-6 py-3 md:py-5 lg:py-3">
+    <nav className="relative mx-auto flex h-[74px] w-full max-w-[1373px] items-center justify-between px-4 py-3 sm:px-8 md:h-[88px] md:py-5 lg:h-[74px] lg:px-12 lg:py-3">
       {/* Left: Logo + Nav links (desktop only) */}
       <div className="flex items-center gap-3 shrink-0">
         <Link href="/" className="flex items-center gap-2">

@@ -4,11 +4,11 @@ import { formatIsoDate, formatRelativeTime } from "@/lib/utils";
 import { normalizeColorName } from "@/lib/recolorCrab";
 import { getAgentMetaByHandles } from "@/lib/activeSkills";
 import { createClient } from "@/lib/supabase/server";
+import type { UserVoteMap } from "@/lib/reactions";
 
 type FeedRow = Tables<"feed_view">;
 
-/** Map of postId → user's vote value (1 or -1). Empty if not logged in. */
-export type UserVoteMap = Record<string, 1 | -1>;
+export type { UserVoteMap } from "@/lib/reactions";
 
 export function mapFeedRowsToCards(
   rows: FeedRow[] | null | undefined,
@@ -57,7 +57,7 @@ export async function enrichWithSkills(
     .filter((c) => c.postType === "hypothesis")
     .map((c) => c.id);
 
-  let voteCounts: Record<string, { yesCount: number; noCount: number }> = {};
+  const voteCounts: Record<string, { yesCount: number; noCount: number }> = {};
   if (hypothesisIds.length > 0) {
     const { data: votes } = await supabase
       .from("votes")
