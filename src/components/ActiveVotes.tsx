@@ -1,5 +1,5 @@
 import Link from "next/link";
-import SectionHeading from "./SectionHeading";
+import Image from "next/image";
 import AvatarClient from "./AvatarClient";
 import Badge from "./Badge";
 
@@ -41,9 +41,20 @@ export default function ActiveVotes({ posts }: Props) {
   if (withVotes.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-3">
-      <SectionHeading variant="white">Current Votes</SectionHeading>
-      <div className="grid grid-cols-3 gap-3 overflow-x-auto pb-2">
+    <div className="bg-white border border-dawn-2 rounded-panel p-4 flex flex-col gap-4 overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-1.5">
+          <AvatarClient bg={null} size="xs" />
+          <span className="paragraph-m-bold text-dark-space">Current Votes</span>
+        </div>
+        <div className="border border-dawn-3 rounded-card size-8 flex items-center justify-center">
+          <Image src="/icons/info-box.svg" alt="" width={20} height={20} className="opacity-40" />
+        </div>
+      </div>
+
+      {/* Horizontally scrollable cards row */}
+      <div className="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4">
         {withVotes.map((post) => {
           const relevantPct = post.relevant_total > 0 ? Math.round((post.relevant_yes / post.relevant_total) * 100) : 0;
           const soundPct = post.sound_total > 0 ? Math.round((post.sound_yes / post.sound_total) * 100) : 0;
@@ -51,31 +62,29 @@ export default function ActiveVotes({ posts }: Props) {
           return (
             <div
               key={post.id}
-              className="flex flex-col gap-3 border border-dawn-2 bg-white rounded-panel p-4 min-w-[280px]"
+              className="flex flex-col gap-4 border border-dawn-2 bg-white rounded-panel p-3 w-[300px] sm:w-[360px] shrink-0"
             >
               {/* Author row */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <AvatarClient bg={post.author_avatar_bg} size="xs" />
-                  <span className="paragraph-s text-dark-space font-medium">
+                  <span className="paragraph-m-bold text-dark-space">
                     {post.author_name}
                   </span>
                 </div>
                 {post.author_is_agent && (
-                  <span className="inline-flex items-center h-6 px-1.5 label-s-bold leading-none rounded-full border-2 border-moss-3 text-moss-4 bg-moss-2">
-                    Agent
-                  </span>
+                  <Badge variant="agent" />
                 )}
               </div>
 
-              {/* Title — not bold */}
-              <p className="paragraph-m text-dark-space line-clamp-3">
+              {/* Title */}
+              <p className="paragraph-l text-dark-space line-clamp-3 flex-1">
                 {post.title}
               </p>
 
-              {/* Vote bars */}
+              {/* Vote bars + buttons */}
               <div className="flex gap-3">
-                <div className="flex-1 flex flex-col gap-1.5">
+                <div className="flex-1 flex flex-col gap-2">
                   <span className="paragraph-s text-smoke-4">Relevant</span>
                   <div className="h-[6px] w-full bg-orange-2 rounded-full overflow-hidden">
                     {post.relevant_total > 0 && (
@@ -86,8 +95,14 @@ export default function ActiveVotes({ posts }: Props) {
                     <span className="text-smoke-5">{relevantPct}%</span>
                     <span className="text-smoke-4">{post.relevant_total}</span>
                   </div>
+                  <Link
+                    href={`/post/${post.id}`}
+                    className="w-full py-1.5 rounded-full bg-orange-2 text-center label-m-bold text-orange-4 hover:bg-orange-3 transition-colors"
+                  >
+                    Vote
+                  </Link>
                 </div>
-                <div className="flex-1 flex flex-col gap-1.5">
+                <div className="flex-1 flex flex-col gap-2">
                   <span className="paragraph-s text-smoke-4">Sound</span>
                   <div className="h-[6px] w-full bg-blue-1 rounded-full overflow-hidden">
                     {post.sound_total > 0 && (
@@ -98,26 +113,14 @@ export default function ActiveVotes({ posts }: Props) {
                     <span className="text-smoke-5">{soundPct}%</span>
                     <span className="text-smoke-4">{post.sound_total}</span>
                   </div>
+                  <Link
+                    href={`/post/${post.id}`}
+                    className="w-full py-1.5 rounded-full bg-blue-1 text-center label-m-bold text-blue-4 hover:bg-blue-2 transition-colors"
+                  >
+                    Vote
+                  </Link>
                 </div>
               </div>
-
-              {/* Footer: vote count + time remaining */}
-              <div className="flex items-center justify-between">
-                <span className="paragraph-s text-smoke-4">
-                  {post.vote_count} {post.vote_count === 1 ? "vote" : "votes"}
-                </span>
-                <span className="label-m-bold text-blue-4">
-                  {formatTimeRemaining(post.created_at)}
-                </span>
-              </div>
-
-              {/* Vote button */}
-              <Link
-                href={`/post/${post.id}`}
-                className="w-full py-2 rounded-full bg-smoke-7 border border-smoke-5 text-center paragraph-s text-dark-space hover:bg-dawn-2 transition-colors"
-              >
-                Vote
-              </Link>
             </div>
           );
         })}

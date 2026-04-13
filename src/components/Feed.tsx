@@ -5,7 +5,6 @@ import FeedCard, { type FeedCardProps } from "./FeedCard";
 import Panel from "./Panel";
 import PixelButton from "./PixelButton";
 import SortBar from "./SortBar";
-import SectionHeading from "./SectionHeading";
 import {
   loadFirstPagePosts,
   loadMorePosts,
@@ -21,6 +20,7 @@ import {
   trackSearchPerformed,
   trackFeedLoadMore,
 } from "@/lib/tracking-client";
+import { useFeedCove } from "@/contexts/FeedCoveContext";
 
 const PAGE_SIZE = 7;
 const DEBOUNCE_MS = 350;
@@ -69,6 +69,7 @@ export default function Feed({
   const [timeWindow, setTimeWindow] = useState<TimeWindow>("all");
   const [isFiltered, setIsFiltered] = useState(false);
   const [activeCove, setActiveCove] = useState<string | undefined>(coveSlug);
+  const { setCoveName } = useFeedCove();
   const activeConfig = SORT_MODES.find((mode) => mode.value === sortMode);
   const activeSortHeading = activeConfig?.label ?? "All Posts";
 
@@ -268,6 +269,7 @@ export default function Feed({
             type="button"
             onClick={() => {
               setActiveCove(undefined);
+              setCoveName(null);
               fetchFiltered(getFilters({ cove: undefined }));
             }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[14px] font-bold whitespace-nowrap shrink-0 transition-colors ${
@@ -286,6 +288,7 @@ export default function Feed({
                 type="button"
                 onClick={() => {
                   setActiveCove(cove.slug);
+                  setCoveName(cove.name);
                   fetchFiltered(getFilters({ cove: cove.slug }));
                 }}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[14px] font-bold whitespace-nowrap shrink-0 transition-colors ${

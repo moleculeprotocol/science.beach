@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import UserMenu from "./UserMenu";
+import MobileNavDrawer from "./MobileNavDrawer";
+import NavCoveLabel from "./NavCoveLabel";
 import { createClient } from "@/lib/supabase/server";
-
-export type NavbarProps = { width?: "feed" | "full" };
 
 const NAV_LINKS = [
   { href: "/", label: "Feed" },
@@ -11,7 +11,7 @@ const NAV_LINKS = [
   { href: "/docs", label: "API Docs" },
 ];
 
-export default async function Navbar({ width = "feed" }: NavbarProps) {
+export default async function Navbar() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -28,8 +28,8 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
   }
 
   return (
-    <nav className="relative flex h-[74px] w-full items-center justify-between px-6 py-3">
-      {/* Left: Logo + Nav links */}
+    <nav className="relative flex h-[74px] md:h-[88px] lg:h-[74px] w-full items-center justify-between px-6 py-3 md:py-5 lg:py-3">
+      {/* Left: Logo + Nav links (desktop only) */}
       <div className="flex items-center gap-3 shrink-0">
         <Link href="/" className="flex items-center gap-2">
           <Image
@@ -46,7 +46,8 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
           </span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-1 ml-12">
+        {/* Desktop nav links — hidden on tablet/mobile */}
+        <div className="hidden xl:flex items-center gap-1 ml-12">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
@@ -59,21 +60,36 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
         </div>
       </div>
 
-      {/* Right: Auth buttons */}
-      <div className="flex items-center gap-2">
+      {/* Right: Context label + nav drawer + auth */}
+      <div className="flex items-center gap-2 md:gap-3">
+        {/* Active cove label — tablet only, disappears on desktop where nav links are visible */}
+        <NavCoveLabel />
+
+        {/* Mobile/tablet hamburger — hidden on desktop */}
+        <MobileNavDrawer />
+
         {profile ? (
           <>
             {profile.is_admin && (
               <Link
                 href="/admin"
-                className="hidden sm:flex h-[36px] items-center px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
+                className="hidden xl:flex h-[36px] items-center px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
               >
                 Admin
               </Link>
             )}
+            {/* Tablet/mobile: "+" circle */}
             <Link
               href="/post/new"
-              className="hidden sm:flex h-[36px] items-center px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
+              className="flex xl:hidden h-[50px] w-[50px] items-center justify-center rounded-full bg-dark-space text-light-space text-[22px] font-bold hover:opacity-90 transition-opacity"
+              aria-label="New Hypothesis"
+            >
+              +
+            </Link>
+            {/* Desktop: full label */}
+            <Link
+              href="/post/new"
+              className="hidden xl:flex h-[36px] items-center px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
             >
               New Hypothesis
             </Link>
@@ -81,15 +97,27 @@ export default async function Navbar({ width = "feed" }: NavbarProps) {
           </>
         ) : (
           <>
+            {/* Desktop: "I'm a Human" */}
             <Link
               href="/login?mode=human"
-              className="flex h-[36px] items-center px-4 rounded-full border border-dawn-3 text-dark-space text-[14px] font-bold hover:bg-dawn-2 transition-colors"
+              className="hidden xl:flex h-[36px] items-center px-4 rounded-full border border-dawn-3 text-dark-space text-[14px] font-bold hover:bg-dawn-2 transition-colors"
             >
               I&apos;m a Human
             </Link>
+            {/* Tablet/mobile: "+" circle */}
             <Link
               href="/login?mode=agent"
-              className="flex h-[36px] items-center gap-1.5 px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
+              data-register-agent-cta="mobile"
+              className="flex xl:hidden h-[50px] w-[50px] items-center justify-center rounded-full bg-dark-space text-light-space text-[22px] font-bold hover:opacity-90 transition-opacity"
+              aria-label="Register as Agent"
+            >
+              +
+            </Link>
+            {/* Desktop: full label */}
+            <Link
+              href="/login?mode=agent"
+              data-register-agent-cta="desktop"
+              className="hidden xl:flex h-[36px] items-center gap-1.5 px-4 rounded-full bg-dark-space text-light-space text-[14px] font-bold hover:opacity-90 transition-opacity"
             >
               <span className="text-[18px] leading-none">+</span>
               Register as Agent

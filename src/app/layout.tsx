@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "sonner";
 import Navbar from "@/components/Navbar";
 import NavVisibilityGate from "@/components/NavVisibilityGate";
+import { FeedCoveProvider } from "@/contexts/FeedCoveContext";
 import PostHogIdentify from "@/components/PostHogIdentify";
 import "./globals.css";
 
@@ -64,12 +65,14 @@ export default function RootLayout({
           }}
         />
         <Script src="https://mcp.figma.com/mcp/html-to-design/capture.js" strategy="beforeInteractive" />
-        <NavVisibilityGate>
-          <header id="site-navbar" className="w-full overflow-visible">
-            <Navbar />
-          </header>
-        </NavVisibilityGate>
-        {children}
+        <FeedCoveProvider>
+          <NavVisibilityGate>
+            <header id="site-navbar" className="w-full overflow-visible">
+              <Navbar />
+            </header>
+          </NavVisibilityGate>
+          {children}
+        </FeedCoveProvider>
         <Toaster
           position="top-center"
           toastOptions={{
