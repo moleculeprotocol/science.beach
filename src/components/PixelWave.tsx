@@ -1,88 +1,198 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { createNoise3D } from "@/lib/noise";
 
-const PIXEL_SIZE = 2;
-const NOISE_SCALE = 0.004;
-const SPEED = 0.004;
+const PIXEL_SIZE = 4;
 
-const PALETTE: [number, number, number][] = [
-  [18, 113, 203],  // #1271CB — deepest
-  [0, 121, 235],   // #0079EB
-  [34, 147, 255],  // #2293FF
-  [8, 214, 255],   // #08D6FF
-  [32, 255, 251],  // #20FFFB — highlight
+// Warm sandy beach palette (day mode from design preview)
+const PALETTE = {
+  deepOcean: [233, 223, 213] as [number, number, number],
+  ocean:     [238, 231, 224] as [number, number, number],
+  ripple:    [246, 243, 240] as [number, number, number],
+  foam:      [255, 255, 255] as [number, number, number],
+  sandDry:   [245, 241, 237] as [number, number, number],
+  sandWet:   [233, 223, 213] as [number, number, number],
+  bgHex:     "#F5F1ED",
+};
+
+// Sparkle colors: coral + near-white
+const SPARKLE_COLORS: [number, number, number][] = [
+  [255, 111, 97],
+  [255, 245, 238],
 ];
 
+type Foam = { x: number; y: number; width: number };
+
 export default function PixelWave() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
     const container = containerRef.current;
-    if (!canvas || !container) return;
+    const canvas = canvasRef.current;
+    if (!container || !canvas) return;
 
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    const noise3D = createNoise3D();
     let raf: number;
+    let resizeRaf = 0;
+    let ctx: CanvasRenderingContext2D | null = null;
+    let w = 0;
+    let h = 0;
+    let frame = 0;
     let time = 0;
+    let moisture = new Float32Array(0);
+    let sparkle = new Int8Array(0);
+    let foam: Foam[] = [];
 
     const resize = () => {
-      const { width, height } = container.getBoundingClientRect();
-      canvas.width = Math.ceil(Math.max(1, width) / PIXEL_SIZE);
-      canvas.height = Math.ceil(Math.max(1, height) / PIXEL_SIZE);
+      const rect = container.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+      const nw = Math.ceil(rect.width / PIXEL_SIZE);
+      const nh = Math.ceil(rect.height / PIXEL_SIZE);
+      if (nw === w && nh === h && ctx) return;
+      w = nw;
+      h = nh;
+      canvas.width = w;
+      canvas.height = h;
+      ctx = canvas.getContext("2d", { alpha: false, desynchronized: true });
+      moisture = new Float32Array(w * h).fill(0);
+      sparkle = new Int8Array(w * h).fill(0);
+      foam = [];
+      draw();
     };
 
     const draw = () => {
-      const w = canvas.width;
-      const h = canvas.height;
-      if (w === 0 || h === 0) { raf = requestAnimationFrame(draw); return; }
+      if (!ctx || w === 0 || h === 0) return;
 
-      const imageData = ctx.createImageData(w, h);
-      const data = imageData.data;
+      frame += 1;
+      time += 0.006;
 
-      for (let y = 0; y < h; y++) {
-        for (let x = 0; x < w; x++) {
-          const normX = x / w;
-          const distFromCenter = Math.abs(normX - 0.5);
+      // Wave height oscillates between 15% and 35% from top
+      const swing = (Math.sin(time) + 1) / 2;
+      const waveMin = h * 0.15;
+      const waveMax = h * 0.35;
+      const waveY = waveMin + swing * (waveMax - waveMin);
 
-          let activity = 0;
-          if (distFromCenter > 0.05) {
-            activity = Math.pow((distFromCenter - 0.05) / 0.45, 1.5);
+      // Spawn foam bubbles occasionally
+      if (Math.random() < 0.02) {
+        foam.push({
+          x: Math.random() * w,
+          y: Math.random() * (waveMin - 10),
+          width: 4 + Math.random() * 8,
+        });
+      }
+      // Drift foam down, cull past wave
+      for (let i = foam.length - 1; i >= 0; i--) {
+        foam[i].y += 0.1;
+        if (foam[i].y > waveY - 2) foam.splice(i, 1);
+      }
+
+      const img = ctx.createImageData(w, h);
+      const data = img.data;
+
+      for (let x = 0; x < w; x++) {
+        // Per-column wave shape
+        const waveSurface = Math.sin(x * 0.1 + frame * 0.03) * 2
+                          + Math.cos(x * 0.2 + frame * 0.01) * 1.5;
+        const surface = waveY + waveSurface;
+
+        for (let y = 0; y < h; y++) {
+          const idx4 = (y * w + x) * 4;
+          const idx1 = y * w + x;
+          let r: number, g: number, b: number;
+
+          if (y < surface) {
+            // Water
+            if (sparkle[idx1] !== 0) sparkle[idx1] = 0;
+            moisture[idx1] = 1;
+
+            if (surface - y <= 1.5) {
+              [r, g, b] = PALETTE.foam;
+            } else if (y < h * 0.1 + waveSurface) {
+              [r, g, b] = PALETTE.deepOcean;
+            } else {
+              [r, g, b] = PALETTE.ocean;
+            }
+          } else {
+            // Sand
+            if (moisture[idx1] > 0) {
+              moisture[idx1] -= 0.006;
+              if (moisture[idx1] < 0) moisture[idx1] = 0;
+            }
+            // Spawn sparkles on freshly wet sand
+            if (moisture[idx1] > 0.95 && sparkle[idx1] === 0 && Math.random() < 3e-4) {
+              sparkle[idx1] = Math.random() > 0.6 ? 1 : 2;
+            }
+
+            const m = moisture[idx1];
+            r = PALETTE.sandDry[0] + (PALETTE.sandWet[0] - PALETTE.sandDry[0]) * m;
+            g = PALETTE.sandDry[1] + (PALETTE.sandWet[1] - PALETTE.sandDry[1]) * m;
+            b = PALETTE.sandDry[2] + (PALETTE.sandWet[2] - PALETTE.sandDry[2]) * m;
+
+            const sp = sparkle[idx1];
+            if (sp !== 0) [r, g, b] = SPARKLE_COLORS[sp - 1];
           }
 
-          const n = noise3D(x * NOISE_SCALE, y * NOISE_SCALE, time);
-          const eff = n * (0.1 + activity * 1.2);
-
-          let ci = 0;
-          if (eff > 0.15) ci = 1;
-          if (eff > 0.35) ci = 2;
-          if (eff > 0.60) ci = 3;
-          if (eff > 0.85) ci = 4;
-
-          const idx = (y * w + x) * 4;
-          data[idx] = PALETTE[ci][0];
-          data[idx + 1] = PALETTE[ci][1];
-          data[idx + 2] = PALETTE[ci][2];
-          data[idx + 3] = 255;
+          data[idx4]     = r;
+          data[idx4 + 1] = g;
+          data[idx4 + 2] = b;
+          data[idx4 + 3] = 255;
         }
       }
 
-      ctx.putImageData(imageData, 0, 0);
-      time += SPEED;
-      raf = requestAnimationFrame(draw);
+      // Draw foam particles as ripple-colored streaks
+      for (const f of foam) {
+        const fy = Math.round(f.y);
+        const fx1 = Math.round(f.x);
+        const fx2 = Math.round(f.x + f.width);
+        if (fy < 0 || fy >= h) continue;
+        for (let x = fx1; x < fx2; x++) {
+          if (x < 0 || x >= w) continue;
+          const waveSurface = Math.sin(x * 0.1 + frame * 0.03) * 2
+                            + Math.cos(x * 0.2 + frame * 0.01) * 1.5;
+          if (fy < waveY + waveSurface - 2) {
+            const idx4 = (fy * w + x) * 4;
+            data[idx4]     = PALETTE.ripple[0];
+            data[idx4 + 1] = PALETTE.ripple[1];
+            data[idx4 + 2] = PALETTE.ripple[2];
+          }
+        }
+      }
+
+      ctx.putImageData(img, 0, 0);
     };
 
-    window.addEventListener("resize", resize);
+    let lastTime = 0;
+
+    const loop = (now: DOMHighResTimeStamp) => {
+      raf = requestAnimationFrame(loop);
+      if (now - lastTime < 1000 / 30) return;
+      lastTime = now;
+      if (!ctx || w === 0 || h === 0) return;
+      draw();
+    };
+
+    const onVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(raf);
+      } else {
+        lastTime = 0;
+        raf = requestAnimationFrame(loop);
+      }
+    };
+
+    const ro = new ResizeObserver(() => {
+      if (resizeRaf) cancelAnimationFrame(resizeRaf);
+      resizeRaf = requestAnimationFrame(() => { resizeRaf = 0; resize(); });
+    });
+    ro.observe(container);
+    document.addEventListener("visibilitychange", onVisibility);
     resize();
-    draw();
+    raf = requestAnimationFrame(loop);
 
     return () => {
-      window.removeEventListener("resize", resize);
+      ro.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+      if (resizeRaf) cancelAnimationFrame(resizeRaf);
       cancelAnimationFrame(raf);
     };
   }, []);
@@ -90,12 +200,13 @@ export default function PixelWave() {
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 overflow-hidden bg-[#1271CB]"
+      className="absolute inset-0 overflow-hidden"
+      style={{ backgroundColor: PALETTE.bgHex }}
     >
       <canvas
         ref={canvasRef}
         className="block h-full w-full"
-        style={{ imageRendering: "pixelated" }}
+        style={{ imageRendering: "pixelated", willChange: "transform" }}
       />
     </div>
   );

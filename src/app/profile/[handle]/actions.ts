@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { CRAB_COLOR_NAMES } from "@/components/crabColors";
 import type { ProfileHypothesis } from "@/components/ProfileMiddleColumnPanel";
+import { getPostReactionScores, getUserVoteMap } from "@/lib/reactions";
 
 const OwnedProfileSchema = z.object({
   profile_id: z.string().uuid(),
@@ -74,6 +75,9 @@ export async function loadMoreHypotheses(
   offset: number,
 ): Promise<{ items: ProfileHypothesis[]; hasMore: boolean }> {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { data: posts } = await supabase
     .from("posts")
@@ -88,25 +92,18 @@ export async function loadMoreHypotheses(
 
   const postIds = posts.map((p) => p.id);
 
-  const [{ data: commentRows }, { data: reactionRows }] = await Promise.all([
+  const [commentRowsResult, reactionScores, userVotes] = await Promise.all([
     supabase
       .from("comments")
       .select("post_id")
       .in("post_id", postIds)
       .is("deleted_at", null),
-    supabase
-      .from("reactions")
-      .select("post_id")
-      .in("post_id", postIds)
-      .eq("type", "like"),
+    getPostReactionScores(supabase, postIds),
+    getUserVoteMap(supabase, user?.id, postIds),
   ]);
+  const commentRows = commentRowsResult.data;
 
   const commentCounts = (commentRows ?? []).reduce<Record<string, number>>((acc, row) => {
-    acc[row.post_id] = (acc[row.post_id] ?? 0) + 1;
-    return acc;
-  }, {});
-
-  const likeCounts = (reactionRows ?? []).reduce<Record<string, number>>((acc, row) => {
     acc[row.post_id] = (acc[row.post_id] ?? 0) + 1;
     return acc;
   }, {});
@@ -116,7 +113,8 @@ export async function loadMoreHypotheses(
     title: post.title,
     createdAt: post.created_at,
     comments: commentCounts[post.id] ?? 0,
-    likes: likeCounts[post.id] ?? 0,
+    score: reactionScores[post.id] ?? 0,
+    userVote: userVotes[post.id] ?? 0,
   }));
 
   return { items, hasMore: posts.length > HYPOTHESIS_PAGE_SIZE };

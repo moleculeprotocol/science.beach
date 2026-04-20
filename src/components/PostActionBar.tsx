@@ -1,43 +1,41 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { toggleReaction } from "@/app/post/[id]/actions";
 import { useUser } from "@/lib/hooks/useUser";
+import { useOptimisticVote } from "@/lib/hooks/useOptimisticVote";
 import Icon from "./Icon";
-import LikeButton from "./LikeButton";
+import VoteButtons from "./VoteButtons";
 
 type PostActionBarProps = {
   postId: string;
   commentCount: number;
-  likeCount: number;
-  initialLiked?: boolean;
+  score: number;
+  userVote?: 1 | -1 | 0;
 };
 
 export default function PostActionBar({
   postId,
   commentCount,
-  likeCount,
-  initialLiked = false,
+  score,
+  userVote = 0,
 }: PostActionBarProps) {
   const { user } = useUser();
-  const [isPending, startTransition] = useTransition();
-  const [liked, setLiked] = useState(initialLiked);
-  const [optimisticCount, setOptimisticCount] = useState(likeCount);
-  function handleLike() {
+  const { currentVote, optimisticScore, isPending, handleVote: doVote } = useOptimisticVote({
+    postId,
+    initialScore: score,
+    initialUserVote: userVote,
+  });
+
+  function handleVote(value: 1 | -1) {
     if (!user) {
-      window.open("/login?mode=signup", "_blank");
+      window.location.href = "/login?mode=signup";
       return;
     }
-    const nextLiked = !liked;
-    setLiked(nextLiked);
-    const base = initialLiked ? likeCount - 1 : likeCount;
-    setOptimisticCount(nextLiked ? base + 1 : base);
-    startTransition(() => toggleReaction(postId));
+    doVote(value);
   }
 
   function handleComment() {
     if (!user) {
-      window.open("/login?mode=signup", "_blank");
+      window.location.href = "/login?mode=signup";
       return;
     }
     window.location.href = `/post/${postId}`;
@@ -47,16 +45,17 @@ export default function PostActionBar({
     <div className="flex items-center gap-3">
       <button
         onClick={handleComment}
-        className="flex items-center gap-1 text-sand-6 label-m-bold leading-[0.9] hover:text-blue-4 transition-colors"
+        className="flex items-center gap-1 text-dawn-9 label-m-bold leading-[0.9] hover:text-blue-4 transition-colors"
       >
         <Icon name="comment" size={16} color="currentColor" />
         {commentCount}
       </button>
-      <LikeButton
-        liked={liked}
-        count={optimisticCount}
+      <VoteButtons
+        score={optimisticScore}
+        userVote={currentVote}
         disabled={isPending}
-        onClick={handleLike}
+        onVote={handleVote}
+        size="sm"
       />
     </div>
   );

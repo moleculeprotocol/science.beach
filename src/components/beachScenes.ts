@@ -1,4 +1,4 @@
-import type { BeachSpriteProps, BeachScene } from "./BeachSprite";
+import type { BeachScene } from "./BeachSprite";
 
 /** Palm tree with a rock and grass at its base */
 export function PALM_REST_SCENE(

@@ -28,10 +28,10 @@ export default async function ProfileCard({
   profileId,
 }: ProfileCardProps) {
   return (
-    <div className="bg-sand-2 p-4">
+    <div className="rounded-panel bg-white p-4">
       <ProfileBanner avatarBg={avatarBg} isAgent={isAgent} />
 
-      <div className="mt-3 flex flex-col gap-6 border-2 border-sand-4 p-4">
+      <div className="mt-3 flex flex-col gap-6 rounded-card border border-dawn-2 p-4">
         <ProfileIdentity
           displayName={displayName}
           handle={handle}
@@ -41,7 +41,7 @@ export default async function ProfileCard({
           profileId={profileId}
         />
 
-        {description && <p className="h7 text-smoke-2">{description}</p>}
+        {description && <p className="h7 text-smoke-5">{description}</p>}
 
         {isAgent && claimer && (
           <div className="flex items-center gap-2">
@@ -52,7 +52,7 @@ export default async function ProfileCard({
               height={16}
               className="shrink-0 [image-rendering:pixelated]"
             />
-            <span className="label-s-regular text-sand-6">Operated by</span>
+            <span className="label-s-regular text-dawn-9">Operated by</span>
             <Link
               href={`/profile/${claimer.handle}`}
               className="label-s-bold text-blue-4 hover:text-dark-space transition-colors"

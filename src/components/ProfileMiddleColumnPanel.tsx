@@ -13,7 +13,8 @@ export type ProfileHypothesis = {
   title: string;
   createdAt: string;
   comments: number;
-  likes: number;
+  score: number;
+  userVote: 1 | -1 | 0;
 };
 
 const BREAKDOWN_LABELS = ["Consistency", "Quality", "Volume"] as const;
@@ -21,7 +22,6 @@ const BREAKDOWN_LABELS = ["Consistency", "Quality", "Volume"] as const;
 type ProfileMiddleColumnPanelProps = {
   profileId: string;
   hypotheses: ProfileHypothesis[];
-  likedPostIds?: string[];
   initialHasMore?: boolean;
   isAgent?: boolean;
   score?: ScoreOutput;
@@ -30,7 +30,6 @@ type ProfileMiddleColumnPanelProps = {
 export default function ProfileMiddleColumnPanel({
   profileId,
   hypotheses,
-  likedPostIds = [],
   initialHasMore = false,
   isAgent = true,
   score,
@@ -38,15 +37,15 @@ export default function ProfileMiddleColumnPanel({
   const [explainerOpen, setExplainerOpen] = useState(false);
 
   return (
-    <section className="flex h-full min-h-0 w-full flex-col rounded-[2px] border-2 border-sand-4 bg-sand-2 p-3">
+    <section className="flex h-full min-h-0 w-full flex-col rounded-panel border border-dawn-2 bg-white p-3">
       <div className="flex min-h-0 flex-1 flex-col gap-3">
         <div className="hidden lg:flex lg:flex-col lg:gap-3">
-          <SectionHeading className="h-[50px] rounded-[2px] border-sand-4 py-0 flex items-center">
+          <SectionHeading className="h-[50px] rounded-card border-dawn-2 py-0 flex items-center">
             {isAgent ? "Agent Score" : "Score"}
           </SectionHeading>
 
           {score ? (
-            <div className="flex gap-3 border border-sand-4 bg-sand-1 p-3">
+            <div className="flex gap-3 rounded-card border border-dawn-2 bg-white p-3">
               <ScoreDial
                 value={score.composite}
                 tier={score.tier}
@@ -55,7 +54,7 @@ export default function ProfileMiddleColumnPanel({
 
               <div className="flex min-w-0 flex-1 flex-col gap-3">
                 <div className="flex items-center justify-between">
-                  <p className="font-ibm-bios text-[16px] leading-none text-sand-8 text-shadow-bubble">
+                  <p className="text-[16px] leading-none text-dawn-8 text-shadow-bubble">
                     Composite Score
                   </p>
                   <button
@@ -63,13 +62,13 @@ export default function ProfileMiddleColumnPanel({
                     className="flex shrink-0 cursor-pointer items-center gap-[5px] transition-opacity hover:opacity-70"
                   >
                     <Image src="/icons/info-box.svg" alt="" width={16} height={16} />
-                    <span className="font-kode-mono font-bold text-[13px] leading-[1.4] text-sand-4">
+                    <span className="font-bold text-[13px] leading-[1.4] text-dawn-2">
                       How it works
                     </span>
                   </button>
                 </div>
 
-                <p className="paragraph-s text-sand-6">
+                <p className="paragraph-s text-dawn-9">
                   Weighted blend of consistency, quality &amp; volume.
                   Agents are held to higher standards. Inactivity over
                   14 days triggers score decay.
@@ -88,41 +87,41 @@ export default function ProfileMiddleColumnPanel({
             </div>
           ) : (
             <>
-              <div className="relative border border-sand-4 bg-sand-1 p-3">
+              <div className="relative rounded-card border border-dawn-2 bg-white p-3">
                 <div className="flex items-start justify-between gap-3 opacity-30">
                   <div className="flex min-w-0 items-center gap-3">
                     <ScoreDialPlaceholder />
                     <div className="flex min-w-0 flex-col gap-2">
-                      <p className="font-ibm-bios h8 text-sand-8 text-shadow-bubble">
+                      <p className="paragraph-m-bold text-dawn-8 text-shadow-bubble">
                         Composite Score
                       </p>
-                      <div className="h-3 w-32 rounded-[2px] bg-sand-4" />
+                      <div className="h-3 w-32 rounded-[2px] bg-dawn-2" />
                     </div>
                   </div>
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <p className="font-ibm-bios text-[14px] text-sand-6 text-shadow-bubble">
+                  <p className="text-[14px] text-dawn-9 text-shadow-bubble">
                     Coming Soon
                   </p>
                 </div>
               </div>
 
-              <div className="relative border border-sand-4 bg-sand-1 p-3">
+              <div className="relative rounded-card border border-dawn-2 bg-white p-3">
                 <div className="flex flex-col gap-6 opacity-30">
                   {BREAKDOWN_LABELS.map((label) => (
                     <div key={label} className="flex flex-col gap-2">
                       <div className="flex items-center justify-between gap-3">
-                        <p className="label-m-bold leading-[0.9] text-sand-6">{label}</p>
-                        <div className="inline-flex h-5 w-10 items-center border border-sand-4 bg-sand-4 px-1.5" />
+                        <p className="label-m-bold leading-[0.9] text-dawn-9">{label}</p>
+                        <div className="inline-flex h-5 w-10 items-center border border-dawn-2 bg-dawn-2 px-1.5" />
                       </div>
-                      <div className="h-3 border border-sand-4 bg-sand-1 p-px">
-                        <div className="h-full w-0 rounded-[2px] bg-sand-4" />
+                      <div className="h-3 border border-dawn-2 bg-white p-px">
+                        <div className="h-full w-0 rounded-[2px] bg-dawn-2" />
                       </div>
                     </div>
                   ))}
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <p className="font-ibm-bios text-[14px] text-sand-6 text-shadow-bubble">
+                  <p className="text-[14px] text-dawn-9 text-shadow-bubble">
                     Coming Soon
                   </p>
                 </div>
@@ -134,7 +133,6 @@ export default function ProfileMiddleColumnPanel({
         <HypothesisList
           profileId={profileId}
           initialItems={hypotheses}
-          likedPostIds={likedPostIds}
           initialHasMore={initialHasMore}
         />
       </div>
@@ -155,12 +153,12 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center justify-between">
-        <p className="font-kode-mono font-bold text-[14px] leading-[0.9] text-sand-6">{label}</p>
+        <p className="font-bold text-[14px] leading-[0.9] text-dawn-9">{label}</p>
         <div className={`inline-flex h-5 items-center justify-center border px-1.5 py-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)] ${colors.tagBg} ${colors.tagBorder}`}>
-          <span className={`font-kode-mono font-bold text-[12px] leading-[0.9] ${colors.tagText}`}>{Math.round(value)}%</span>
+          <span className={`font-bold text-[12px] leading-[0.9] ${colors.tagText}`}>{Math.round(value)}%</span>
         </div>
       </div>
-      <div className="h-5 overflow-hidden border border-sand-4 bg-sand-1">
+      <div className="h-5 overflow-hidden rounded-card border border-dawn-2 bg-white">
         <div className={`h-full rounded-[2px] ${colors.bg}`} style={{ width: `${value}%` }} />
       </div>
     </div>
@@ -169,9 +167,9 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
 
 function ScoreDialPlaceholder() {
   return (
-    <div className="flex size-[72px] shrink-0 items-center justify-center rounded-full border-[6px] border-sand-4 bg-sand-3">
-      <div className="flex size-[46px] items-center justify-center rounded-full border-2 border-sand-4 bg-sand-1">
-        <span className="label-s-bold text-sand-5">--</span>
+    <div className="flex size-[72px] shrink-0 items-center justify-center rounded-full border-[6px] border-dawn-2 bg-white">
+      <div className="flex size-[46px] items-center justify-center rounded-full border-2 border-dawn-2 bg-white">
+        <span className="label-s-bold text-dawn-8">--</span>
       </div>
     </div>
   );

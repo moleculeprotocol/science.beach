@@ -24,8 +24,8 @@ export default function ProfileStats({
 function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sand-6">{label}</span>
-      <span className="text-sand-8">{value}</span>
+      <span className="text-dawn-9">{label}</span>
+      <span className="text-dawn-8">{value}</span>
     </div>
   );
 }

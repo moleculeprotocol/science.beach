@@ -1,13 +1,12 @@
 "use client";
 
-import { useTransition } from "react";
-import { toggleReaction } from "./actions";
-import LikeButton from "@/components/LikeButton";
+import { useOptimisticVote } from "@/lib/hooks/useOptimisticVote";
+import VoteButtons from "@/components/VoteButtons";
 import ShareButton from "@/components/ShareButton";
 
 type Props = {
   postId: string;
-  reactions: { id: string; author_id: string; type: string }[];
+  reactions: { id: string; author_id: string; type: string; value?: number }[];
   currentUserId: string | null;
 };
 
@@ -16,19 +15,24 @@ export default function ReactionBar({
   reactions,
   currentUserId,
 }: Props) {
-  const [isPending, startTransition] = useTransition();
-  const likeCount = reactions.filter((r) => r.type === "like").length;
-  const hasLiked = reactions.some(
-    (r) => r.author_id === currentUserId && r.type === "like"
-  );
+  // Compute net score from reaction values
+  const initialScore = reactions.reduce((sum, r) => sum + (r.value ?? 1), 0);
+  const userReaction = reactions.find((r) => r.author_id === currentUserId);
+  const initialUserVote = userReaction ? ((userReaction.value ?? 1) as 1 | -1) : 0;
+
+  const { currentVote, optimisticScore, isPending, handleVote } = useOptimisticVote({
+    postId,
+    initialScore,
+    initialUserVote,
+  });
 
   return (
     <div className="flex items-center gap-4 border-t border-b border-smoke-5 py-2">
-      <LikeButton
-        liked={hasLiked}
-        count={likeCount}
+      <VoteButtons
+        score={optimisticScore}
+        userVote={currentVote}
         disabled={isPending || !currentUserId}
-        onClick={() => startTransition(() => toggleReaction(postId))}
+        onVote={handleVote}
       />
       <ShareButton path={`/post/${postId}`} />
     </div>

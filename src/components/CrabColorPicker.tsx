@@ -55,10 +55,10 @@ export default function CrabColorPicker({
               key={colorName}
               type="button"
               onClick={() => setSelected(colorName)}
-              className={`flex flex-col items-center gap-1 border-2 p-1.5 transition-colors ${
+              className={`flex flex-col items-center gap-1 border-2 p-1.5 rounded-card transition-colors ${
                 isSelected
-                  ? "border-blue-4 bg-smoke-7"
-                  : "border-sand-4 bg-sand-2 hover:border-sand-5"
+                  ? "border-blue-4 bg-white"
+                  : "border-dawn-2 bg-white hover:border-dawn-4"
               }`}
             >
               {thumb ? (
@@ -73,7 +73,7 @@ export default function CrabColorPicker({
               ) : (
                 <div className="h-8 w-[45px]" />
               )}
-              <span className="label-s-regular text-smoke-2 capitalize">
+              <span className="label-s-regular text-smoke-5 capitalize">
                 {colorName}
               </span>
             </button>

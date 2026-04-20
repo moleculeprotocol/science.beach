@@ -7,7 +7,7 @@ type PageShellProps = {
 
 export default function PageShell({ children, className = "" }: PageShellProps) {
   return (
-    <main className={`flex justify-center pt-80 pb-12 ${className}`}>
+    <main className={`flex justify-center pt-8 pb-12 ${className}`}>
       {children}
     </main>
   );

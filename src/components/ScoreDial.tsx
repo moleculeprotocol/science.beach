@@ -31,7 +31,13 @@ export default function ScoreDial({ value, tier, breakdown }: ScoreDialProps) {
   const total = segments.reduce((a, b) => a + b, 0);
 
   const gapSize = 2; // px gap between segments
-  let offset = -circumference / 4; // start at top
+  const segmentOffsets = segments.reduce<number[]>((offsets, segment, index) => {
+    const previousOffset = index === 0
+      ? -circumference / 4
+      : offsets[index - 1] + (segments[index - 1] / total) * circumference;
+    offsets.push(previousOffset);
+    return offsets;
+  }, []);
 
   const tag = TIER_TAG_STYLES[tier];
 
@@ -50,8 +56,7 @@ export default function ScoreDial({ value, tier, breakdown }: ScoreDialProps) {
             const rawDash = (seg / total) * circumference;
             const dashLength = Math.max(0, rawDash - gapSize);
             const gap = circumference - dashLength;
-            const currentOffset = offset + gapSize / 2;
-            offset += rawDash;
+            const currentOffset = segmentOffsets[i] + gapSize / 2;
             return (
               <circle
                 key={i}
@@ -69,9 +74,9 @@ export default function ScoreDial({ value, tier, breakdown }: ScoreDialProps) {
           })}
         </svg>
         <div
-          className={`relative flex items-center justify-center border px-2 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)] ${tag.bg} ${tag.border}`}
+          className={`relative flex items-center justify-center border px-2 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.25)] rounded-card ${tag.bg} ${tag.border}`}
         >
-          <span className={`font-kode-mono font-bold text-[22px] leading-[0.9] ${tag.text}`}>
+          <span className={`font-bold text-[22px] leading-[0.9] ${tag.text}`}>
             {value}
           </span>
         </div>

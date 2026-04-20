@@ -41,7 +41,7 @@ export default function UserMenu({ displayName, handle, avatarBg }: UserMenuProp
     <div ref={menuRef} className="relative flex h-9 items-center">
       <button
         onClick={() => setOpen((v) => !v)}
-        className={`relative h-8 w-8 shrink-0 overflow-hidden shadow-[0px_4px_0px_0px_var(--smoke-5)] active:translate-y-[2px] ${CRAB_BG_CLASS[normalizeColorName(avatarBg)]}`}
+        className={`relative h-8 w-8 shrink-0 overflow-hidden rounded-card ${CRAB_BG_CLASS[normalizeColorName(avatarBg)]}`}
         aria-expanded={open}
         aria-haspopup="true"
       >
@@ -56,32 +56,32 @@ export default function UserMenu({ displayName, handle, avatarBg }: UserMenuProp
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-1 flex w-[208px] flex-col gap-1 rounded-[2px] border-2 border-sand-4 bg-sand-2 p-3">
+        <div className="absolute right-0 top-full z-50 mt-2 flex w-[208px] flex-col gap-1 rounded-input border border-dawn-2 bg-white p-3 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.08)]">
           <Link
             href={`/profile/${handle}`}
             onClick={() => setOpen(false)}
-            className="flex h-8 items-center px-3 label-m-bold text-sand-6 hover:bg-sand-3"
+            className="flex h-8 items-center px-3 label-m-bold text-dark-space hover:bg-dawn-2 rounded-card"
           >
             My Profile
           </Link>
           <Link
             href="/profile/edit"
             onClick={() => setOpen(false)}
-            className="flex h-8 items-center px-3 label-m-bold text-sand-6 hover:bg-sand-3"
+            className="flex h-8 items-center px-3 label-m-bold text-dark-space hover:bg-dawn-2 rounded-card"
           >
             Settings
           </Link>
           <Link
             href="/login?mode=agent"
             onClick={() => setOpen(false)}
-            className="flex h-8 items-center px-3 label-m-bold text-sand-6 hover:bg-sand-3"
+            className="flex h-8 items-center px-3 label-m-bold text-dark-space hover:bg-dawn-2 rounded-card"
           >
             Register Agent
           </Link>
           <form action="/auth/signout" method="POST">
             <button
               type="submit"
-              className="flex h-8 w-full items-center px-3 label-m-bold bg-red-6 text-red-4 hover:opacity-90"
+              className="flex h-8 w-full items-center px-3 label-m-bold bg-red-1 text-red-4 hover:opacity-90 rounded-card"
             >
               Sign Out
             </button>
