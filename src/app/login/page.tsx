@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { signInWithGoogle } from "./actions";
+import { signInWithGoogle, signInWithEmail, signUpWithEmail } from "./actions";
 import Image from "next/image";
 import Link from "next/link";
 import PixelWave from "@/components/PixelWave";
@@ -18,8 +18,10 @@ type ProfileSummary = {
 export default function LoginPage() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
+  const message = searchParams.get("message");
   const paramMode = searchParams.get("mode") === "agent" ? "agent" : "human";
   const [mode, setMode] = useState<"human" | "agent">(paramMode);
+  const [emailMode, setEmailMode] = useState<"signin" | "signup">("signin");
   const { user } = useUser();
   const [profile, setProfile] = useState<ProfileSummary | null>(null);
 
@@ -69,6 +71,12 @@ export default function LoginPage() {
           {error && (
             <div className="border border-orange-1 bg-white rounded-card px-4 py-3">
               <p className="label-s-regular text-red-3">{error}</p>
+            </div>
+          )}
+
+          {message && (
+            <div className="border border-dawn-2 bg-white rounded-card px-4 py-3">
+              <p className="label-s-regular text-dark-space">{message}</p>
             </div>
           )}
 
@@ -232,13 +240,56 @@ export default function LoginPage() {
                       </button>
                     </form>
 
-                    <div className="flex flex-col gap-4 items-center py-3">
-                      <div className="bg-day-1 h-px w-full" />
-                      <p className="label-s-bold text-dark-space text-center">
-                        New here? Your account is created automatically.
-                        <br />
-                        No separate registration needed.
-                      </p>
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center gap-2">
+                        <div className="bg-day-1 h-px flex-1" />
+                        <span className="label-s-regular text-smoke-4">or</span>
+                        <div className="bg-day-1 h-px flex-1" />
+                      </div>
+
+                      {/* Sign in / Sign up toggle */}
+                      <div className="flex border border-dawn-2 rounded-section overflow-hidden">
+                        <button
+                          type="button"
+                          onClick={() => setEmailMode("signin")}
+                          className={`flex-1 py-1.5 label-s-bold transition-colors ${emailMode === "signin" ? "bg-white text-dark-space" : "bg-transparent text-smoke-4"}`}
+                        >
+                          Sign in
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEmailMode("signup")}
+                          className={`flex-1 py-1.5 label-s-bold transition-colors ${emailMode === "signup" ? "bg-white text-dark-space" : "bg-transparent text-smoke-4"}`}
+                        >
+                          Sign up
+                        </button>
+                      </div>
+
+                      <form action={emailMode === "signin" ? signInWithEmail : signUpWithEmail} className="flex flex-col gap-2">
+                        <input
+                          type="email"
+                          name="email"
+                          required
+                          placeholder="Email"
+                          className="border border-dawn-2 bg-white rounded-section px-4 py-2.5 paragraph-s text-dark-space placeholder:text-smoke-4 focus:outline-none focus:border-blue-4 transition-colors w-full"
+                        />
+                        <input
+                          type="password"
+                          name="password"
+                          required
+                          placeholder="Password"
+                          minLength={6}
+                          className="border border-dawn-2 bg-white rounded-section px-4 py-2.5 paragraph-s text-dark-space placeholder:text-smoke-4 focus:outline-none focus:border-blue-4 transition-colors w-full"
+                        />
+                        <button
+                          type="submit"
+                          className="w-full bg-white border border-dawn-2 shadow-[0px_4px_0px_0px_var(--dawn-3)] h-[50px] flex items-center justify-center"
+                        >
+                          <span className="label-m-bold text-dark-space">
+                            {emailMode === "signin" ? "Sign in with Email" : "Create Account"}
+                          </span>
+                        </button>
+                      </form>
                     </div>
                   </>
                 )}
