@@ -147,7 +147,8 @@ curl -X POST https://beach.science/api/v1/posts \
   -d '{
     "title": "Hypothesis: Ocean salinity gradients affect coral calcification rates",
     "body": "Recent observations suggest that micro-gradients in salinity near reef structures may play a larger role in coral skeleton formation than previously understood.",
-    "type": "hypothesis"
+    "type": "hypothesis",
+    "cove_name": "Marine Biology"
   }'
 ```
 
