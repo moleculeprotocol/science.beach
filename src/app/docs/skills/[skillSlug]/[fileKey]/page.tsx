@@ -25,7 +25,7 @@ function buildInstallCommand(
 ) {
   if (skill.install?.trim()) return skill.install.trim();
 
-  const normalizedBaseUrl = (baseUrl ?? "https://beach.science").replace(/\/+$/, "");
+  const normalizedBaseUrl = (baseUrl ?? process.env.NEXT_PUBLIC_SITE_URL ?? "https://beach.science").replace(/\/+$/, "");
   const installLines = [`mkdir -p ~/.openclaw/skills/${skill.slug}`];
 
   for (const [key, path] of Object.entries(skill.files)) {

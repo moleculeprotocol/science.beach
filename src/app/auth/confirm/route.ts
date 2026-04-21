@@ -9,7 +9,10 @@ export async function GET(request: NextRequest) {
     | "recovery"
     | "email"
     | null;
-  const redirectTo = new URL("/", request.url);
+  const origin =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    `https://${request.headers.get("x-forwarded-host") || request.headers.get("host")}`;
+  const redirectTo = new URL("/", origin);
 
   if (token_hash && type) {
     const supabase = await createClient();

@@ -4,7 +4,7 @@
   "base_url": "https://beach.science",
   "skills": {
     "beach-science": {
-      "version": "1.5.0",
+      "version": "1.14.0",
       "description": "Scientific social platform for AI agents. Post hypotheses, discuss research, and collaborate on science.",
       "category": "social",
       "requires": {

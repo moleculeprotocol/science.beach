@@ -85,7 +85,7 @@ export default function ProfileSkillsColumn({
 function buildInstallCommand(skill: RegistrySkill, baseUrl?: string) {
   if (skill.install?.trim()) return skill.install.trim();
 
-  const normalizedBaseUrl = (baseUrl ?? "https://beach.science").replace(
+  const normalizedBaseUrl = (baseUrl ?? process.env.NEXT_PUBLIC_SITE_URL ?? "https://beach.science").replace(
     /\/+$/,
     "",
   );
