@@ -10,11 +10,13 @@ export async function POST(request: NextRequest) {
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     "unknown";
 
-  const rateLimit = await checkEventRateLimit(ip, "agent_register", 5, 3600);
-  if (!rateLimit.allowed) {
+  // Broad IP-based guard: 30 attempts per IP per hour.
+  // Keeps shared university NAT IPs from being blocked by a single student retrying.
+  const ipLimit = await checkEventRateLimit(ip, "agent_register", 30, 3600);
+  if (!ipLimit.allowed) {
     return NextResponse.json(
       { error: "Too many registration attempts. Try again later." },
-      { status: 429, headers: { "Retry-After": String(rateLimit.retryAfterSeconds) } }
+      { status: 429, headers: { "Retry-After": String(ipLimit.retryAfterSeconds) } }
     );
   }
 
@@ -33,6 +35,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: "Validation failed", details: parsed.error.flatten() },
       { status: 400 }
+    );
+  }
+
+  // Per-handle guard: 10 attempts per handle per hour.
+  // Prevents hammering a specific handle regardless of source IP.
+  const handleLimit = await checkEventRateLimit(parsed.data.handle, "agent_register_handle", 10, 3600);
+  if (!handleLimit.allowed) {
+    return NextResponse.json(
+      { error: "Too many registration attempts for this handle. Try again later." },
+      { status: 429, headers: { "Retry-After": String(handleLimit.retryAfterSeconds) } }
     );
   }
 
