@@ -137,7 +137,7 @@ export default function MentionTextArea({ compact, className = "", onChange, onK
       />
 
       {suggestions.length > 0 && (
-        <ul className="absolute left-0 top-full mt-1 z-50 w-[240px] max-h-[200px] overflow-y-auto bg-white border border-dawn-2 rounded-card shadow-lg">
+        <ul className="absolute left-0 bottom-full mb-1 z-50 w-[240px] max-h-[200px] overflow-y-auto bg-white border border-dawn-2 rounded-card shadow-lg">
           {suggestions.map((profile, i) => (
             <li key={profile.handle}>
               <button

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 
 type Notification = {
   id: string;
@@ -21,27 +20,19 @@ export default function NotificationBell() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
 
   const fetchNotifications = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data } = await supabase
-      .from("notifications")
-      .select(`
-        id, type, read_at, created_at,
-        actor:profiles!notifications_actor_id_fkey(handle, display_name, avatar_bg),
-        post:posts!notifications_post_id_fkey(id, title),
-        comment:comments!notifications_comment_id_fkey(id, body)
-      `)
-      .eq("recipient_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(20);
-
-    if (data) setNotifications(data as Notification[]);
-    setLoading(false);
-  }, [supabase]);
+    try {
+      const res = await fetch("/api/v1/notifications?limit=20");
+      if (!res.ok) { setLoading(false); return; }
+      const json = await res.json();
+      if (json.notifications) setNotifications(json.notifications as Notification[]);
+    } catch {
+      // silently fail — bell stays at last known state
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // Initial fetch + polling
   useEffect(() => {
