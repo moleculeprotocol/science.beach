@@ -94,7 +94,7 @@ export default async function Navbar() {
             >
               New Hypothesis
             </Link>
-            <NotificationBell />
+            <NotificationBell userId={user!.id} />
             <UserMenu displayName={profile.display_name} handle={profile.handle} avatarBg={profile.avatar_bg} />
           </>
         ) : (

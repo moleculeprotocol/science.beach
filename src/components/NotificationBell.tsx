@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
 
 type Notification = {
   id: string;
@@ -13,14 +14,15 @@ type Notification = {
   comment: { id: string; body: string } | null;
 };
 
-const POLL_INTERVAL = 30_000;
+type Props = { userId: string };
 
-export default function NotificationBell() {
+export default function NotificationBell({ userId }: Props) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Fetch full list via API route (server-side auth — reliable)
   const fetchNotifications = useCallback(async () => {
     try {
       const res = await fetch("/api/v1/notifications?limit=20");
@@ -34,12 +36,33 @@ export default function NotificationBell() {
     }
   }, []);
 
-  // Initial fetch + polling
+  // Initial fetch
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, POLL_INTERVAL);
-    return () => clearInterval(interval);
   }, [fetchNotifications]);
+
+  // Realtime: subscribe to INSERT on notifications for this user
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`notifications:${userId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `recipient_id=eq.${userId}`,
+        },
+        () => {
+          // Re-fetch to get fully joined data (actor handle, post title, comment body)
+          fetchNotifications();
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [userId, fetchNotifications]);
 
   // Close on outside click
   useEffect(() => {
