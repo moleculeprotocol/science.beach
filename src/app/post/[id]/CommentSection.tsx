@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { createComment, deleteComment, toggleCommentReaction } from "./actions";
 import { formatRelativeTime } from "@/lib/utils";
 import AvatarClient from "@/components/AvatarClient";
-import TextArea from "@/components/TextArea";
+import MentionTextArea from "@/components/MentionTextArea";
 import PixelButton from "@/components/PixelButton";
 import Markdown from "@/components/Markdown";
 import LikeButton from "@/components/LikeButton";
@@ -152,15 +152,14 @@ function CommentNode({
 }
 
 function ReplyForm({ postId, parentId }: { postId: string; parentId: string | null }) {
-  const formRef = useRef<HTMLFormElement>(null);
   const detailsRef = useRef<HTMLDetailsElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [resetKey, setResetKey] = useState(0);
 
   return (
     <details ref={detailsRef} className="group">
       <summary className="text-[11px] leading-[1.4] text-smoke-5 hover:text-blue-4 transition-colors cursor-pointer">reply</summary>
       <form
-        ref={formRef}
         action={async (formData) => {
           setError(null);
           const result = await createComment(formData);
@@ -170,14 +169,14 @@ function ReplyForm({ postId, parentId }: { postId: string; parentId: string | nu
             return;
           }
           toast.success("Reply posted!");
-          formRef.current?.reset();
+          setResetKey((k) => k + 1);
           if (detailsRef.current) detailsRef.current.open = false;
         }}
         className="flex flex-col gap-2 mt-2"
       >
         <input type="hidden" name="post_id" value={postId} />
         {parentId && <input type="hidden" name="parent_id" value={parentId} />}
-        <TextArea compact name="body" required rows={2} maxLength={5000} placeholder="Write a reply..." />
+        <MentionTextArea key={resetKey} compact name="body" required rows={2} maxLength={5000} placeholder="Write a reply..." />
         {error && <p className="label-s-regular text-red-3">{error}</p>}
         <PixelButton type="submit" bg="blue-4" textColor="light-space" shadowColor="blue-2" textShadowTop="blue-2" textShadowBottom="blue-5" className="self-start">
           Reply
@@ -189,9 +188,9 @@ function ReplyForm({ postId, parentId }: { postId: string; parentId: string | nu
 
 export default function CommentSection({ postId, comments, commentReactions, currentUserId, isAdmin, postVotes }: Props) {
   const tree = buildTree(comments);
-  const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
 
   return (
     <section className="flex flex-col gap-2">
@@ -203,7 +202,6 @@ export default function CommentSection({ postId, comments, commentReactions, cur
 
       {currentUserId ? (
         <form
-          ref={formRef}
           action={async (formData) => {
             setError(null);
             setSubmitting(true);
@@ -215,12 +213,12 @@ export default function CommentSection({ postId, comments, commentReactions, cur
               return;
             }
             toast.success("Comment posted!");
-            formRef.current?.reset();
+            setResetKey((k) => k + 1);
           }}
           className="flex flex-col gap-2 border-2 border-dawn-2 bg-white rounded-panel p-3"
         >
           <input type="hidden" name="post_id" value={postId} />
-          <TextArea compact name="body" required rows={3} maxLength={5000} placeholder="Add a comment..." className="bg-white border-dawn-2!" />
+          <MentionTextArea key={resetKey} compact name="body" required rows={3} maxLength={5000} placeholder="Add a comment..." className="bg-white border-dawn-2!" />
           {error && <p className="label-s-regular text-red-3">{error}</p>}
           <div className="flex justify-end">
             <PixelButton type="submit" disabled={submitting} bg="green-4" textColor="green-2" shadowColor="green-2" textShadowTop="green-3" textShadowBottom="green-5">
