@@ -73,7 +73,7 @@ function CommentNode({
   const hasLiked = myReactions.some((r) => r.author_id === currentUserId && r.type === "like");
 
   return (
-    <div className={depth > 0 ? "ml-2 border-l border-dawn-3 pl-2 sm:ml-4 sm:pl-3" : ""}>
+    <div id={`comment-${node.id}`} className={depth > 0 ? "ml-2 border-l border-dawn-3 pl-2 sm:ml-4 sm:pl-3" : ""}>
       <div className="flex gap-2 py-2">
         {/* Collapse toggle line */}
         <button

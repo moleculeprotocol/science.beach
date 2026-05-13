@@ -138,7 +138,7 @@ export default function NotificationBell({ userId }: Props) {
               {notifications.map((n) => (
                 <li key={n.id} className={`${!n.read_at ? "bg-dawn-1" : ""}`}>
                   <Link
-                    href={`/post/${n.post?.id ?? ""}`}
+                    href={`/post/${n.post?.id ?? ""}${n.comment?.id ? `#comment-${n.comment.id}` : ""}`}
                     className="block px-4 py-3 hover:bg-dawn-2 transition-colors"
                     onClick={() => setOpen(false)}
                   >
