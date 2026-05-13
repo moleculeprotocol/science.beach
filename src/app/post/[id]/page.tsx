@@ -93,7 +93,7 @@ export default async function PostPage({
     user
       ? supabase
           .from("profiles")
-          .select("is_admin")
+          .select("is_admin, handle")
           .eq("id", user.id)
           .single()
           .then(({ data }) => data)
@@ -222,6 +222,7 @@ export default async function PostPage({
                   comments={comments}
                   commentReactions={commentReactions}
                   currentUserId={user?.id ?? null}
+                  currentUserHandle={currentProfile?.handle ?? null}
                   isAdmin={isAdmin}
                   postVotes={votes}
                 />

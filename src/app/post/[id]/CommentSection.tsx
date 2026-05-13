@@ -32,6 +32,7 @@ type Props = {
   comments: CommentWithProfile[];
   commentReactions: CommentReaction[];
   currentUserId: string | null;
+  currentUserHandle?: string | null;
   isAdmin?: boolean;
   postVotes?: PostVote[];
 };
@@ -65,24 +66,34 @@ function hasDescendant(node: TreeNode, id: string): boolean {
 }
 
 function CommentNode({
-  node, postId, currentUserId, depth, isAdmin, defaultCollapsed, commentReactions, postVotes, highlightedId,
+  node, postId, currentUserId, depth, isAdmin, defaultCollapsed, commentReactions, postVotes, highlightedId, mentionedIds,
 }: {
-  node: TreeNode; postId: string; currentUserId: string | null; depth: number; isAdmin?: boolean; defaultCollapsed?: boolean; commentReactions: CommentReaction[]; postVotes?: PostVote[]; highlightedId?: string | null;
+  node: TreeNode; postId: string; currentUserId: string | null; depth: number; isAdmin?: boolean; defaultCollapsed?: boolean; commentReactions: CommentReaction[]; postVotes?: PostVote[]; highlightedId: string | null; mentionedIds: Set<string>;
 }) {
-  const isOnPath = !!highlightedId && hasDescendant(node, highlightedId);
-  const isHighlighted = highlightedId === node.id;
-  const [collapsed, setCollapsed] = useState(isOnPath ? false : (defaultCollapsed ?? true));
+  const [collapsed, setCollapsed] = useState(defaultCollapsed ?? true);
   const [isPending, startTransition] = useTransition();
   const canDelete = currentUserId === node.author_id || isAdmin;
   const replyCount = countDescendants(node);
   const myReactions = commentReactions.filter((r) => r.comment_id === node.id);
   const likeCount = myReactions.filter((r) => r.type === "like").length;
   const hasLiked = myReactions.some((r) => r.author_id === currentUserId && r.type === "like");
+  const isMentioned = mentionedIds.has(node.id);
+  const isHighlighted = highlightedId === node.id;
+
+  // Reactively uncollapse when this node is on the path to the highlighted comment
+  useEffect(() => {
+    if (highlightedId && hasDescendant(node, highlightedId)) {
+      setCollapsed(false);
+    }
+  }, [highlightedId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div id={`comment-${node.id}`} className={`${depth > 0 ? "ml-2 border-l border-dawn-3 pl-2 sm:ml-4 sm:pl-3" : ""} ${isHighlighted ? "rounded-section bg-blue-1/40 ring-1 ring-blue-4/30 transition-colors" : ""}`}>
+    <div
+      id={`comment-${node.id}`}
+      className={`${depth > 0 ? "ml-2 border-l border-dawn-3 pl-2 sm:ml-4 sm:pl-3" : ""} ${isMentioned ? "rounded-section bg-blue-1/30 ring-1 ring-blue-4/20" : ""}`}
+    >
       <div className="flex gap-2 py-2">
-        {/* Collapse toggle line */}
+        {/* Collapse toggle */}
         <button
           type="button"
           onClick={() => setCollapsed(!collapsed)}
@@ -152,7 +163,7 @@ function CommentNode({
       </div>
 
       {!collapsed && node.children.map((child) => (
-        <CommentNode key={child.id} node={child} postId={postId} currentUserId={currentUserId} depth={depth + 1} isAdmin={isAdmin} commentReactions={commentReactions} postVotes={postVotes} highlightedId={highlightedId} />
+        <CommentNode key={child.id} node={child} postId={postId} currentUserId={currentUserId} depth={depth + 1} isAdmin={isAdmin} commentReactions={commentReactions} postVotes={postVotes} highlightedId={highlightedId} mentionedIds={mentionedIds} />
       ))}
     </div>
   );
@@ -193,30 +204,45 @@ function ReplyForm({ postId, parentId }: { postId: string; parentId: string | nu
   );
 }
 
-export default function CommentSection({ postId, comments, commentReactions, currentUserId, isAdmin, postVotes }: Props) {
+export default function CommentSection({ postId, comments, commentReactions, currentUserId, currentUserHandle, isAdmin, postVotes }: Props) {
   const tree = buildTree(comments);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
+  // All comment IDs where the current user is mentioned — always highlighted
+  const mentionedIds = new Set(
+    currentUserHandle
+      ? comments
+          .filter((c) => c.body.toLowerCase().includes(`@${currentUserHandle.toLowerCase()}`))
+          .map((c) => c.id)
+      : []
+  );
+
+  // Detect hash on mount and on every hashchange (handles multiple notification clicks)
   useEffect(() => {
-    const hash = window.location.hash;
-    if (hash.startsWith("#comment-")) {
+    function activate() {
+      const hash = window.location.hash;
+      if (!hash.startsWith("#comment-")) return;
       const id = hash.slice("#comment-".length);
       setHighlightedId(id);
-      // Scroll after React has uncollapsed the comment
+      // Scroll after React has had a chance to uncollapse
       setTimeout(() => {
         document.getElementById(`comment-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
-      }, 80);
+      }, 120);
     }
+
+    activate();
+    window.addEventListener("hashchange", activate);
+    return () => window.removeEventListener("hashchange", activate);
   }, []);
 
   return (
     <section className="flex flex-col gap-2">
       <div className="flex flex-col">
         {tree.map((node) => (
-          <CommentNode key={node.id} node={node} postId={postId} currentUserId={currentUserId} depth={0} isAdmin={isAdmin} commentReactions={commentReactions} postVotes={postVotes} highlightedId={highlightedId} />
+          <CommentNode key={node.id} node={node} postId={postId} currentUserId={currentUserId} depth={0} isAdmin={isAdmin} commentReactions={commentReactions} postVotes={postVotes} highlightedId={highlightedId} mentionedIds={mentionedIds} />
         ))}
       </div>
 
