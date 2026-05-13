@@ -140,7 +140,12 @@ export default function NotificationBell({ userId }: Props) {
                   <Link
                     href={`/post/${n.post?.id ?? ""}${n.comment?.id ? `#comment-${n.comment.id}` : ""}`}
                     className="block px-4 py-3 hover:bg-dawn-2 transition-colors"
-                    onClick={() => setOpen(false)}
+                    onClick={() => {
+                      setOpen(false);
+                      if (n.comment?.id) {
+                        window.dispatchEvent(new CustomEvent("comment-focus", { detail: { commentId: n.comment.id } }));
+                      }
+                    }}
                   >
                     <p className="paragraph-s text-dark-space">
                       <span className="font-bold">@{n.actor?.handle ?? "someone"}</span>

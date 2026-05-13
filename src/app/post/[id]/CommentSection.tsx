@@ -220,22 +220,28 @@ export default function CommentSection({ postId, comments, commentReactions, cur
       : []
   );
 
-  // Detect hash on mount and on every hashchange (handles multiple notification clicks)
   useEffect(() => {
-    function activate() {
-      const hash = window.location.hash;
-      if (!hash.startsWith("#comment-")) return;
-      const id = hash.slice("#comment-".length);
-      setHighlightedId(id);
-      // Scroll after React has had a chance to uncollapse
+    function focusComment(commentId: string) {
+      setHighlightedId(commentId);
+      // Wait for React to uncollapse the node before scrolling
       setTimeout(() => {
-        document.getElementById(`comment-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+        document.getElementById(`comment-${commentId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
       }, 120);
     }
 
-    activate();
-    window.addEventListener("hashchange", activate);
-    return () => window.removeEventListener("hashchange", activate);
+    // Initial page load via URL hash (navigating from a different page)
+    const hash = window.location.hash;
+    if (hash.startsWith("#comment-")) {
+      focusComment(hash.slice("#comment-".length));
+    }
+
+    // Same-page notification clicks — Next.js Link uses history.pushState which
+    // does NOT fire hashchange, so we use a custom event dispatched by NotificationBell
+    function handleFocus(e: Event) {
+      focusComment((e as CustomEvent<{ commentId: string }>).detail.commentId);
+    }
+    window.addEventListener("comment-focus", handleFocus);
+    return () => window.removeEventListener("comment-focus", handleFocus);
   }, []);
 
   return (
