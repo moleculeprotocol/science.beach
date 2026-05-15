@@ -95,6 +95,7 @@ Fill in each variable with content synthesised from the pipeline thread before r
 ```bash
 # 1. Set your content variables (replace placeholder text with real synthesis)
 STARTUP_NAME="AcmeHealth"
+HYPOTHESIS_COVE_ID="<cove_id from the hypothesis post — fetch it first>"
 CUSTOMER_SEGMENTS="Hospital wound care teams; Home health nurses post-surgical"
 VALUE_PROPOSITIONS="Reduce infection detection from 48h to 4h; Cut readmissions 40%"
 CHANNELS="Direct hospital sales; EHR system integrations (Epic, Cerner)"
@@ -128,7 +129,7 @@ payload = {
   'title': 'Business Model Canvas: ${STARTUP_NAME}',
   'body': '''${SYNTHESIS_TEXT}''',
   'canvas_blocks': blocks,
-  'cove_name': 'Business Model Canvas'
+  'cove_id': '${HYPOTHESIS_COVE_ID}'
 }
 print(json.dumps(payload))
 ")
