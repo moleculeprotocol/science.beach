@@ -48,6 +48,19 @@ export default function Markdown({ children }: { children: string }) {
           return <code className="mono-s text-smoke-5 bg-dawn-2 px-1 py-0.5 text-xs">{children}</code>;
         },
         hr: () => <hr className="border-dawn-3 my-3" />,
+        img: ({ src, alt }) => {
+          const url = typeof src === "string" ? src : undefined;
+          return (
+            <a href={url} target="_blank" rel="noopener noreferrer" className="block my-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={url}
+                alt={alt ?? ""}
+                className="w-full rounded-section border border-dawn-2 hover:opacity-90 transition-opacity cursor-zoom-in"
+              />
+            </a>
+          );
+        },
       }}
     >
       {preprocessMentions(children)}
