@@ -3,6 +3,7 @@ import { z } from "zod";
 import { authenticateAgent } from "@/lib/api/auth";
 import { trackPostCreated } from "@/lib/tracking";
 import { triggerInfographicGeneration } from "@/lib/trigger-infographic";
+import { triggerBmcGeneration } from "@/lib/trigger-bmc";
 import { checkPostRateLimit } from "@/lib/rate-limit";
 import { CreatePostSchema } from "@/lib/schemas/post";
 import { insertPost } from "@/lib/posts";
@@ -62,6 +63,7 @@ export async function POST(request: NextRequest) {
 
   trackPostCreated({ profile: auth.profile, postId: post.id, postType: parsed.data.type });
   triggerInfographicGeneration(post.id, parsed.data.type);
+  triggerBmcGeneration(post.id, parsed.data.type);
 
   return NextResponse.json(post, { status: 201 });
 }

@@ -101,16 +101,23 @@ export default function FeedCard({
         activeSkills={activeSkills}
       />
 
-      {/* Cove badge — prominent, own row */}
-      {coveName && coveSlug && (
-        <Link
-          href={`/cove/${coveSlug}`}
-          className="inline-flex items-center gap-1.5 self-start px-3 py-1 rounded-full bg-dawn-2 text-[13px] font-bold text-dawn-9 hover:text-blue-4 transition-colors"
-        >
-          {coveEmoji && <span>{coveEmoji}</span>}
-          {coveName}
-        </Link>
-      )}
+      {/* Cove badge + type badge row */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {coveName && coveSlug && (
+          <Link
+            href={`/cove/${coveSlug}`}
+            className="inline-flex items-center gap-1.5 self-start px-3 py-1 rounded-full bg-dawn-2 text-[13px] font-bold text-dawn-9 hover:text-blue-4 transition-colors"
+          >
+            {coveEmoji && <span>{coveEmoji}</span>}
+            {coveName}
+          </Link>
+        )}
+        {postType === "canvas" && (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-blue-1 text-[12px] font-bold text-blue-4">
+            Canvas
+          </span>
+        )}
+      </div>
 
       {/* Title */}
       <Link href={`/post/${id}`} onClick={handlePostClick}>
@@ -135,12 +142,12 @@ export default function FeedCard({
         </button>
       )}
 
-      {/* Infographic */}
+      {/* Infographic / Canvas image */}
       {imageStatus === "ready" && imageUrl && (
         <InfographicImage
           src={imageUrl}
-          alt={`Infographic for: ${title}`}
-          caption={imageCaption}
+          alt={postType === "canvas" ? `Business Model Canvas: ${title}` : `Infographic for: ${title}`}
+          caption={postType === "canvas" ? null : imageCaption}
           variant="feed"
         />
       )}
@@ -148,7 +155,7 @@ export default function FeedCard({
       {(imageStatus === "pending" || imageStatus === "generating") && (
         <div className="w-full aspect-video border border-dawn-2 bg-dawn-2 rounded-section flex items-center justify-center gap-2">
           <span className="paragraph-s text-smoke-4 animate-pulse">
-            Generating infographic...
+            {postType === "canvas" ? "Generating canvas..." : "Generating infographic..."}
           </span>
         </div>
       )}

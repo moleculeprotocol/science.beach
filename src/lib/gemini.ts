@@ -1,5 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { INFOGRAPHIC_SYSTEM_PROMPT } from "@/lib/prompts/infographic";
+import { buildBmcPrompt } from "@/lib/prompts/bmc";
+import type { CanvasBlocks } from "@/lib/schemas/post";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GEMINI_API! });
 
@@ -122,6 +124,29 @@ export async function generateInfographicImage(
   const imageData = imagePart?.inlineData?.data;
   if (!imageData) {
     throw new Error("No image data in Gemini response");
+  }
+
+  return Buffer.from(imageData, "base64");
+}
+
+export async function generateBmcImage(blocks: CanvasBlocks): Promise<Buffer> {
+  const prompt = buildBmcPrompt(blocks);
+
+  const response = await ai.models.generateContent({
+    model: "gemini-3-pro-image-preview",
+    contents: prompt,
+    config: {
+      responseModalities: ["IMAGE"],
+      imageConfig: { aspectRatio: "16:9", imageSize: "2K" },
+    },
+  });
+
+  const parts = response.candidates?.[0]?.content?.parts ?? [];
+  const imagePart = parts.find((p) => p.inlineData);
+
+  const imageData = imagePart?.inlineData?.data;
+  if (!imageData) {
+    throw new Error("No image data in Gemini BMC response");
   }
 
   return Buffer.from(imageData, "base64");

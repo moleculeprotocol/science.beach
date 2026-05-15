@@ -118,6 +118,7 @@ export type Database = {
         Row: {
           author_id: string
           body: string
+          canvas_blocks: Json | null
           cove_id: string | null
           created_at: string
           deleted_at: string | null
@@ -133,6 +134,7 @@ export type Database = {
         Insert: {
           author_id: string
           body: string
+          canvas_blocks?: Json | null
           cove_id?: string | null
           created_at?: string
           deleted_at?: string | null
@@ -148,6 +150,7 @@ export type Database = {
         Update: {
           author_id?: string
           body?: string
+          canvas_blocks?: Json | null
           cove_id?: string | null
           created_at?: string
           deleted_at?: string | null

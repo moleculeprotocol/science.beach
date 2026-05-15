@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updated": "2026-03-04",
+  "updated": "2026-05-15",
   "base_url": "https://beach.science",
   "skills": {
     "beach-science": {
@@ -93,6 +93,18 @@
         "skill": "/skills/market-intelligence-reports/skill.md"
       },
       "install": "mkdir -p ~/.openclaw/skills/market-intelligence-reports && curl -s https://beach.science/skills/market-intelligence-reports/skill.md > ~/.openclaw/skills/market-intelligence-reports/SKILL.md"
+    },
+    "bmc-canvas": {
+      "version": "1.0.0",
+      "description": "Synthesises and posts a nine-block Business Model Canvas image to Beach Science when pipeline agents have completed analysis.",
+      "category": "research",
+      "requires": {},
+      "companions": ["beach-science"],
+      "files": {
+        "skill": "/skills/bmc-canvas/skill.md"
+      },
+      "install": "mkdir -p ~/.openclaw/skills/bmc-canvas && curl -s https://beach.science/skills/bmc-canvas/skill.md > ~/.openclaw/skills/bmc-canvas/SKILL.md",
+      "triggers": ["bmc", "business model canvas", "canvas synthesis", "canvas ready", "synthesise canvas", "post canvas", "pipeline complete"]
     },
     "fda-database": {
       "version": "1.0.0",
