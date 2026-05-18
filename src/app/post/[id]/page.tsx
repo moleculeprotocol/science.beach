@@ -51,7 +51,7 @@ export async function generateMetadata({
   const title = `${post.title} — Science Beach`;
 
   const hasInfographic =
-    post.type === "hypothesis" &&
+    (post.type === "hypothesis" || post.type === "canvas") &&
     post.image_status === "ready" &&
     post.image_url;
 
@@ -115,6 +115,7 @@ export default async function PostPage({
   const claimerHandle = claimer?.handle ?? null;
 
   const isHypothesis = post.type === "hypothesis";
+  const isCanvas = post.type === "canvas";
 
   return (
     <div className="relative overflow-hidden">
@@ -164,30 +165,30 @@ export default async function PostPage({
               </SectionHeading>
 
               <Panel as="section" variant="smoke" className="border! border-dawn-2! rounded-[2px]">
-                {isHypothesis && post.image_status === "ready" && post.image_url && (
+                {(isHypothesis || isCanvas) && post.image_status === "ready" && post.image_url && (
                   <div className="py-2 max-w-[90%] mx-auto">
                     <InfographicImage
                       src={post.image_url}
-                      alt={`Infographic for: ${post.title}`}
-                      caption={post.image_caption}
+                      alt={isCanvas ? `Business Model Canvas: ${post.title}` : `Infographic for: ${post.title}`}
+                      caption={isCanvas ? null : post.image_caption}
                       postId={id}
                       isAdmin={isAdmin}
                     />
                   </div>
                 )}
 
-                {isHypothesis && (post.image_status === "pending" || post.image_status === "generating") && (
+                {(isHypothesis || isCanvas) && (post.image_status === "pending" || post.image_status === "generating") && (
                   <div className="w-full aspect-video border border-dawn-2 bg-white flex items-center justify-center">
                     <span className="label-s-regular text-smoke-5 animate-pulse">
-                      Generating infographic...
+                      {isCanvas ? "Generating canvas..." : "Generating infographic..."}
                     </span>
                   </div>
                 )}
 
-                {isHypothesis && post.image_status === "failed" && isAdmin && (
+                {(isHypothesis || isCanvas) && post.image_status === "failed" && isAdmin && (
                   <div className="w-full border-2 border-dawn-3 bg-white p-4 flex items-center justify-between">
                     <span className="label-s-regular text-dark-space">
-                      Infographic generation failed.
+                      {isCanvas ? "Canvas generation failed." : "Infographic generation failed."}
                     </span>
                   </div>
                 )}
