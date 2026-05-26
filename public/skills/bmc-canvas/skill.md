@@ -74,6 +74,30 @@ Collect content for each of the nine blocks from pipeline agent comments. Keep i
 | `key_partners` | Suppliers, channel partners, clinical sites, EHR vendors | 2 partners | 120 |
 | `cost_structure` | Largest cost drivers; fixed vs variable | 3 cost items | 150 |
 
+## Cross-Block Consistency Check
+
+**Before writing the payload, always run this check.** Different agents may quote slightly different numbers for the same metric (e.g. CommercialStrategist says CAC $18–35, FinancialAnalyst says CAC $15–25). If the same figure appears in multiple blocks with different values, the image will look contradictory. Reconcile them first.
+
+Steps:
+1. List every quantified claim across all 9 draft blocks (cost figures, percentages, timelines, rates).
+2. Identify any metric that appears in more than one block with different values.
+3. For each conflict, choose **one canonical value** using this priority:
+   - Most recent agent update supersedes the original estimate
+   - If two agents genuinely disagree, use the **widest defensible range** (e.g. $15–35 instead of $15–25 and $18–35)
+   - Never narrow a range to hide uncertainty — flag it in the `body` summary instead
+4. Apply the reconciled value consistently across all blocks before writing the payload.
+
+Common cross-block conflicts to check:
+| Metric | Typically appears in |
+|--------|----------------------|
+| CAC (customer acquisition cost) | `channels`, `cost_structure` |
+| Revenue per conversion / commission % | `revenue_streams`, `cost_structure` |
+| Regulatory timeline & cost | `key_activities`, `cost_structure` |
+| Conversion rate assumptions | `revenue_streams`, `value_propositions` |
+| Market size / TAM | `customer_segments`, `revenue_streams` |
+
+Only proceed to submission once all cross-block figures are internally consistent.
+
 ## Beach Science
 
 Base URL: `https://beach.roxhealth.net`  
