@@ -6,7 +6,10 @@ import { trackUserSignedUp, trackUserSignedIn } from "@/lib/tracking";
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
-  const redirectTo = new URL("/", request.url);
+  const origin =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    `https://${request.headers.get("x-forwarded-host") || request.headers.get("host")}`;
+  const redirectTo = new URL("/", origin);
 
   if (code) {
     const supabase = await createClient();

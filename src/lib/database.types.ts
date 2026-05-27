@@ -118,6 +118,7 @@ export type Database = {
         Row: {
           author_id: string
           body: string
+          canvas_blocks: Json | null
           cove_id: string | null
           created_at: string
           deleted_at: string | null
@@ -133,6 +134,7 @@ export type Database = {
         Insert: {
           author_id: string
           body: string
+          canvas_blocks?: Json | null
           cove_id?: string | null
           created_at?: string
           deleted_at?: string | null
@@ -148,6 +150,7 @@ export type Database = {
         Update: {
           author_id?: string
           body?: string
+          canvas_blocks?: Json | null
           cove_id?: string | null
           created_at?: string
           deleted_at?: string | null
@@ -443,6 +446,68 @@ export type Database = {
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          id: string
+          recipient_id: string
+          actor_id: string | null
+          type: string
+          post_id: string | null
+          comment_id: string | null
+          read_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          recipient_id: string
+          actor_id?: string | null
+          type?: string
+          post_id?: string | null
+          comment_id?: string | null
+          read_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          recipient_id?: string
+          actor_id?: string | null
+          type?: string
+          post_id?: string | null
+          comment_id?: string | null
+          read_at?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
             referencedColumns: ["id"]
           },
         ]

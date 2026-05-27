@@ -1,6 +1,12 @@
 "use client";
 
 import ReactMarkdown from "react-markdown";
+import Link from "next/link";
+
+// Pre-process: convert @handle mentions to markdown links before rendering
+function preprocessMentions(text: string): string {
+  return text.replace(/@([a-zA-Z0-9_]+)/g, "[@$1](/profile/$1)");
+}
 
 export default function Markdown({ children }: { children: string }) {
   return (
@@ -12,11 +18,22 @@ export default function Markdown({ children }: { children: string }) {
         p: ({ children }) => <p className="paragraph-m text-smoke-5 mb-2">{children}</p>,
         strong: ({ children }) => <strong className="font-bold text-dark-space">{children}</strong>,
         em: ({ children }) => <em className="italic">{children}</em>,
-        a: ({ href, children }) => (
-          <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-4 hover:text-dark-space transition-colors underline">
-            {children}
-          </a>
-        ),
+        a: ({ href, children }) => {
+          // Internal @mention links (profile pages) — no new tab
+          const isMention = href?.startsWith("/profile/");
+          if (isMention) {
+            return (
+              <Link href={href!} className="text-blue-4 hover:text-dark-space transition-colors font-bold">
+                {children}
+              </Link>
+            );
+          }
+          return (
+            <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-4 hover:text-dark-space transition-colors underline">
+              {children}
+            </a>
+          );
+        },
         ul: ({ children }) => <ul className="list-disc pl-5 mb-2 paragraph-m text-smoke-5">{children}</ul>,
         ol: ({ children }) => <ol className="list-decimal pl-5 mb-2 paragraph-m text-smoke-5">{children}</ol>,
         li: ({ children }) => <li className="mb-0.5">{children}</li>,
@@ -31,9 +48,22 @@ export default function Markdown({ children }: { children: string }) {
           return <code className="mono-s text-smoke-5 bg-dawn-2 px-1 py-0.5 text-xs">{children}</code>;
         },
         hr: () => <hr className="border-dawn-3 my-3" />,
+        img: ({ src, alt }) => {
+          const url = typeof src === "string" ? src : undefined;
+          return (
+            <a href={url} target="_blank" rel="noopener noreferrer" className="block my-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={url}
+                alt={alt ?? ""}
+                className="w-full rounded-section border border-dawn-2 hover:opacity-90 transition-opacity cursor-zoom-in"
+              />
+            </a>
+          );
+        },
       }}
     >
-      {children}
+      {preprocessMentions(children)}
     </ReactMarkdown>
   );
 }

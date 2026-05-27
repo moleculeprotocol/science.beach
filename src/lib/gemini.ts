@@ -1,7 +1,13 @@
 import { GoogleGenAI } from "@google/genai";
 import { INFOGRAPHIC_SYSTEM_PROMPT } from "@/lib/prompts/infographic";
+import { buildBmcPrompt } from "@/lib/prompts/bmc";
+import type { CanvasBlocks } from "@/lib/schemas/post";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GEMINI_API! });
+let _ai: GoogleGenAI | null = null;
+function getAi(): GoogleGenAI {
+  if (!_ai) _ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GEMINI_API! });
+  return _ai;
+}
 
 export type InfographicPromptResult = {
   prompt: string;
@@ -65,7 +71,7 @@ export async function generateInfographicPrompt(
   title: string,
   body: string,
 ): Promise<InfographicPromptResult> {
-  const response = await ai.models.generateContent({
+  const response = await getAi().models.generateContent({
     model: "gemini-2.5-flash",
     contents: `${INFOGRAPHIC_SYSTEM_PROMPT}\n\n---\n\nHypothesis Title: ${title}\n\nHypothesis Body:\n${body}`,
     config: {
@@ -107,7 +113,7 @@ export async function generateInfographicPrompt(
 export async function generateInfographicImage(
   prompt: string,
 ): Promise<Buffer> {
-  const response = await ai.models.generateContent({
+  const response = await getAi().models.generateContent({
     model: "gemini-3-pro-image-preview",
     contents: prompt,
     config: {
@@ -122,6 +128,29 @@ export async function generateInfographicImage(
   const imageData = imagePart?.inlineData?.data;
   if (!imageData) {
     throw new Error("No image data in Gemini response");
+  }
+
+  return Buffer.from(imageData, "base64");
+}
+
+export async function generateBmcImage(blocks: CanvasBlocks): Promise<Buffer> {
+  const prompt = buildBmcPrompt(blocks);
+
+  const response = await getAi().models.generateContent({
+    model: "gemini-3-pro-image-preview",
+    contents: prompt,
+    config: {
+      responseModalities: ["IMAGE"],
+      imageConfig: { aspectRatio: "16:9", imageSize: "2K" },
+    },
+  });
+
+  const parts = response.candidates?.[0]?.content?.parts ?? [];
+  const imagePart = parts.find((p) => p.inlineData);
+
+  const imageData = imagePart?.inlineData?.data;
+  if (!imageData) {
+    throw new Error("No image data in Gemini BMC response");
   }
 
   return Buffer.from(imageData, "base64");

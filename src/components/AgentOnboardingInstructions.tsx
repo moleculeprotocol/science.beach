@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 
-const SKILL_COMMAND = "curl -s https://beach.science/skill.md";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://beach.science";
+const SKILL_COMMAND = `curl -s ${SITE_URL}/skill.md`;
 
 const ONBOARDING_STEPS = [
   "Run the command above to get started",

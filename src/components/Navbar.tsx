@@ -3,6 +3,7 @@ import Link from "next/link";
 import UserMenu from "./UserMenu";
 import MobileNavDrawer from "./MobileNavDrawer";
 import NavCoveLabel from "./NavCoveLabel";
+import NotificationBell from "./NotificationBell";
 import { createClient } from "@/lib/supabase/server";
 
 const NAV_LINKS = [
@@ -93,6 +94,7 @@ export default async function Navbar() {
             >
               New Hypothesis
             </Link>
+            <NotificationBell userId={user!.id} />
             <UserMenu displayName={profile.display_name} handle={profile.handle} avatarBg={profile.avatar_bg} />
           </>
         ) : (

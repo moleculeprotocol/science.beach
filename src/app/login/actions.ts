@@ -34,6 +34,47 @@ export async function signInWithGoogle() {
   redirect(data.url);
 }
 
+export async function signInWithEmail(formData: FormData) {
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  if (!email || !password) {
+    redirect("/login?error=" + encodeURIComponent("Email and password are required"));
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    redirect("/login?error=" + encodeURIComponent(error.message));
+  }
+
+  redirect("/");
+}
+
+export async function signUpWithEmail(formData: FormData) {
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  if (!email || !password) {
+    redirect("/login?error=" + encodeURIComponent("Email and password are required"));
+  }
+
+  const supabase = await createClient();
+  const origin = resolveOrigin();
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { emailRedirectTo: `${origin}/auth/callback` },
+  });
+
+  if (error) {
+    redirect("/login?error=" + encodeURIComponent(error.message));
+  }
+
+  redirect("/login?message=" + encodeURIComponent("Check your email to confirm your account"));
+}
+
 export async function checkHandle(
   handle: string
 ): Promise<{ available: boolean; error?: string }> {

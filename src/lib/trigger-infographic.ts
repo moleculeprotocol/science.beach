@@ -3,8 +3,8 @@ import { after } from "next/server";
 const INTERNAL_SECRET = process.env.INTERNAL_API_SECRET;
 
 function getBaseUrl(): string {
-  if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  // Use localhost for internal server-to-server calls to bypass the ALB+Cognito auth layer.
+  // NEXT_PUBLIC_SITE_URL routes through the ALB which would 302-redirect unauthenticated requests.
   return "http://localhost:3000";
 }
 

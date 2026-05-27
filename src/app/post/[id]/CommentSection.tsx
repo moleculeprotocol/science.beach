@@ -1,11 +1,11 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { createComment, deleteComment, toggleCommentReaction } from "./actions";
 import { formatRelativeTime } from "@/lib/utils";
 import AvatarClient from "@/components/AvatarClient";
-import TextArea from "@/components/TextArea";
+import MentionTextArea from "@/components/MentionTextArea";
 import PixelButton from "@/components/PixelButton";
 import Markdown from "@/components/Markdown";
 import LikeButton from "@/components/LikeButton";
@@ -32,6 +32,7 @@ type Props = {
   comments: CommentWithProfile[];
   commentReactions: CommentReaction[];
   currentUserId: string | null;
+  currentUserHandle?: string | null;
   isAdmin?: boolean;
   postVotes?: PostVote[];
 };
@@ -59,10 +60,15 @@ function countDescendants(node: TreeNode): number {
   return count;
 }
 
+function hasDescendant(node: TreeNode, id: string): boolean {
+  if (node.id === id) return true;
+  return node.children.some((c) => hasDescendant(c, id));
+}
+
 function CommentNode({
-  node, postId, currentUserId, depth, isAdmin, defaultCollapsed, commentReactions, postVotes,
+  node, postId, currentUserId, depth, isAdmin, defaultCollapsed, commentReactions, postVotes, highlightedId, mentionedIds,
 }: {
-  node: TreeNode; postId: string; currentUserId: string | null; depth: number; isAdmin?: boolean; defaultCollapsed?: boolean; commentReactions: CommentReaction[]; postVotes?: PostVote[];
+  node: TreeNode; postId: string; currentUserId: string | null; depth: number; isAdmin?: boolean; defaultCollapsed?: boolean; commentReactions: CommentReaction[]; postVotes?: PostVote[]; highlightedId: string | null; mentionedIds: Set<string>;
 }) {
   const [collapsed, setCollapsed] = useState(defaultCollapsed ?? true);
   const [isPending, startTransition] = useTransition();
@@ -71,11 +77,23 @@ function CommentNode({
   const myReactions = commentReactions.filter((r) => r.comment_id === node.id);
   const likeCount = myReactions.filter((r) => r.type === "like").length;
   const hasLiked = myReactions.some((r) => r.author_id === currentUserId && r.type === "like");
+  const isMentioned = mentionedIds.has(node.id);
+  const isHighlighted = highlightedId === node.id;
+
+  // Reactively uncollapse when this node is on the path to the highlighted comment
+  useEffect(() => {
+    if (highlightedId && hasDescendant(node, highlightedId)) {
+      setCollapsed(false);
+    }
+  }, [highlightedId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className={depth > 0 ? "ml-2 border-l border-dawn-3 pl-2 sm:ml-4 sm:pl-3" : ""}>
+    <div
+      id={`comment-${node.id}`}
+      className={`${depth > 0 ? "ml-2 border-l border-dawn-3 pl-2 sm:ml-4 sm:pl-3" : ""} ${isMentioned ? "rounded-section bg-blue-1/30 ring-1 ring-blue-4/20" : ""}`}
+    >
       <div className="flex gap-2 py-2">
-        {/* Collapse toggle line */}
+        {/* Collapse toggle */}
         <button
           type="button"
           onClick={() => setCollapsed(!collapsed)}
@@ -145,22 +163,21 @@ function CommentNode({
       </div>
 
       {!collapsed && node.children.map((child) => (
-        <CommentNode key={child.id} node={child} postId={postId} currentUserId={currentUserId} depth={depth + 1} isAdmin={isAdmin} commentReactions={commentReactions} postVotes={postVotes} />
+        <CommentNode key={child.id} node={child} postId={postId} currentUserId={currentUserId} depth={depth + 1} isAdmin={isAdmin} commentReactions={commentReactions} postVotes={postVotes} highlightedId={highlightedId} mentionedIds={mentionedIds} />
       ))}
     </div>
   );
 }
 
 function ReplyForm({ postId, parentId }: { postId: string; parentId: string | null }) {
-  const formRef = useRef<HTMLFormElement>(null);
   const detailsRef = useRef<HTMLDetailsElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [resetKey, setResetKey] = useState(0);
 
   return (
     <details ref={detailsRef} className="group">
       <summary className="text-[11px] leading-[1.4] text-smoke-5 hover:text-blue-4 transition-colors cursor-pointer">reply</summary>
       <form
-        ref={formRef}
         action={async (formData) => {
           setError(null);
           const result = await createComment(formData);
@@ -170,14 +187,14 @@ function ReplyForm({ postId, parentId }: { postId: string; parentId: string | nu
             return;
           }
           toast.success("Reply posted!");
-          formRef.current?.reset();
+          setResetKey((k) => k + 1);
           if (detailsRef.current) detailsRef.current.open = false;
         }}
         className="flex flex-col gap-2 mt-2"
       >
         <input type="hidden" name="post_id" value={postId} />
         {parentId && <input type="hidden" name="parent_id" value={parentId} />}
-        <TextArea compact name="body" required rows={2} maxLength={5000} placeholder="Write a reply..." />
+        <MentionTextArea key={resetKey} compact name="body" required rows={2} maxLength={5000} placeholder="Write a reply..." />
         {error && <p className="label-s-regular text-red-3">{error}</p>}
         <PixelButton type="submit" bg="blue-4" textColor="light-space" shadowColor="blue-2" textShadowTop="blue-2" textShadowBottom="blue-5" className="self-start">
           Reply
@@ -187,23 +204,56 @@ function ReplyForm({ postId, parentId }: { postId: string; parentId: string | nu
   );
 }
 
-export default function CommentSection({ postId, comments, commentReactions, currentUserId, isAdmin, postVotes }: Props) {
+export default function CommentSection({ postId, comments, commentReactions, currentUserId, currentUserHandle, isAdmin, postVotes }: Props) {
   const tree = buildTree(comments);
-  const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
+
+  // All comment IDs where the current user is mentioned — always highlighted
+  const mentionedIds = new Set(
+    currentUserHandle
+      ? comments
+          .filter((c) => c.body.toLowerCase().includes(`@${currentUserHandle.toLowerCase()}`))
+          .map((c) => c.id)
+      : []
+  );
+
+  useEffect(() => {
+    function focusComment(commentId: string) {
+      setHighlightedId(commentId);
+      // Wait for React to uncollapse the node before scrolling
+      setTimeout(() => {
+        document.getElementById(`comment-${commentId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 120);
+    }
+
+    // Initial page load via URL hash (navigating from a different page)
+    const hash = window.location.hash;
+    if (hash.startsWith("#comment-")) {
+      focusComment(hash.slice("#comment-".length));
+    }
+
+    // Same-page notification clicks — Next.js Link uses history.pushState which
+    // does NOT fire hashchange, so we use a custom event dispatched by NotificationBell
+    function handleFocus(e: Event) {
+      focusComment((e as CustomEvent<{ commentId: string }>).detail.commentId);
+    }
+    window.addEventListener("comment-focus", handleFocus);
+    return () => window.removeEventListener("comment-focus", handleFocus);
+  }, []);
 
   return (
     <section className="flex flex-col gap-2">
       <div className="flex flex-col">
         {tree.map((node) => (
-          <CommentNode key={node.id} node={node} postId={postId} currentUserId={currentUserId} depth={0} isAdmin={isAdmin} commentReactions={commentReactions} postVotes={postVotes} />
+          <CommentNode key={node.id} node={node} postId={postId} currentUserId={currentUserId} depth={0} isAdmin={isAdmin} commentReactions={commentReactions} postVotes={postVotes} highlightedId={highlightedId} mentionedIds={mentionedIds} />
         ))}
       </div>
 
       {currentUserId ? (
         <form
-          ref={formRef}
           action={async (formData) => {
             setError(null);
             setSubmitting(true);
@@ -215,12 +265,12 @@ export default function CommentSection({ postId, comments, commentReactions, cur
               return;
             }
             toast.success("Comment posted!");
-            formRef.current?.reset();
+            setResetKey((k) => k + 1);
           }}
           className="flex flex-col gap-2 border-2 border-dawn-2 bg-white rounded-panel p-3"
         >
           <input type="hidden" name="post_id" value={postId} />
-          <TextArea compact name="body" required rows={3} maxLength={5000} placeholder="Add a comment..." className="bg-white border-dawn-2!" />
+          <MentionTextArea key={resetKey} compact name="body" required rows={3} maxLength={5000} placeholder="Add a comment..." className="bg-white border-dawn-2!" />
           {error && <p className="label-s-regular text-red-3">{error}</p>}
           <div className="flex justify-end">
             <PixelButton type="submit" disabled={submitting} bg="green-4" textColor="green-2" shadowColor="green-2" textShadowTop="green-3" textShadowBottom="green-5">
