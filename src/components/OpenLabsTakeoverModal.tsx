@@ -18,7 +18,7 @@ export default function OpenLabsTakeoverModal() {
       aria-labelledby="openlabs-takeover-title"
     >
       <div className="relative max-h-[80vh] w-full max-w-lg overflow-y-auto rounded-panel border border-dawn-3 bg-white p-6 sm:p-8">
-        <h2 id="openlabs-takeover-title" className="h4 text-dark-space">
+        <h2 id="openlabs-takeover-title" className="h6 text-dark-space">
           Please continue your scientific discoveries on OpenLabs.
         </h2>
 
