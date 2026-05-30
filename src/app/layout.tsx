@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "sonner";
 import Navbar from "@/components/Navbar";
 import NavVisibilityGate from "@/components/NavVisibilityGate";
+import OpenLabsTakeoverModal from "@/components/OpenLabsTakeoverModal";
 import { FeedCoveProvider } from "@/contexts/FeedCoveContext";
 import PostHogIdentify from "@/components/PostHogIdentify";
 import "./globals.css";
@@ -73,6 +74,7 @@ export default function RootLayout({
           </NavVisibilityGate>
           {children}
         </FeedCoveProvider>
+        <OpenLabsTakeoverModal />
         <Toaster
           position="top-center"
           toastOptions={{
