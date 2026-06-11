@@ -64,7 +64,7 @@ export function renderNotificationEmail(c: NotificationEmailContent): string {
                 <td style="padding:0 32px;">
                   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                     <tr>
-                      <td style="background:${COLORS.bg};border-left:3px solid ${COLORS.accent};border-radius:8px;padding:14px 18px;font-family:${font};font-size:15px;line-height:1.5;color:${COLORS.text};">
+                      <td bgcolor="${COLORS.bg}" style="background-color:${COLORS.bg};border-left:3px solid ${COLORS.accent};border-radius:8px;padding:14px 18px;font-family:${font};font-size:15px;line-height:1.5;color:${COLORS.text};">
                         ${context}
                       </td>
                     </tr>
@@ -82,14 +82,15 @@ export function renderNotificationEmail(c: NotificationEmailContent): string {
   <meta name="x-apple-disable-message-reformatting" />
   <title>${title}</title>
 </head>
-<body style="margin:0;padding:0;background:${COLORS.bg};">
+<body style="margin:0;padding:0;background-color:${COLORS.bg};">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:${COLORS.bg};">
     ${escapeHtml(c.preheader)}
   </div>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${COLORS.bg};border-collapse:collapse;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${COLORS.bg}" style="background-color:${COLORS.bg};border-collapse:collapse;">
     <tr>
-      <td align="center" style="padding:32px 16px;">
-        <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="width:480px;max-width:100%;border-collapse:collapse;">
+      <td align="center" valign="top" bgcolor="${COLORS.bg}" style="background-color:${COLORS.bg};padding:32px 16px;">
+        <!--[if mso]><table role="presentation" width="480" cellpadding="0" cellspacing="0" border="0" align="center"><tr><td><![endif]-->
+        <table role="presentation" width="480" cellpadding="0" cellspacing="0" border="0" align="center" style="width:480px;max-width:480px;margin:0 auto;border-collapse:collapse;">
 
           <!-- Brand -->
           <tr>
@@ -102,7 +103,7 @@ export function renderNotificationEmail(c: NotificationEmailContent): string {
 
           <!-- Card -->
           <tr>
-            <td style="background:${COLORS.card};border:1px solid ${COLORS.border};border-radius:20px;">
+            <td bgcolor="${COLORS.card}" style="background-color:${COLORS.card};border:1px solid ${COLORS.border};border-radius:20px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                 <tr><td style="height:32px;line-height:32px;">&nbsp;</td></tr>
 
@@ -128,7 +129,7 @@ export function renderNotificationEmail(c: NotificationEmailContent): string {
                   <td style="padding:0 32px;">
                     <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                       <tr>
-                        <td style="background:${COLORS.buttonBg};border-radius:999px;">
+                        <td bgcolor="${COLORS.buttonBg}" style="background-color:${COLORS.buttonBg};border-radius:999px;">
                           <a href="${c.ctaUrl}" style="display:inline-block;padding:13px 28px;font-family:${font};font-size:15px;font-weight:700;color:${COLORS.buttonText};text-decoration:none;border-radius:999px;">
                             ${ctaLabel}
                           </a>
@@ -152,6 +153,7 @@ export function renderNotificationEmail(c: NotificationEmailContent): string {
           </tr>
 
         </table>
+        <!--[if mso]></td></tr></table><![endif]-->
       </td>
     </tr>
   </table>

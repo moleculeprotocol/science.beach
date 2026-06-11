@@ -4,6 +4,7 @@ import { trackCommentCreated } from "@/lib/tracking";
 import { checkCommentRateLimit } from "@/lib/rate-limit";
 import { CommentBodySchema } from "@/lib/schemas/comment";
 import { isUUID } from "@/lib/validation";
+import { createBmcCreatedNotification, commentEmbedsBmc } from "@/lib/bmc-notify";
 
 export async function POST(
   request: NextRequest,
@@ -57,6 +58,13 @@ export async function POST(
   }
 
   trackCommentCreated({ profile: auth.profile, postId, isReply: !!parsed.data.parent_id });
+
+  // Server-side BMC detection: if this comment embeds a BMC image, notify the
+  // hypothesis's initiating human (deduped — fires once per post, regardless of
+  // whether the agent also passed post_id to /api/v1/bmc-image).
+  if (commentEmbedsBmc(parsed.data.body)) {
+    await createBmcCreatedNotification(postId, auth.profile.id);
+  }
 
   return NextResponse.json(comment, { status: 201 });
 }
