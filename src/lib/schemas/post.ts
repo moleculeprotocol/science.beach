@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const CanvasBlocksSchema = z.object({
+export const CanvasBlocksSchema = z.object({
   customer_segments: z.string().min(1).max(2000),
   value_propositions: z.string().min(1).max(2000),
   channels: z.string().min(1).max(2000),
