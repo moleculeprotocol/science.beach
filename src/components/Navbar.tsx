@@ -4,6 +4,7 @@ import UserMenu from "./UserMenu";
 import MobileNavDrawer from "./MobileNavDrawer";
 import NavCoveLabel from "./NavCoveLabel";
 import NotificationBell from "./NotificationBell";
+import OpenRouterCreditsBadge from "./OpenRouterCreditsBadge";
 import { createClient } from "@/lib/supabase/server";
 
 const NAV_LINKS = [
@@ -63,6 +64,9 @@ export default async function Navbar() {
 
       {/* Right: Context label + nav drawer + auth */}
       <div className="flex items-center gap-2 md:gap-3">
+        {/* OpenRouter credits — visible to everyone, including logged-out visitors */}
+        <OpenRouterCreditsBadge />
+
         {/* Active cove label — tablet only, disappears on desktop where nav links are visible */}
         <NavCoveLabel />
 

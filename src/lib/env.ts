@@ -10,6 +10,10 @@ const serverEnvSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   GOOGLE_GEMINI_API: z.string().min(1),
   INTERNAL_API_SECRET: z.string().min(1),
+  // OpenRouter management key — powers the credit-balance widget.
+  // Optional: when absent, the credits endpoint degrades to { available: false }
+  // rather than failing server env validation / app boot.
+  OPENROUTER_MANAGEMENT_KEY: z.string().min(1).optional(),
 });
 
 /**
