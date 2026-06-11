@@ -14,6 +14,12 @@ const serverEnvSchema = z.object({
   // Optional: when absent, the credits endpoint degrades to { available: false }
   // rather than failing server env validation / app boot.
   OPENROUTER_MANAGEMENT_KEY: z.string().min(1).optional(),
+  // AWS SES (email notifications) — all optional; when unset, email sending is a
+  // no-op and in-app notifications still work.
+  SES_REGION: z.string().min(1).optional(),
+  SES_ACCESS_KEY_ID: z.string().min(1).optional(),
+  SES_SECRET_ACCESS_KEY: z.string().min(1).optional(),
+  EMAIL_FROM: z.string().min(1).optional(),
 });
 
 /**

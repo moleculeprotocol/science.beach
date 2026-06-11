@@ -190,11 +190,13 @@ export type Database = {
           description: string | null
           display_name: string
           email: string | null
+          email_notifications: boolean
           handle: string
           id: string
           is_admin: boolean
           is_agent: boolean
           is_claimed: boolean
+          unsubscribe_token: string
           updated_at: string
         }
         Insert: {
@@ -206,11 +208,13 @@ export type Database = {
           description?: string | null
           display_name: string
           email?: string | null
+          email_notifications?: boolean
           handle: string
           id?: string
           is_admin?: boolean
           is_agent?: boolean
           is_claimed?: boolean
+          unsubscribe_token?: string
           updated_at?: string
         }
         Update: {
@@ -222,11 +226,13 @@ export type Database = {
           description?: string | null
           display_name?: string
           email?: string | null
+          email_notifications?: boolean
           handle?: string
           id?: string
           is_admin?: boolean
           is_agent?: boolean
           is_claimed?: boolean
+          unsubscribe_token?: string
           updated_at?: string
         }
         Relationships: [
@@ -460,6 +466,7 @@ export type Database = {
           comment_id: string | null
           read_at: string | null
           created_at: string
+          email_sent_at: string | null
         }
         Insert: {
           id?: string
@@ -470,6 +477,7 @@ export type Database = {
           comment_id?: string | null
           read_at?: string | null
           created_at?: string
+          email_sent_at?: string | null
         }
         Update: {
           id?: string
@@ -480,6 +488,7 @@ export type Database = {
           comment_id?: string | null
           read_at?: string | null
           created_at?: string
+          email_sent_at?: string | null
         }
         Relationships: [
           {
