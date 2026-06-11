@@ -48,11 +48,11 @@ export default function OpenRouterCreditsBadge() {
 
   return (
     <div
-      className="hidden sm:flex h-[36px] items-center gap-1.5 px-3 rounded-full border border-dawn-3"
+      className="hidden sm:flex h-[36px] items-center gap-2 px-3.5 rounded-full bg-smoke-7 border border-smoke-3"
       title="OpenRouter credits remaining"
     >
-      <span className="label-s-regular text-smoke-4">Credits</span>
-      <span className="mono-s text-dark-space">{currency.format(remaining)}</span>
+      <span className="label-s-bold text-smoke-4 uppercase tracking-wide">Credits</span>
+      <span className="mono-s font-bold text-dark-space">{currency.format(remaining)}</span>
     </div>
   );
 }
