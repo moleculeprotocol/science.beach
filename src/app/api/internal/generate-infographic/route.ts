@@ -5,6 +5,7 @@ import {
   generateInfographicPrompt,
   generateInfographicImage,
 } from "@/lib/gemini";
+import { addRoxLogo } from "@/lib/rox-logo";
 
 const INTERNAL_SECRET = process.env.INTERNAL_API_SECRET;
 
@@ -48,7 +49,9 @@ export async function POST(request: NextRequest) {
   after(async () => {
     try {
       const { prompt: imagePrompt, caption } = await generateInfographicPrompt(post.title, post.body);
-      const imageBuffer = await generateInfographicImage(imagePrompt);
+      const rawImage = await generateInfographicImage(imagePrompt);
+      // Stamp the ROX logo (bottom-right) onto the generated image.
+      const imageBuffer = await addRoxLogo(rawImage);
 
       // Convert full-res to lossy WebP (quality 90) — cuts ~3 MB PNGs to ~300-500 KB
       // while staying visually identical at the 1400 px max display width.
@@ -66,12 +69,11 @@ export async function POST(request: NextRequest) {
 
       if (uploadError) throw uploadError;
 
-      // Generate and upload a 1024px-wide lossless WebP thumbnail for the feed.
-      // Nearest-neighbor resampling preserves pixel-art edges (2048 / 1024 = exact 2x).
+      // Generate and upload a 1024px-wide WebP thumbnail for the feed.
       // Wrapped in its own try/catch so failure doesn't block the full-res post.
       try {
         const thumbBuffer = await sharp(imageBuffer)
-          .resize(1024, null, { kernel: "nearest" })
+          .resize(1024, null)
           .webp({ quality: 80 })
           .toBuffer();
 
