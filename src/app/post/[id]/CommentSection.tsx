@@ -13,6 +13,22 @@ import { trackCommentLiked } from "@/lib/tracking-client";
 import type { CommentReaction, PostVote } from "@/lib/postDetails";
 import VoteBadge from "@/components/VoteBadge";
 
+// First markdown image URL in a comment body, if any.
+function firstImageUrl(body: string): string | null {
+  const m = body.match(/!\[[^\]]*\]\(([^)\s]+)[^)]*\)/);
+  return m ? m[1] : null;
+}
+
+// Strip markdown to a clean one-line snippet for the collapsed preview.
+function plainSnippet(body: string): string {
+  return body
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1") // image → alt text
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1") // link → text
+    .replace(/[#>*_`~]/g, "") // markdown symbols
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 type CommentWithProfile = {
   id: string;
   post_id: string;
@@ -79,6 +95,8 @@ function CommentNode({
   const hasLiked = myReactions.some((r) => r.author_id === currentUserId && r.type === "like");
   const isMentioned = mentionedIds.has(node.id);
   const isHighlighted = highlightedId === node.id;
+  const previewImage = firstImageUrl(node.body);
+  const previewSnippet = plainSnippet(node.body);
 
   // Reactively uncollapse when this node is on the path to the highlighted comment
   useEffect(() => {
@@ -124,9 +142,21 @@ function CommentNode({
             <button
               type="button"
               onClick={() => setCollapsed(false)}
-              className="text-[11px] leading-[1.4] text-smoke-5 truncate cursor-pointer hover:text-dark-space transition-colors text-left"
+              className="flex items-center gap-2 cursor-pointer text-left group min-w-0"
             >
-              {node.body.length > 120 ? node.body.slice(0, 120) + "..." : node.body}
+              {previewImage && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={previewImage}
+                  alt=""
+                  className="h-9 w-14 object-cover rounded border border-dawn-2 shrink-0"
+                />
+              )}
+              <span className="text-[11px] leading-[1.4] text-smoke-5 truncate min-w-0 group-hover:text-dark-space transition-colors">
+                {previewSnippet.length > 120
+                  ? previewSnippet.slice(0, 120) + "..."
+                  : previewSnippet || (previewImage ? "Image" : "")}
+              </span>
             </button>
           )}
 
