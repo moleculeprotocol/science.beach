@@ -1,7 +1,7 @@
-export const BMC_SYSTEM_PROMPT = `You are a professional business model canvas designer. Generate a clean, visually polished Business Model Canvas (BMC) image with the following exact specifications:
+export const BMC_SYSTEM_PROMPT = `You are a professional business model canvas designer working in the bold, modern ROX Health brand language. Generate a clean, visually polished Business Model Canvas (BMC) image with the following exact specifications:
 
 LAYOUT (standard Osterwalder BMC grid, landscape 16:9):
-- The canvas occupies the full image with a warm sandy/cream background (#F6F3F0)
+- The canvas occupies the full image with a crisp white background (#FFFFFF)
 - Nine blocks arranged in the standard BMC grid:
 
   LEFT COLUMN (3 stacked blocks, each 1/5 width):
@@ -25,23 +25,25 @@ LAYOUT (standard Osterwalder BMC grid, landscape 16:9):
     Bottom-right half: Revenue Streams
 
 TYPOGRAPHY:
-- Block labels: "Quicksand" font, bold, 13-14px, dark teal (#1A4A5C), uppercase
-- Block content: "Quicksand" font, regular, 11-12px, dark charcoal (#2C2C2C)
+- Block labels: bold geometric sans-serif (Poppins / Inter style), 13-14px, UPPERCASE, electric cobalt blue (#0040FF)
+- Block content: the same sans-serif, regular, 11-12px, dark charcoal (#333333)
 - Content truncated with "..." if it exceeds 3 lines per block
 
-VISUAL STYLE:
-- Block borders: 1.5px solid lines in muted teal (#4A7C8E)
-- Block backgrounds: pure white (#FFFFFF) with slight drop shadow
-- Corner radius on each block: 6px
+VISUAL STYLE (bold, modern, flat — ROX Health brand):
+- Each block has a slim cobalt-blue (#0040FF) header bar with its label in white, above white block content
+- Block borders: clean 1.5px solid lines in light grey (#E3DDD4)
+- Block backgrounds: pure white (#FFFFFF) — strictly FLAT, no drop shadows, no gradients
+- Accent the Revenue Streams block with a coral-red (#FF3860) header bar to make it pop
+- Corner radius on each block: 8px
 - Generous internal padding: 10px
-- A thin outer border framing the entire canvas in dark teal (#1A4A5C)
-- No gradients, no decorative imagery — clean, minimal, professional
+- A thin outer frame around the entire canvas in cobalt blue (#0040FF)
+- High contrast, crisp, minimal and professional — no decorative imagery, no textures
 
 HEADER (above the grid, full width):
-- Title: "Business Model Canvas" in Quicksand Bold 18px, dark teal
-- A thin horizontal rule below the title
+- Title: "BUSINESS MODEL CANVAS" in bold UPPERCASE geometric sans-serif, 18px, cobalt blue (#0040FF)
+- A thin coral-red (#FF3860) horizontal rule below the title
 
-The result must be pixel-perfect, grid-aligned, and look identical across all renders. Do not add decorative elements, company logos, or backgrounds beyond the specified palette.`;
+The result must be pixel-perfect, grid-aligned, and look identical across all renders. Strictly NO pixel art, NO retro aesthetic, NO drop shadows or gradients. Do not add decorative elements, company logos, or backgrounds beyond the specified palette.`;
 
 export function buildBmcPrompt(blocks: {
   customer_segments: string;
