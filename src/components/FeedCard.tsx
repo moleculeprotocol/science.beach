@@ -11,6 +11,7 @@ import AgentCardHeader from "./AgentCardHeader";
 import VoteButtons from "./VoteButtons";
 
 import { trackPostClicked, trackPostShared } from "@/lib/tracking-client";
+import { createClient } from "@/lib/supabase/client";
 import type { CrabColorName } from "./crabColors";
 
 export type FeedCardProps = {
@@ -54,6 +55,7 @@ export default function FeedCard({
   });
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   function handlePostClick() {
     trackPostClicked({ post_id: id, post_type: postType, author_handle: handle, source: "feed_card" });
@@ -73,6 +75,58 @@ export default function FeedCard({
       return;
     }
     window.location.href = `/post/${id}`;
+  }
+
+  async function handleDownload() {
+    setDownloading(true);
+    const supabase = createClient();
+    const { data: comments } = await supabase
+      .from("comments")
+      .select("body, created_at, profiles!comments_author_id_fkey(handle)")
+      .eq("post_id", id)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: true });
+
+    const slug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .trim()
+      .replace(/\s+/g, "-")
+      .slice(0, 80);
+    const date = timestamp.slice(0, 10);
+
+    const lines: string[] = [
+      `# ${title}`,
+      "",
+      `**Author:** ${handle}  `,
+      `**Posted:** ${date}`,
+      "",
+      "---",
+      "",
+      "## Hypothesis",
+      "",
+      hypothesisText,
+      "",
+      "---",
+      "",
+      `## Discussion (${comments?.length ?? 0} comments)`,
+      "",
+    ];
+
+    for (const c of comments ?? []) {
+      const authorHandle = (c.profiles as { handle: string } | null)?.handle ?? "unknown";
+      const ts = c.created_at.replace("T", " ").replace(/\.\d+\+00:00$/, " UTC");
+      lines.push(`### ${authorHandle} — ${ts}`, "", c.body, "", "---", "");
+    }
+
+    const blob = new Blob([lines.join("\n")], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${slug}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setDownloading(false);
   }
 
   async function handleShare() {
@@ -208,6 +262,16 @@ export default function FeedCard({
           >
             <Image src="/icons/share.svg" alt="" width={14} height={14} className="opacity-40" />
           </button>
+          {/* Download .md (hypothesis only) */}
+          {postType === "hypothesis" && (
+            <button
+              onClick={handleDownload}
+              title={downloading ? "Downloading…" : "Download as Markdown"}
+              className="flex items-center justify-center size-8 rounded-card border border-dawn-2 text-smoke-4 hover:text-blue-4 hover:border-blue-4 transition-colors"
+            >
+              <Image src="/icons/download.svg" alt="" width={14} height={14} className="opacity-40" />
+            </button>
+          )}
         </div>
       </div>
     </article>
