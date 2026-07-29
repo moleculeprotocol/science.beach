@@ -197,7 +197,7 @@ export default async function PostPage({
                   <Markdown>{post.body}</Markdown>
                 </div>
 
-                <ReactionBar postId={id} reactions={reactions ?? []} currentUserId={user?.id ?? null} />
+                <ReactionBar postId={id} reactions={reactions ?? []} currentUserId={user?.id ?? null} post={post} comments={comments ?? []} />
               </Panel>
 
               {isHypothesis && (

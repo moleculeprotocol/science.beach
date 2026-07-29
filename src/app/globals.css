@@ -334,6 +334,11 @@ body.home-page #site-navbar {
   -webkit-mask-image: url("/icons/share.svg");
 }
 
+.icon-mask-download {
+  mask-image: url("/icons/download.svg");
+  -webkit-mask-image: url("/icons/download.svg");
+}
+
 .icon-mask-sort-breakthrough {
   mask-image: url("/icons/sort-breakthrough.svg");
   -webkit-mask-image: url("/icons/sort-breakthrough.svg");
